@@ -231,13 +231,18 @@ exports.reset_user_password = async (req, res) => {
 exports.change_user_password = async (req, res) => {
     const { email, previousPassword, password } = req.body;
     
+    // checking there is a logged-in user
+    if (!req.user) return res.status(401).send('Access denied');
+
     // validating the request body
     if (!email) return res.status(400).send("'email' required");
     if (!password) return res.status(400).send("'password' required");
     if (!previousPassword) return res.status(400).send("'previousPassword' required");
 
+    if (req.user.email !== email) return res.status(401).send('You can only make updates to your account.');
+
     // checking if there is an existing user
-    const existingUser = await User.findOne({ email: email });
+    const existingUser = await User.findOne({ _id: req.user._id, email: email });
     if (!existingUser) return res.status(404).send('User not found');
 
     // checking the previous assword passed matches the password saved in db
