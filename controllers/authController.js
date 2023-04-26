@@ -1,6 +1,6 @@
 const { validateNewUserDetails, User } = require("../models/user");
 const bcrypt = require('bcrypt');
-const { sendEmail, sendSms, compileHtml, generateToken } = require("../utils/utils");
+const { sendEmail, sendSms, compileHtml, generateToken, validateToken } = require("../utils/utils");
 const jwt = require("jsonwebtoken");
 const path = require("path");
 const { VerificationCodes } = require("../models/codes");
@@ -86,29 +86,22 @@ exports.verify_new_account = async (req, res) => {
     // checking for a 'token' request query param
     if (!token) return res.status(401).send("'token' required");
 
-    try {
-
-        // validating the jwt token passed against the token secret
-        const validToken = jwt.verify(token, process.env.VERIFICATION_TOKEN_SECRET);
-
-        // checking if the user exists
-        const existingUser = await User.findOne({ email: validToken.email });
+    const validToken = validateToken(token, 'verification');
+    if (!validToken) return res.status(401).send('Invalid token provided');
+    
+    const existingUser = await User.findOne({ email: validToken.email });
         
-        // validating the user exists and the account is not yet verified
-        if (!existingUser) return res.status(404).send('User not found');
-        if (existingUser.accountVerified) return res.status(409).send('Account already verified.')
+    // validating the user exists and the account is not yet verified
+    if (!existingUser) return res.status(404).send('User not found');
+    if (existingUser.accountVerified) return res.status(409).send('Account already verified.')
 
-        // updating the existing user details
-        existingUser.accountVerified = true;
-        existingUser.verificationToken = null;
+    // updating the existing user details
+    existingUser.accountVerified = true;
+    existingUser.verificationToken = null;
 
-        await existingUser.save();
+    await existingUser.save();
 
-        return res.status(200).send('Successfully verified account!');
-
-    } catch (error) {
-        return res.status(401).send('Invalid token provided');
-    }
+    return res.status(200).send('Successfully verified account!');
 }
 
 exports.login_user = async (req, res) => {
@@ -172,60 +165,51 @@ exports.reset_user_password = async (req, res) => {
 
 
     if (req.method === 'POST') {
-        try {
-            
-            // checking for a 'token' request query param
-            if (!token) return res.status(401).send({ message: "'token' required" });
-            
-            // validating the jwt token passed against the token secret
-            const validToken = jwt.verify(token, process.env.RESET_TOKEN_SECRET);
-    
-            // validating the request body
-            if (!email) return res.status(400).json({ message: "'email' required" });
-            if (!password) return res.status(400).json({ message: "'password' required" });
-        
-            // checking if there is an existing user
-            const existingUser = await User.findOne({ email: email, resetPasswordToken: token });
-            if (!existingUser) return res.status(404).json({ message: 'User not found or link has already been used' });
-    
-            // hashing and salting the user's new password
-            const hashAndSaltedPassword = await bcrypt.hash(password, Number(process.env.SALT_ROUNDS));
-    
-            existingUser.password = hashAndSaltedPassword;
-            existingUser.resetPasswordToken = null;
-    
-            await existingUser.save();
-
-            // compiling the password change mail to send to the new user
-            const passwordChangeHtml = compileHtml('Password changed', '', 'passwordChange');
-            await sendEmail(existingUser.email, 'Yoola Password Change', passwordChangeHtml);
-    
-            return res.status(200).json({ message: 'Successfully changed your password!' }); 
-        } catch (error) {
-            return res.status(401).send({ message: 'Invalid token provided' });
-        }
-    }
-
-    try {
-
         // checking for a 'token' request query param
-        if (!token) return res.status(401).send("'token' required");
-
+        if (!token) return res.status(401).send({ message: "'token' required" });
+            
         // validating the jwt token passed against the token secret
-        const validToken = jwt.verify(token, process.env.RESET_TOKEN_SECRET);
+        const validToken = validateToken(token, 'reset');
+        if (!validToken) return res.status(401).json({ message: 'Invalid token provided' });
 
-        // checking if the user exists
-        const existingUser = await User.findOne({ email: validToken.email, resetPasswordToken: token  });
-        
-        // validating the user exists and the account is not yet verified
-        if (!existingUser) return res.status(404).send('User not found or link has already been used');
-        
-        // sending back the html file to allow the user reset password
-        res.sendFile(path.join(__dirname, '..', 'views', 'resetPassword.html'));
+        // validating the request body
+        if (!email) return res.status(400).json({ message: "'email' required" });
+        if (!password) return res.status(400).json({ message: "'password' required" });
+    
+        // checking if there is an existing user
+        const existingUser = await User.findOne({ email: email, resetPasswordToken: token });
+        if (!existingUser) return res.status(404).json({ message: 'User not found or link has already been used' });
 
-    } catch (error) {
-        return res.status(401).send('Invalid token provided');
+        // hashing and salting the user's new password
+        const hashAndSaltedPassword = await bcrypt.hash(password, Number(process.env.SALT_ROUNDS));
+
+        existingUser.password = hashAndSaltedPassword;
+        existingUser.resetPasswordToken = null;
+
+        await existingUser.save();
+
+        // compiling the password change mail to send to the new user
+        const passwordChangeHtml = compileHtml('Password changed', '', 'passwordChange');
+        await sendEmail(existingUser.email, 'Yoola Password Change', passwordChangeHtml);
+
+        return res.status(200).json({ message: 'Successfully changed your password!' });
     }
+
+    // checking for a 'token' request query param
+    if (!token) return res.status(401).send("'token' required");
+
+    // validating the jwt token passed against the token secret
+    const validToken = validateToken(token, 'reset');
+    if (!validToken) return res.status(401).json('Invalid token provided');
+
+    // checking if the user exists
+    const existingUser = await User.findOne({ email: validToken.email, resetPasswordToken: token  });
+    
+    // validating the user exists and the account is not yet verified
+    if (!existingUser) return res.status(404).send('User not found or link has already been used');
+    
+    // sending back the html file to allow the user reset password
+    res.sendFile(path.join(__dirname, '..', 'views', 'resetPassword.html'));
 }
 
 exports.change_user_password = async (req, res) => {
