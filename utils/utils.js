@@ -68,10 +68,11 @@ exports.sendEmail = async (receiver, subject, htmlTemplate) => {
     }
 } 
 
-exports.compileHtml = (title, content, type) => {
+exports.compileHtml = (nameOfUser, title, content, type) => {
     /**
      * Uses handlebars to compile a js file into html.
      * 
+     * @param nameOfUser The name of the user you will like to send the email to.
      * @param title The title you will like to display on the html file.
      * @param content The content of the html file.
      * @param type The type of js file you are looking to compile
@@ -85,18 +86,21 @@ exports.compileHtml = (title, content, type) => {
             template = Handlebars.compile(verificationMailHtmlContent);
             return template({ 
                 title: title, 
-                content: content 
+                content: content,
+                name: nameOfUser,
             });
         case 'resetPasswordMail':
             template = Handlebars.compile(resetPasswordHtmlContent);
             return template({ 
                 title: title, 
-                content: content 
+                content: content,
+                name: nameOfUser,
             });
         case 'passwordChange':
             template = Handlebars.compile(successPasswordChangeHtmlContent);
             return template({
                 title: title,
+                name: nameOfUser,
             })
         default:
             console.log('Invalid type passed');

@@ -62,13 +62,17 @@ exports.register_user = async (req, res) => {
     const hashAndSaltedPassword = await bcrypt.hash(validUserDetails.value.password, Number(process.env.SALT_ROUNDS));
     newUser.password = hashAndSaltedPassword;
 
+    // creating a copy of the valid details entered by the user
+    const copyOfValidUserDetails = {...validUserDetails.value};
+    delete copyOfValidUserDetails.password;
+
     // creating a verification token for the new user
-    const verificationToken = await generateToken(validUserDetails.value, 'verification');
+    const verificationToken = await generateToken(copyOfValidUserDetails, 'verification');
     newUser.verificationToken = verificationToken;
 
-    // compiling the verification mail to send to the new user
+    // compiling the verification html mail to send to the new user
     const linkToVerifyAccount = `${process.env.SERVER_URL}/auth/verify?token=${verificationToken}`;
-    const verificationHtml = compileHtml('Welcome to Yoola!', linkToVerifyAccount, 'verificationMail');
+    const verificationHtml = compileHtml(newUser.name, 'Welcome to Yoola!', linkToVerifyAccount, 'verificationMail');
     const mailResponse = await sendEmail(newUser.email, 'Verify your account on Yoola', verificationHtml);
 
     // if an error occured trying to send the email
@@ -119,9 +123,15 @@ exports.login_user = async (req, res) => {
     const passwordMatch = await bcrypt.compare(password, existingUser.password);
     if (!passwordMatch) return res.status(401).send('Invalid email or password');
 
+    // creating a copy of the existing user object
+    const copyOfExistingUser = {...existingUser};
+    delete copyOfExistingUser.password;
+
     // creating new access and refresh tokens for the user
-    const accessToken = await generateToken(existingUser, 'access');
-    const refreshToken = await generateToken(existingUser, 'refresh');
+    const accessToken = await generateToken(copyOfExistingUser, 'access');
+    const refreshToken = await generateToken(copyOfExistingUser, 'refresh');
+
+    await User.findByIdAndUpdate(existingUser._id, { $set: { refreshToken: refreshToken } });
 
     res.status(200)
     .set('access-token', accessToken)
@@ -146,7 +156,7 @@ exports.request_password_reset = async (req, res) => {
 
         // compiling the password reset mail to send to the new user
         const linkToResetPassword = `${process.env.SERVER_URL}/auth/reset-password?token=${resetPasswordToken}`;
-        const resetHtml = compileHtml('Reset password', linkToResetPassword, 'resetPasswordMail');
+        const resetHtml = compileHtml(existingUser.name, 'Reset password', linkToResetPassword, 'resetPasswordMail');
         const mailResponse = await sendEmail(existingUser.email, 'Yoola Password Reset', resetHtml);
 
         // if an error occured trying to send the email
@@ -155,7 +165,7 @@ exports.request_password_reset = async (req, res) => {
         await existingUser.save();
     }
     
-    return res.status(200).send('An email to reset password will be sent to the email provided if an accounts exists on our platform.');
+    return res.status(200).send('An email to reset password will be sent to the email provided if an account exists on our platform.');
 }
 
 exports.reset_user_password = async (req, res) => {
@@ -164,7 +174,7 @@ exports.reset_user_password = async (req, res) => {
     const { email, password } = req.body;
 
 
-    if (req.method === 'POST') {
+    if (req.method === 'PUT') {
         // checking for a 'token' request query param
         if (!token) return res.status(401).send({ message: "'token' required" });
             
@@ -189,7 +199,7 @@ exports.reset_user_password = async (req, res) => {
         await existingUser.save();
 
         // compiling the password change mail to send to the new user
-        const passwordChangeHtml = compileHtml('Password changed', '', 'passwordChange');
+        const passwordChangeHtml = compileHtml(existingUser.name, 'Password changed', '', 'passwordChange');
         await sendEmail(existingUser.email, 'Yoola Password Change', passwordChangeHtml);
 
         return res.status(200).json({ message: 'Successfully changed your password!' });
@@ -223,15 +233,16 @@ exports.change_user_password = async (req, res) => {
     if (!password) return res.status(400).send("'password' required");
     if (!previousPassword) return res.status(400).send("'previousPassword' required");
 
+    if (password === previousPassword) return res.status(400).send("You cannot use your previous password as your new password");
     if (req.user.email !== email) return res.status(401).send('You can only make updates to your account.');
 
     // checking if there is an existing user
     const existingUser = await User.findOne({ _id: req.user._id, email: email });
     if (!existingUser) return res.status(404).send('User not found');
 
-    // checking the previous assword passed matches the password saved in db
+    // checking the previous password passed matches the password saved in db
     const passwordMatch = await bcrypt.compare(previousPassword, existingUser.password);
-    if (!passwordMatch) return res.status(401).send('Password mismatch');
+    if (!passwordMatch) return res.status(401).send('Previous password mismatch');
 
     // hashing and salting the user's new password
     const hashAndSaltedPassword = await bcrypt.hash(password, Number(process.env.SALT_ROUNDS));
@@ -240,8 +251,34 @@ exports.change_user_password = async (req, res) => {
     await existingUser.save();
 
     // compiling the password change mail to send to the new user
-    const passwordChangeHtml = compileHtml('Password changed', '', 'passwordChange');
+    const passwordChangeHtml = compileHtml(existingUser.name, 'Password changed', '', 'passwordChange');
     await sendEmail(existingUser.email, 'Yoola Password Change', passwordChangeHtml);
 
     return res.status(200).send('Successfully changed your password!')
+}
+
+exports.refresh_user_token = async (req, res) => {
+    // validating the request body
+    const { token } = req.body;
+    if (!token) return res.status(400).send("'token' required");
+
+    // checking that it is a valid refresh token
+    const validRefreshToken = validateToken(token, 'refresh');
+    if (!validRefreshToken) return res.status(401).send("Invalid token provided");
+
+    // checking the decoded refresh token matches an existing user
+    const existingUser = await User.findOne({ _id: validRefreshToken._id, refreshToken: token }).select('-password').lean();
+    if (!existingUser) return res.status(401).send("Token has been used by user");
+
+    // creating new access and refresh tokens for the user
+    const accessToken = await generateToken(existingUser, 'access');
+    const refreshToken = await generateToken(existingUser, 'refresh');
+
+    await User.findByIdAndUpdate(existingUser._id, { $set: { refreshToken: refreshToken } });
+
+    res.status(200)
+    .set('access-token', accessToken)
+    .set('refresh-token', refreshToken)
+    .set("Access-Control-Expose-Headers", "access-token, refresh-token")
+    .json({ accessToken })
 }

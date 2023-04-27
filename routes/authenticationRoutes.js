@@ -12,8 +12,9 @@ router.get("/verify", authController.verify_new_account);
 router.post("/login", authController.login_user);
 router.post("/request-password-reset", authController.request_password_reset);
 router.get("/reset-password", authController.reset_user_password);
-router.post("/reset-password", authController.reset_user_password);
-router.post("/change-password", userAuth, authController.change_user_password);
+router.put("/reset-password", authController.reset_user_password);
+router.put("/change-password", userAuth, authController.change_user_password);
+router.post("/refresh-token", authController.refresh_user_token);
 
 
 module.exports = router;

@@ -7,6 +7,7 @@ exports.verificationMailHtmlContent = `
             alt='freepik illustration'
             style='max-width: 100%; width: 45%;'
         />
+        <p>Hello {{name}},</p>
         <p>Thank you for signing up to Yoola!</p>
         <br />
         <p>
