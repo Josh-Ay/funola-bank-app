@@ -15,6 +15,6 @@ router.get("/reset-password", authController.reset_user_password);
 router.put("/reset-password", authController.reset_user_password);
 router.put("/change-password", userAuth, authController.change_user_password);
 router.post("/refresh-token", authController.refresh_user_token);
-
+router.get("/login-status", userAuth, authController.get_login_status);
 
 module.exports = router;

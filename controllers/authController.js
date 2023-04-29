@@ -1,9 +1,10 @@
 const { validateNewUserDetails, User } = require("../models/user");
 const bcrypt = require('bcrypt');
-const { sendEmail, sendSms, compileHtml, generateToken, validateToken } = require("../utils/utils");
-const jwt = require("jsonwebtoken");
+const { sendSms } = require("../utils/smsUtil");
 const path = require("path");
 const { VerificationCodes } = require("../models/codes");
+const { generateToken, validateToken } = require("../utils/tokenUtils");
+const { compileHtml, sendEmail } = require("../utils/emailUtils");
 
 exports.send_verification_code = async (req, res) => {
     // checking for a request body
@@ -81,7 +82,7 @@ exports.register_user = async (req, res) => {
     // saving the new user
     await newUser.save();
 
-    return res.status(200).send('Sucessfully registed new account!');
+    return res.status(201).send('Sucessfully registed new account!');
 }
 
 exports.verify_new_account = async (req, res) => {
@@ -123,9 +124,13 @@ exports.login_user = async (req, res) => {
     const passwordMatch = await bcrypt.compare(password, existingUser.password);
     if (!passwordMatch) return res.status(401).send('Invalid email or password');
 
+    // if the user has not yet verified account
+    if (!existingUser.accountVerified) return res.status(200).json({ message: 'Please check your email to verify your account '});
+
     // creating a copy of the existing user object
     const copyOfExistingUser = {...existingUser};
     delete copyOfExistingUser.password;
+    delete copyOfExistingUser.refreshToken;
 
     // creating new access and refresh tokens for the user
     const accessToken = await generateToken(copyOfExistingUser, 'access');
@@ -267,7 +272,7 @@ exports.refresh_user_token = async (req, res) => {
     if (!validRefreshToken) return res.status(401).send("Invalid token provided");
 
     // checking the decoded refresh token matches an existing user
-    const existingUser = await User.findOne({ _id: validRefreshToken._id, refreshToken: token }).select('-password').lean();
+    const existingUser = await User.findOne({ _id: validRefreshToken._id, refreshToken: token }).select('-password -refreshToken').lean();
     if (!existingUser) return res.status(401).send("Token has been used by user");
 
     // creating new access and refresh tokens for the user
@@ -282,3 +287,5 @@ exports.refresh_user_token = async (req, res) => {
     .set("Access-Control-Expose-Headers", "access-token, refresh-token")
     .json({ accessToken })
 }
+
+exports.get_login_status = (req, res) => res.status(200).send(`${req.user.name} still has access`);
