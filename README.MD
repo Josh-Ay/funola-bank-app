@@ -1,9 +1,9 @@
 # Yoola Banking Application API
-The API for the Yoola Banking Application API built using the [Model-View-Controller](https://developer.mozilla.org/en-US/docs/Glossary/MVC) design pattern.
+The API for the Yoola Banking Application is a REST API built using the [Model-View-Controller](https://developer.mozilla.org/en-US/docs/Glossary/MVC) design pattern.
 
 Local API Link: `http://localhost:5000`
 
-Live API Link: ``
+Live API Link: `https://yoola-bank-app.onrender.com`
 
 <br />
 
@@ -34,9 +34,14 @@ Live API Link: ``
             <td>/user</td>
             <td>Routes to handle all user-related requests in the application</td>
         </tr>
-        <tr></tr>
-        <tr></tr>
-        <tr></tr>
+        <tr>
+            <td>/wallet</td>
+            <td>Routes to handle creation, funding, transfers and withdrawals of/from wallet.</td>
+        </tr>
+        <tr>
+            <td>/card</td>
+            <td>Routes to handle creation, funding and withdrawals of/from ATM cards.</td>
+        </tr>
     </tbody>
 </table>
 
@@ -45,8 +50,71 @@ Live API Link: ``
 - Node.js
 - Express.js
 - MongoDB
+- Mongoose
+- HTML/CSS
 
 ### How to run
+To run this application, you'll need [Node.js](https://nodejs.org/en/download/) installed on your computer. You can either clone or download a .zip file to get your own local copy.
+
+<br />
+
+If you would like to clone this repository, open up a terminal and type this:
+```bash
+# Clone this repository
+$ git clone https://github.com/Josh-Ay/yoola-bank-app.git
+```
+
+Open up your copy of this project and follow the following steps:
+- Install all dependencies by running:
+```bash
+# Install all dependencies
+$ npm install
+```
+- Create a new .env file and set the following:
+    1. MONGO_DB_URI=mongodb://127.0.0.1:27017/<name_of_db> <mark style='background-color: #999; color: #fff'>This uri format only works if you have MongoDB insalled locally on your device. Alternatively, you can replace this with a remote mongo database uri.</mark>
+    2. SALT_ROUNDS=2
+    3. ADMIN_MAIL=`<yourgmail>@gmail.com`
+
+    <br />
+    
+    Follow this [link](https://support.google.com/accounts/answer/185833?hl=en) to get the values for the next variable: `ADMIN_MAIL_PASSWORD`.
+
+    4. ADMIN_MAIL_PASSWORD=''
+    5. VERIFICATION_TOKEN_SECRET=secret
+    6. SERVER_URL=http://localhost:5000
+    7. ACCESS_TOKEN_SECRET=secret
+    8. REFRESH_TOKEN_SECRET=secret
+    9. RESET_TOKEN_SECRET=secret
+
+    <br />
+    
+    Follow this [link](https://www.twilio.com/docs/sms/quickstart/node) to get the values for the following variables: `TWILIO_AUTH_TOKEN`, `TWILIO_SID`.
+
+    10. TWILIO_AUTH_TOKEN=''
+    11. TWILIO_SID=''
+
+    <br />
+    
+    Follow this [link](https://developer.flutterwave.com/docs/quickstart) to get the values for the following variables: `FLW_PUBLIC_KEY`, `FLW_SECRET_KEY`, `FLW_ENCRYPTION_KEY`.
+
+    12. FLW_PUBLIC_KEY=''
+    13. FLW_SECRET_KEY=''
+    14. FLW_ENCRYPTION_KEY=''
+
+- When done, save all changes then run the server using:
+
+```bash
+# Run the server
+$ node app.js
+```
+
+-That's all! You should see your server successfully running on port 5000.
+
+<br />
+
+**Happy hacking!**
+
+<br />
 
 ### Detailed routes description
 <table>
@@ -138,10 +206,82 @@ Live API Link: ``
             <td><a href='#get-userprofile'>Details</a></td>
         </tr>
         <tr>
-            <td>/update-profile/:updateType</td>
+            <td>/user/update-profile/:updateType</td>
             <td>PUT</td>
             <td>Update a user's details.</td>
-            <td><a href='#put-update-profileupdatetype'>Details</a></td>
+            <td><a href='#put-userupdate-profileupdatetype'>Details</a></td>
+        </tr>
+        <tr>
+            <td>/user/notifications</td>
+            <td>GET</td>
+            <td>Get notifications of a user.</td>
+            <td><a href='#get-usernotifications'>Details</a></td>
+        </tr>
+        <tr>
+            <td>/wallet/create</td>
+            <td>POST</td>
+            <td>Create a new wallet for a user.</td>
+            <td><a href=''>Details</a></td>
+        </tr>
+        <tr>
+            <td>/wallet/balance</td>
+            <td>GET</td>
+            <td>Get the wallet balances of a user.</td>
+            <td><a href=''>Details</a></td>
+        </tr>
+        <tr>
+            <td>/wallet/fund</td>
+            <td>PUT</td>
+            <td>Fund a wallet of a user.</td>
+            <td><a href=''>Details</a></td>
+        </tr>
+        <tr>
+            <td>/wallet/transfer</td>
+            <td>POST</td>
+            <td>Transfer funds from a user's wallet.</td>
+            <td><a href=''>Details</a></td>
+        </tr>
+        <tr>
+            <td>/wallet/withdrawal</td>
+            <td>POST</td>
+            <td>Withdraw funds from a user's wallet.</td>
+            <td><a href=''>Details</a></td>
+        </tr>
+        <tr>
+            <td>/card/create/:cardType</td>
+            <td>POST</td>
+            <td>Create a new card for a user.</td>
+            <td><a href=''>Details</a></td>
+        </tr>
+        <tr>
+            <td>/card/detail/:id</td>
+            <td>GET</td>
+            <td>Get a user's card details.</td>
+            <td><a href=''>Details</a></td>
+        </tr>
+        <tr>
+            <td>/card/fund/:cardType/:id</td>
+            <td>POST</td>
+            <td>Fund a user's card.</td>
+            <td><a href=''>Details</a></td>
+        </tr>
+        <tr>
+            <td>/card/transactions/:cardType/:id</td>
+            <td>GET</td>
+            <td>Get the transactions made on a user's card.</td>
+            <td><a href=''>Details</a></td>
+        </tr>
+        <tr>
+            <td>/deposit/</td>
+            <td>GET</td>
+            <td>Get deposits of a user.</td>
+            <td><a href=''>Details</a></td>
+        </tr>
+        <tr>
+            <td>/deposit/new</td>
+            <td>POST</td>
+            <td>Create a new deposit for a user.</td>
+            <td><a href=''>Details</a></td>
         </tr>
     </tbody>
 </table>
@@ -187,6 +327,16 @@ REQUEST BODY
             <span style="font-size: 0.9rem;">(required) 4-digit number you would like to validate.</span>
         </td>
     </tr>
+    <tr>
+        <td>
+            number
+        </td>
+        <td>
+            Number
+            <br />
+            <span style="font-size: 0.9rem;">(required) Number that received the verification code.</span>
+        </td>
+    </tr>
 </table>
 
 ### POST `/auth/register`
@@ -196,12 +346,22 @@ REQUEST BODY
 <table>
     <tr>
         <td>
-            name
+            firstName
         </td>
         <td>
             String
             <br />
-            <span style="font-size: 0.9rem;">(required) Name of the new user.</span>
+            <span style="font-size: 0.9rem;">(required) First name of the new user.</span>
+        </td>
+    </tr>
+    <tr>
+        <td>
+            lastName
+        </td>
+        <td>
+            String
+            <br />
+            <span style="font-size: 0.9rem;">(required) Last name of the new user.</span>
         </td>
     </tr>
     <tr>
@@ -264,6 +424,30 @@ REQUEST BODY
             <span style="font-size: 0.9rem;">(required) 1-4 digit phone number extension of the new user.</span>
         </td>
     </tr>
+    <tr>
+        <td>
+            title
+        </td>
+        <td>
+            String.
+            <br />
+            <span style="font-size: 0.9rem;">(required) Title of the new user.</span>
+            <br />
+            <span style="font-size: 0.9rem;">Valid values: Mr | Miss | Mrs</span>
+        </td>
+    </tr>
+    <tr>
+        <td>
+            gender
+        </td>
+        <td>
+            String
+            <br />
+            <span style="font-size: 0.9rem;">(required) Gender of the new user.</span>
+            <br />
+            <span style="font-size: 0.9rem;">Valid values: M | F</span>
+        </td>
+    </tr>
 </table>
 
 ### GET `/auth/verify`
@@ -323,7 +507,7 @@ REQUEST BODY
         <td>
             String
             <br />
-            <span style="font-size: 0.9rem;">(required) Email of the user you would like to request password reset.</span>
+            <span style="font-size: 0.9rem;">(required) Email of the user that would like to request a password reset.</span>
         </td>
     </tr>
 </table>
@@ -455,7 +639,7 @@ REQUEST BODY/PARAMS
 
 `None`
 
-### PUT `/update-profile/:updateType`
+### PUT `/user/update-profile/:updateType`
 Update a user's details.
 
 REQUEST PARAMS
@@ -467,12 +651,22 @@ REQUEST BODY
 <table>
     <tr>
         <td>
-            name
+            firstName
         </td>
         <td>
             String
             <br />
-            <span style="font-size: 0.9rem;">(required) New name you would like to be set for an existing user.</span>
+            <span style="font-size: 0.9rem;">(required) New first name you would like to be set for an existing user.</span>
+        </td>
+    </tr>
+     <tr>
+        <td>
+            lastName
+        </td>
+        <td>
+            String
+            <br />
+            <span style="font-size: 0.9rem;">(required) New last name you would like to be set for an existing user.</span>
         </td>
     </tr>
 </table>
@@ -491,5 +685,10 @@ REQUEST BODY
     </tr>
 </table>
 
-3. updateType - `profilePhoto`
+3. updateType - `profilePhoto` (`NOT IMPLEMENTED YET`)
 
+### GET `/user/notifications`
+
+REQUEST BODY/PARAMS
+
+`None`
