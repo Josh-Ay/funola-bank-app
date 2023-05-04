@@ -6,5 +6,6 @@ const router = Router();
 
 router.get("/profile", userAuth, userController.get_user_profile);
 router.put("/update-profile/:updateType", userAuth, userController.update_user_detail);
+router.get("/notifications", userAuth, userController.get_user_notifications);
 
 module.exports = router;

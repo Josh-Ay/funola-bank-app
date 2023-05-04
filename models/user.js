@@ -3,7 +3,11 @@ const { Schema, model } = require("mongoose");
 
 // defining a schema for the user
 const userSchema = new Schema({
-    name: {
+    firstName: {
+        type: String,
+        required: true,
+    },
+    lastName: {
         type: String,
         required: true,
     },
@@ -47,6 +51,22 @@ const userSchema = new Schema({
     profilePhoto: {
         type: String,
     },
+    title: {
+        type: String,
+        required: true,
+        enum: ['Mr', 'Mrs', 'Miss'],
+    },
+    gender: {
+        type: String,
+        required: true,
+        enum: ['M', 'F'],
+    },
+    dollarVirtualCardId: {
+        type: String,
+    },
+    nairaVirtualCardId: {
+        type: String,
+    },
 })
 
 function validateNewUserDetails(userDetails) {
@@ -59,13 +79,16 @@ function validateNewUserDetails(userDetails) {
      */
 
     const schema = Joi.object({
-        name: Joi.string().min(1).required(),
+        firstName: Joi.string().min(2).required(),
+        lastName: Joi.string().min(2).required(),
         email: Joi.string().email({ minDomainSegments: 2 }).required(),
         password: Joi.string().min(6).required(),
         dateOfBirth: Joi.date().required(),
         country: Joi.string().required(),
         phoneNumber: Joi.string().required().min(10).max(13),
         phoneNumberExtension: Joi.string().required().min(1).max(4),
+        title: Joi.string().required().valid('Mr', 'Miss', 'Mrs'),
+        gender: Joi.string().required().valid('M', 'F'),
     })
 
     return schema.validate(userDetails);
@@ -86,7 +109,8 @@ function validateUserUpdateDetails(userDetails, typeOfUpdate) {
     switch (typeOfUpdate) {
         case 'name':
             schema = Joi.object({
-                name: Joi.string().min(1).required(),
+                firstName: Joi.string().min(2).required(),
+                lastName: Joi.string().min(2).required(),
             })
             break;
         case 'email':

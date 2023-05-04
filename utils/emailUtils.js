@@ -4,6 +4,7 @@ const { verificationMailHtmlContent } = require('../templates/verificationEmailT
 const { resetPasswordHtmlContent } = require('../templates/resetEmailTemplate');
 const { successPasswordChangeHtmlContent } = require('../templates/successPasswordChangeTemplate');
 const { emailChangeHtmlContent } = require('../templates/emailChangeTemplate');
+const { cashFlowTemplate } = require('../templates/cashFlowTemplate');
 
 
 exports.sendEmail = async (receiver, subject, htmlTemplate) => {
@@ -39,7 +40,7 @@ exports.sendEmail = async (receiver, subject, htmlTemplate) => {
         console.log('Email sent to: ' + receiver);
         return { success: res.response }       
     } catch (error) {
-        console.log('error: ', error);
+        console.log('error sending mail: ', error);
         return { error: error };
     }
 } 
@@ -85,8 +86,15 @@ exports.compileHtml = (nameOfUser, title, content, type) => {
                 name: nameOfUser,
                 content: content,
             })
+        case 'cashFlow':
+            template = Handlebars.compile(cashFlowTemplate);
+            return template({
+                title: title,
+                name: nameOfUser,
+                content: content
+            })
         default:
             console.log('Invalid type passed');
-            return ''
+            return '<div></div>'
     }
 }

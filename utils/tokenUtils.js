@@ -13,7 +13,7 @@ exports.generateToken = async (plainObj, tokenType) => {
     const validTokenTypes = ['access', 'verification', 'refresh', 'reset'];
     if (!validTokenTypes.includes(tokenType)) throw Error("'tokenType' must be one of 'access', 'verification', 'refresh', 'reset'");
 
-    return await jwt.sign(
+    const token = await jwt.sign(
         plainObj, 
         tokenType === 'access' ? 
             process.env.ACCESS_TOKEN_SECRET :
@@ -23,9 +23,11 @@ exports.generateToken = async (plainObj, tokenType) => {
             process.env.RESET_TOKEN_SECRET :
             process.env.REFRESH_TOKEN_SECRET,
         { 
-            expiresIn: tokenType === 'verification' || tokenType === 'reset' ? '2h' : '1d'
+            expiresIn: tokenType === 'verification' || tokenType === 'reset' ? '2h' : tokenType === 'access' ? '1d' : '7d'
         },
     );
+
+    return token
 }
 
 exports.validateToken = (token, tokenType) => {

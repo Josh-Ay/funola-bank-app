@@ -9,7 +9,15 @@ const verificationCodeSchema = new Schema({
     codeExpiresAt: {
         type: Date,
         required: true,
-    }
+    },
+    number: {
+        type: Number,
+        required: true,
+    },
+    used: {
+        type: Boolean,
+        default: false
+    },
 })
 
 // creating a new model

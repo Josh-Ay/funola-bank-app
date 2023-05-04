@@ -5,6 +5,7 @@ const path = require("path");
 const { VerificationCodes } = require("../models/codes");
 const { generateToken, validateToken } = require("../utils/tokenUtils");
 const { compileHtml, sendEmail } = require("../utils/emailUtils");
+const { Notification } = require("../models/notifications");
 
 exports.send_verification_code = async (req, res) => {
     // checking for a request body
@@ -21,21 +22,28 @@ exports.send_verification_code = async (req, res) => {
     // creating a new verification code
     await VerificationCodes.create({
         code: verificationCode,
-        codeExpiresAt: new Date(new Date().getTime() + 300000) 
+        codeExpiresAt: new Date(new Date().getTime() + 300000),
+        number: number,
     })
 
     return res.status(200).send(`Successfully sent verification code to ${number}`);
 }
 
 exports.verify_code = async (req, res) => {
-    const { code } = req.body;
+    const { code, number } = req.body;
 
     // validating the request body and sending back an appropriate error message if any
     if (!code) return res.status(400).send("'code' required");
+    if (!number) return res.status(400).send("'number' required");
 
     // checking for a stored non-expired code that matches the code sent
-    const validCode = await VerificationCodes.findOne({ code: code, codeExpiresAt: { '$gt': new Date() } });
+    const validCode = await VerificationCodes.findOne({ code: code, codeExpiresAt: { '$gt': new Date() }, number: number });
     if (!validCode) return res.status(404).send("code expired or not found");
+    if (validCode.used) return res.status(409).send("Code already used. Kindly request a new one.");
+
+    // updating the code's status to signify that it has been used
+    validCode.used = true;
+    await validCode.save();
 
     return res.status(200).send('Successfully verified code');
 }
@@ -73,7 +81,7 @@ exports.register_user = async (req, res) => {
 
     // compiling the verification html mail to send to the new user
     const linkToVerifyAccount = `${process.env.SERVER_URL}/auth/verify?token=${verificationToken}`;
-    const verificationHtml = compileHtml(newUser.name, 'Welcome to Yoola!', linkToVerifyAccount, 'verificationMail');
+    const verificationHtml = compileHtml(`${newUser.firstName} ${newUser.lastName}`, 'Welcome to Yoola!', linkToVerifyAccount, 'verificationMail');
     const mailResponse = await sendEmail(newUser.email, 'Verify your account on Yoola', verificationHtml);
 
     // if an error occured trying to send the email
@@ -106,6 +114,12 @@ exports.verify_new_account = async (req, res) => {
 
     await existingUser.save();
 
+    // notifying the user of successful account verification
+    await new Notification.create({
+        owner: existingUser._id,
+        content: 'You have successfully verified your account on Yoola!',
+    })
+
     return res.status(200).send('Successfully verified account!');
 }
 
@@ -125,7 +139,7 @@ exports.login_user = async (req, res) => {
     if (!passwordMatch) return res.status(401).send('Invalid email or password');
 
     // if the user has not yet verified account
-    if (!existingUser.accountVerified) return res.status(200).json({ message: 'Please check your email to verify your account '});
+    if (!existingUser.accountVerified) return res.status(202).send('Please check your email to verify your account');
 
     // creating a copy of the existing user object
     const copyOfExistingUser = {...existingUser};
@@ -155,13 +169,13 @@ exports.request_password_reset = async (req, res) => {
     const existingUser = await User.findOne({ email: email });
 
     if (existingUser) {
-        const resetPasswordToken = await generateToken({email: existingUser.email, name: existingUser.name, _id: existingUser._id}, 'reset');
+        const resetPasswordToken = await generateToken({email: existingUser.email, firstName: existingUser.firstName, lastName: existingUser.lastName, _id: existingUser._id}, 'reset');
         
         existingUser.resetPasswordToken = resetPasswordToken;
 
         // compiling the password reset mail to send to the new user
         const linkToResetPassword = `${process.env.SERVER_URL}/auth/reset-password?token=${resetPasswordToken}`;
-        const resetHtml = compileHtml(existingUser.name, 'Reset password', linkToResetPassword, 'resetPasswordMail');
+        const resetHtml = compileHtml(`${existingUser.firstName} ${existingUser.lastName}`, 'Reset password', linkToResetPassword, 'resetPasswordMail');
         const mailResponse = await sendEmail(existingUser.email, 'Yoola Password Reset', resetHtml);
 
         // if an error occured trying to send the email
@@ -204,7 +218,7 @@ exports.reset_user_password = async (req, res) => {
         await existingUser.save();
 
         // compiling the password change mail to send to the new user
-        const passwordChangeHtml = compileHtml(existingUser.name, 'Password changed', '', 'passwordChange');
+        const passwordChangeHtml = compileHtml(`${existingUser.firstName} ${existingUser.lastName}`, 'Password changed', '', 'passwordChange');
         await sendEmail(existingUser.email, 'Yoola Password Change', passwordChangeHtml);
 
         return res.status(200).json({ message: 'Successfully changed your password!' });
@@ -245,6 +259,9 @@ exports.change_user_password = async (req, res) => {
     const existingUser = await User.findOne({ _id: req.user._id, email: email });
     if (!existingUser) return res.status(404).send('User not found');
 
+    // checking that the user has verified account
+    if (!existingUser.accountVerified) return res.status(401).send('Kindly verify your account first');
+
     // checking the previous password passed matches the password saved in db
     const passwordMatch = await bcrypt.compare(previousPassword, existingUser.password);
     if (!passwordMatch) return res.status(401).send('Previous password mismatch');
@@ -256,7 +273,7 @@ exports.change_user_password = async (req, res) => {
     await existingUser.save();
 
     // compiling the password change mail to send to the new user
-    const passwordChangeHtml = compileHtml(existingUser.name, 'Password changed', '', 'passwordChange');
+    const passwordChangeHtml = compileHtml(`${existingUser.firstName} ${existingUser.lastName}`, 'Password changed', '', 'passwordChange');
     await sendEmail(existingUser.email, 'Yoola Password Change', passwordChangeHtml);
 
     return res.status(200).send('Successfully changed your password!')
@@ -275,6 +292,9 @@ exports.refresh_user_token = async (req, res) => {
     const existingUser = await User.findOne({ _id: validRefreshToken._id, refreshToken: token }).select('-password -refreshToken').lean();
     if (!existingUser) return res.status(401).send("Token has been used by user");
 
+    // checking that the user has verified account
+    if (!existingUser.accountVerified) return res.status(401).send('Kindly verify your account first');
+
     // creating new access and refresh tokens for the user
     const accessToken = await generateToken(existingUser, 'access');
     const refreshToken = await generateToken(existingUser, 'refresh');
@@ -288,4 +308,4 @@ exports.refresh_user_token = async (req, res) => {
     .json({ accessToken })
 }
 
-exports.get_login_status = (req, res) => res.status(200).send(`${req.user.name} still has access`);
+exports.get_login_status = async (req, res) =>  res.status(200).send(`${req.user.firstName} ${req.user.lastName} still has access`);

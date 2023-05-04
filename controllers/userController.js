@@ -1,14 +1,11 @@
 const { InvalidTokens } = require("../models/invalidTokens");
+const { Notification } = require("../models/notifications");
 const { User, validateUserUpdateDetails } = require("../models/user");
 const { compileHtml, sendEmail } = require("../utils/emailUtils");
 
 exports.get_user_profile = async (req, res) => {
-    // checking if the user exists
-    const foundUser = await User.findById(req.user._id).lean().select('-password -refreshToken');
-    if (!foundUser) return res.status(404).send('User not found');
-
     // sending back the user's details
-    return res.status(200).send(foundUser);
+    return res.status(200).send(req.user);
 }
 
 exports.update_user_detail = async (req, res) => {
@@ -16,9 +13,8 @@ exports.update_user_detail = async (req, res) => {
     const { updateType } = req.params;
     if (!updateType) return res.status(400).send("'updateType' required");
 
-    // checking if the user exists
+    // fetching the user details
     const foundUser = await User.findById(req.user._id).select('-password -refreshToken');
-    if (!foundUser) return res.status(404).send('User not found');
 
     // validating the request body and sending back an appropriate error message if any
     const validUserDetails = validateUserUpdateDetails(req.body, updateType);
@@ -29,7 +25,8 @@ exports.update_user_detail = async (req, res) => {
         case 'name':
 
             // updating the user's name in db
-            foundUser.name = validUserDetails.value.name;
+            foundUser.firstName = validUserDetails.value.firstName;
+            foundUser.lastName = validUserDetails.value.lastName;
             await foundUser.save();
 
             return res.status(200).send("Name successfully updated!");
@@ -48,7 +45,7 @@ exports.update_user_detail = async (req, res) => {
             if (existingUserWithEmail) return res.status(409).send("New email already registered");
 
             // compiling and sending a mail to the user to inform of the email change
-            const emailChangeHtml = compileHtml(foundUser.name, 'Email Changed on Yoola!', validUserDetails.value.email, 'emailChange');
+            const emailChangeHtml = compileHtml(`${foundUser.firstName} ${foundUser.lastName}`, 'Email Changed on Yoola!', validUserDetails.value.email, 'emailChange');
             await sendEmail(foundUser.email, 'Email Change on Yoola', emailChangeHtml);
 
             // invalidating the authentication token used
@@ -68,4 +65,13 @@ exports.update_user_detail = async (req, res) => {
         default:
             return res.status(400).send("Invalid update type passed");
     }
+}
+
+exports.get_user_notifications = async (req, res) => {
+
+    // finding all the notifications for the user
+    const notifications = await Notification.find({ owner: req.user._id }).lean();
+    // console.log(notifications);
+
+    return res.status(200).send(notifications);
 }
