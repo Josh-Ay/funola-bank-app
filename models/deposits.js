@@ -1,5 +1,6 @@
 const { Schema, model } = require("mongoose");
 const Joi = require('joi');
+const { funolaValidCurrencies } = require("../utils/utils");
 
 // creating a new schema
 const depositSchema = new Schema({
@@ -7,6 +8,10 @@ const depositSchema = new Schema({
         type: Schema.Types.Mixed,
         required: true,
         ref: 'user',
+    },
+    depositAmount: {
+        type: Number,
+        required: true,
     },
     duration: {
         type: Number,
@@ -23,13 +28,18 @@ const depositSchema = new Schema({
     currency: {
         type: String,
         required: true,
-        enum: ['NGN', 'USD'],
+        enum: funolaValidCurrencies,
     },
     paybackAmount: {
         type: Number,
         required: true,
     },
-});
+    paymentMethod: {
+        type: String,
+        required: true,
+        enum: ['card', 'wallet'],
+    },
+}, { timestamps: true });
 
 function validateNewDepositDetails(depositDetails) {
     /**
@@ -42,11 +52,11 @@ function validateNewDepositDetails(depositDetails) {
 
     const schema = Joi.object({
         owner: Joi.required(),
-        duration: Joi.required().min(1),
-        rate: Joi.required().min(1),
-        paybackDate: Joi.date().required(),
+        duration: Joi.required(),
+        rate: Joi.required(),
         currency: Joi.string().required().valid('NGN', 'USD'),
-        paybackAmount: Joi.required().min(0.01),
+        depositAmount: Joi.required(),
+        paymentMethod: Joi.string().required().valid('card', 'wallet'),
     })
 
     return schema.validate(depositDetails);

@@ -7,7 +7,9 @@ const router = Router();
 router.post("/create", userAuth, walletController.create_wallet);
 router.get("/balance", userAuth, walletController.get_wallet_balance);
 router.put("/fund", userAuth, walletController.fund_wallet);
-router.post("/transfer", userAuth, walletController.transfer_fund);
+router.post("/transfer/:type", userAuth, walletController.transfer_fund);
 router.post("/withdrawal", userAuth, walletController.withdraw_from_wallet);
+router.post("/swap", userAuth, walletController.swap_currency);
+router.post("/request", userAuth, walletController.request_fund);
 
 module.exports = router;

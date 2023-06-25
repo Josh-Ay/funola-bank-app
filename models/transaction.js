@@ -1,5 +1,6 @@
 const { Schema, model } = require("mongoose");
 const Joi = require('joi');
+const { funolaValidCurrencies } = require("../utils/utils");
 
 // creating a new schema
 const transactionSchema = new Schema({
@@ -11,7 +12,7 @@ const transactionSchema = new Schema({
     transactionType: {
         type: String,
         required: true,
-        enum: ['debit', 'credit', 'transfer', 'change'],
+        enum: ['debit', 'credit', 'transfer', 'swap', 'deposit'],
     },
     transactionRemarks: {
         type: String,
@@ -19,7 +20,6 @@ const transactionSchema = new Schema({
     },
     recipientInfo: {
         type: String,
-        required: true,
     },
     amount: {
         type: Number,
@@ -33,7 +33,7 @@ const transactionSchema = new Schema({
     currency: {
         type: String,
         required: true,
-        enum: ['NGN', 'USD'],
+        enum: funolaValidCurrencies,
     },
     convertedAmountToReceive: {
         type: String,
@@ -59,23 +59,23 @@ function validateNewTransactionDetails(transactionDetails) {
 
     const schema = Joi.object({
         owner: Joi.required(),
-        transactionType: Joi.string().required().valid('debit', 'credit', 'transfer', 'change'),
+        transactionType: Joi.string().required().valid('debit', 'credit', 'transfer', 'swap', 'deposit'),
         transactionRemarks: Joi.string().required().min(3),
-        recipientInfo: Joi.string().required().min(3),
-        amount: Joi.string().min(0.01).required(),
+        amount: Joi.required(),
         status: Joi.string().required().valid('pending', 'success', 'failed'),
         currency: Joi.string().required().valid('NGN', 'USD'),
+        recipientInfo: Joi.string().min(0),
     })
 
     return schema.validate(transactionDetails);
 }
 
-function generateNewTransactionObj(userId, typeOfTransaction, remarks, infoOfRecipient, amount, status, currency) {
+function generateNewTransactionObj(userId, typeOfTransaction, remarks, amount, status, currency, infoOfRecipient='') {
     return {
         owner: userId,
         transactionType: typeOfTransaction,
         transactionRemarks: remarks,
-        recipientInfo: infoOfRecipient,
+        recipientInfo: infoOfRecipient ? infoOfRecipient : '',
         amount: amount,
         status: status ? status : 'pending',
         currency: currency,

@@ -1,5 +1,5 @@
-# Yoola Banking Application API
-The API for the Yoola Banking Application is a REST API built using the [Model-View-Controller](https://developer.mozilla.org/en-US/docs/Glossary/MVC) design pattern.
+# Funola Banking Application API
+The Funola Banking Application API is a RESTFul API built using the [Model-View-Controller](https://developer.mozilla.org/en-US/docs/Glossary/MVC) design pattern.
 
 Local API Link: `http://localhost:5000`
 
@@ -17,8 +17,8 @@ Live API Link: `https://yoola-bank-app.onrender.com`
 <table>
     <thead>
         <tr>
-            <th>API Route</th>
-            <th>API Function</th>
+            <th>Route</th>
+            <th>Description</th>
         </tr>
     </thead>
     <tbody>
@@ -61,7 +61,7 @@ To run this application, you'll need [Node.js](https://nodejs.org/en/download/) 
 If you would like to clone this repository, open up a terminal and type this:
 ```bash
 # Clone this repository
-$ git clone https://github.com/Josh-Ay/yoola-bank-app.git
+$ git clone https://github.com/Josh-Ay/funola-bank-app.git
 ```
 
 Open up your copy of this project and follow the following steps:
@@ -120,10 +120,11 @@ $ node app.js
 <table>
     <thead>
         <tr>
-            <th>API Route</th>
+            <th>Route</th>
             <th>METHOD</th>
-            <th>API Function</th>
+            <th>Description</th>
             <th>Request Details</th>
+            <th>Authorization</th>
         </tr>
     </thead>
     <tbody>
@@ -132,24 +133,28 @@ $ node app.js
             <td>GET</td>
             <td>Check that the API is up and working fine.</td>
             <td><a href='#get-teststatus'>Details</a></td>
+            <td>False</td>
         </tr>
         <tr>
             <td>/auth/code</td>
             <td>POST</td>
             <td>Send a verification code to a user.</td>
             <td><a href="#post-authcode">Details</a></td>
+            <td>False</td>
         </tr>
         <tr>
             <td>/auth/verify-code</td>
             <td>POST</td>
             <td>Check the validity of a verification code.</td>
             <td><a href='#post-authverify-code'>Details</a></td>
+            <td>False</td>
         </tr>
         <tr>
             <td>/auth/register</td>
             <td>POST</td>
             <td>Register a new user.</td>
             <td><a href='#post-authregister'>Details</a></td>
+            <td>False</td>
         </tr>
         <tr>
             <td>/auth/verify</td>

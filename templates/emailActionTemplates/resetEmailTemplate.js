@@ -8,7 +8,7 @@ exports.resetPasswordHtmlContent = `
             style='max-width: 100%; width: 45%;'
         />
         <p>Hello {{name}},</p>
-        <p>You requested to reset your password on Yoola. If this was not you, kindly ignore this email and contact customer support.</p>
+        <p>You requested to reset your password on Funola. If this was not you, kindly ignore this email and contact customer support.</p>
         <br />
         <p>
             Kindly use this link to reset your password: 

@@ -1,7 +1,7 @@
 {
-  "name": "yoola-api",
+  "name": "funola-api",
   "version": "1.0.0",
-  "description": "Backend for yoola application",
+  "description": "Backend for funola application",
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
@@ -10,6 +10,7 @@
   "author": "Ayoola Oloyede",
   "license": "ISC",
   "dependencies": {
+    "axios": "^1.4.0",
     "bcrypt": "^5.1.0",
     "compression": "^1.7.4",
     "dotenv": "^16.0.3",

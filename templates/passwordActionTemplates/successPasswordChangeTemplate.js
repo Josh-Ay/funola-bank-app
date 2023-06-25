@@ -8,7 +8,7 @@ exports.successPasswordChangeHtmlContent = `
             style='max-width: 100%; width: 45%;'
         />
         <p>Hello {{name}},</p>
-        <p>You have successfully changed your password on Yoola. If this was not you, kindly contact customer support immediately.</p>
+        <p>You have successfully changed your password on Funola. If this was not you, kindly contact customer support immediately.</p>
     </div>
 </div>
 `;

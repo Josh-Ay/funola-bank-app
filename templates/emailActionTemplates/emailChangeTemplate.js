@@ -8,7 +8,7 @@ exports.emailChangeHtmlContent = `
             style='max-width: 100%; width: 45%;'
         />
         <p>Hello {{name}},</p>
-        <p>You have successfully changed your email to {{content}} on Yoola. Moving forward, you will no longer receive updates on this email.</p>
+        <p>You have successfully changed your email to {{content}} on Funola. Moving forward, you will no longer receive updates on this email.</p>
         <br />
         <span style='font-size: 0.75rem;'>If this was not you, kindly contact customer support immediately.</span>
     </div>

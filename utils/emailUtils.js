@@ -1,11 +1,13 @@
 const nodemailer = require('nodemailer');
 const Handlebars = require("handlebars");
-const { verificationMailHtmlContent } = require('../templates/verificationEmailTemplate');
-const { resetPasswordHtmlContent } = require('../templates/resetEmailTemplate');
-const { successPasswordChangeHtmlContent } = require('../templates/successPasswordChangeTemplate');
-const { emailChangeHtmlContent } = require('../templates/emailChangeTemplate');
-const { cashFlowTemplate } = require('../templates/cashFlowTemplate');
-
+const { verificationMailHtmlContent } = require('../templates/emailActionTemplates/verificationEmailTemplate');
+const { resetPasswordHtmlContent } = require('../templates/emailActionTemplates/resetEmailTemplate');
+const { successPasswordChangeHtmlContent } = require('../templates/passwordActionTemplates/successPasswordChangeTemplate');
+const { emailChangeHtmlContent } = require('../templates/emailActionTemplates/emailChangeTemplate');
+const { newDepositTemplate } = require('../templates/cashFlowTemplates/newDepositTemplate');
+const { newFundingTemplate } = require('../templates/cashFlowTemplates/newFundingTemplate');
+const { newDebitTemplate } = require('../templates/cashFlowTemplates/newDebitTemplate');
+const { newSwapTemplate } = require('../templates/cashFlowTemplates/newSwapTemplate');
 
 exports.sendEmail = async (receiver, subject, htmlTemplate) => {
     /**
@@ -45,7 +47,7 @@ exports.sendEmail = async (receiver, subject, htmlTemplate) => {
     }
 } 
 
-exports.compileHtml = (nameOfUser, title, content, type) => {
+exports.compileHtml = (nameOfUser, title, content, type, cashFlowType='') => {
     /**
      * Uses handlebars to compile a js file into html.
      * 
@@ -86,12 +88,35 @@ exports.compileHtml = (nameOfUser, title, content, type) => {
                 name: nameOfUser,
                 content: content,
             })
-        case 'cashFlow':
-            template = Handlebars.compile(cashFlowTemplate);
+        case 'newDeposit':
+            template = Handlebars.compile(newDepositTemplate);
             return template({
                 title: title,
                 name: nameOfUser,
                 content: content
+            })
+        case 'newFunding':
+            template = Handlebars.compile(newFundingTemplate);
+            return template({
+                title: title,
+                name: nameOfUser,
+                content: content,
+                fundingType: cashFlowType,
+            })
+        case 'debit':
+            template = Handlebars.compile(newDebitTemplate);
+            return template({
+                title: title,
+                name: nameOfUser,
+                content: content,
+                debitType: cashFlowType,
+            })
+        case 'swap':
+            template = Handlebars.compile(newSwapTemplate);
+            return template({
+                title: title,
+                name: nameOfUser,
+                content: content,
             })
         default:
             console.log('Invalid type passed');

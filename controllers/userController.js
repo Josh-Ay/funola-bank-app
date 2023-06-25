@@ -45,8 +45,8 @@ exports.update_user_detail = async (req, res) => {
             if (existingUserWithEmail) return res.status(409).send("New email already registered");
 
             // compiling and sending a mail to the user to inform of the email change
-            const emailChangeHtml = compileHtml(`${foundUser.firstName} ${foundUser.lastName}`, 'Email Changed on Yoola!', validUserDetails.value.email, 'emailChange');
-            await sendEmail(foundUser.email, 'Email Change on Yoola', emailChangeHtml);
+            const emailChangeHtml = compileHtml(`${foundUser.firstName} ${foundUser.lastName}`, 'Email Changed on Funola!', validUserDetails.value.email, 'emailChange');
+            await sendEmail(foundUser.email, 'Email Change on Funola', emailChangeHtml);
 
             // invalidating the authentication token used
             await InvalidTokens.create({
@@ -68,10 +68,47 @@ exports.update_user_detail = async (req, res) => {
 }
 
 exports.get_user_notifications = async (req, res) => {
+    const { end } = req.body;
 
-    // finding all the notifications for the user
-    const notifications = await Notification.find({ owner: req.user._id }).lean();
+    if (end) {
+        // validating 'end' passed is numeric
+        if (isNaN(Number(end))) return res.status(400).send("'end' must be a number");
+
+        // validating the 'end' is positive
+        if (Number(end) < 0) return res.status(400).send("'end' must be a positive number");
+    }
+
+    // fetching the a specific number or the first 50 notifications for the user
+    const notifications = await Notification.find({ owner: req.user._id }).sort({ createdAt: -1 }).limit(end ? end : 50).lean();
     // console.log(notifications);
 
-    return res.status(200).send(notifications);
+    const updatedNotifications = await Promise.all(notifications.map(async (notification) => {
+        // updating notifications that have the id of the user included in them
+        if (notification.content.includes('#') && notification.content.includes('!#')) {
+            // getting the start and end index of the location the user id in the notification content
+            const [startIndex, endIndex] =  [notification.content.indexOf('#'), notification.content.lastIndexOf('#')];
+            if (startIndex === -1 || endIndex === -1) return null;
+
+            const [subStrToReplace, userIdToGet] = [notification.content.substring(startIndex, endIndex + 1), notification.content.substring(startIndex + 1, endIndex - 1)];
+
+            // getting the user details
+            const foundUser = await User.findById(userIdToGet).lean().select('firstName lastName');
+            if (!foundUser) return null
+            
+            // updating the notification content with the user details
+            notification.content = notification.content.replace(subStrToReplace, `${foundUser.firstName} ${foundUser.lastName}`);
+            return notification
+        }
+        return notification
+    }).filter(notification => notification))
+    // console.log(updatedNotifications);
+
+    return res.status(200).send(updatedNotifications);
+}
+
+exports.get_other_users = async (req, res) => {
+    // fetching the first 20 users
+    const users = await User.find({ }).limit(20).select('_id firstName lastName phoneNumber phoneNumberExtension').lean();
+    
+    return res.status(200).send(users);
 }

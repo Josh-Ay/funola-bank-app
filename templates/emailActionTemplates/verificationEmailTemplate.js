@@ -8,7 +8,7 @@ exports.verificationMailHtmlContent = `
             style='max-width: 100%; width: 45%;'
         />
         <p>Hello {{name}},</p>
-        <p>Thank you for signing up to Yoola!</p>
+        <p>Thank you for signing up to Funola!</p>
         <br />
         <p>
             Kindly finish up your account setup by using this link to verify: 

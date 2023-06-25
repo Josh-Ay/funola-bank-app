@@ -38,7 +38,7 @@ exports.verify_code = async (req, res) => {
 
     // checking for a stored non-expired code that matches the code sent
     const validCode = await VerificationCodes.findOne({ code: code, codeExpiresAt: { '$gt': new Date() }, number: number });
-    if (!validCode) return res.status(404).send("code expired or not found");
+    if (!validCode) return res.status(404).send("Code expired or not found");
     if (validCode.used) return res.status(409).send("Code already used. Kindly request a new one.");
 
     // updating the code's status to signify that it has been used
@@ -81,8 +81,8 @@ exports.register_user = async (req, res) => {
 
     // compiling the verification html mail to send to the new user
     const linkToVerifyAccount = `${process.env.SERVER_URL}/auth/verify?token=${verificationToken}`;
-    const verificationHtml = compileHtml(`${newUser.firstName} ${newUser.lastName}`, 'Welcome to Yoola!', linkToVerifyAccount, 'verificationMail');
-    const mailResponse = await sendEmail(newUser.email, 'Verify your account on Yoola', verificationHtml);
+    const verificationHtml = compileHtml(`${newUser.firstName} ${newUser.lastName}`, 'Welcome to Funola!', linkToVerifyAccount, 'verificationMail');
+    const mailResponse = await sendEmail(newUser.email, 'Verify your account on Funola', verificationHtml);
 
     // if an error occured trying to send the email
     if (mailResponse.error) return res.status(500).send(`Verification mail failed to send to: ${newUser.email}`);
@@ -117,7 +117,7 @@ exports.verify_new_account = async (req, res) => {
     // notifying the user of successful account verification
     await new Notification.create({
         owner: existingUser._id,
-        content: 'You have successfully verified your account on Yoola!',
+        content: 'You have successfully verified your account on Funola!',
     })
 
     return res.status(200).send('Successfully verified account!');
@@ -176,7 +176,7 @@ exports.request_password_reset = async (req, res) => {
         // compiling the password reset mail to send to the new user
         const linkToResetPassword = `${process.env.SERVER_URL}/auth/reset-password?token=${resetPasswordToken}`;
         const resetHtml = compileHtml(`${existingUser.firstName} ${existingUser.lastName}`, 'Reset password', linkToResetPassword, 'resetPasswordMail');
-        const mailResponse = await sendEmail(existingUser.email, 'Yoola Password Reset', resetHtml);
+        const mailResponse = await sendEmail(existingUser.email, 'Funola Password Reset', resetHtml);
 
         // if an error occured trying to send the email
         if (mailResponse.error) return res.status(500).send(`Reset password mail failed to send to: ${existingUser.email}`);
@@ -219,7 +219,7 @@ exports.reset_user_password = async (req, res) => {
 
         // compiling the password change mail to send to the new user
         const passwordChangeHtml = compileHtml(`${existingUser.firstName} ${existingUser.lastName}`, 'Password changed', '', 'passwordChange');
-        await sendEmail(existingUser.email, 'Yoola Password Change', passwordChangeHtml);
+        await sendEmail(existingUser.email, 'Funola Password Change', passwordChangeHtml);
 
         return res.status(200).json({ message: 'Successfully changed your password!' });
     }
@@ -274,7 +274,7 @@ exports.change_user_password = async (req, res) => {
 
     // compiling the password change mail to send to the new user
     const passwordChangeHtml = compileHtml(`${existingUser.firstName} ${existingUser.lastName}`, 'Password changed', '', 'passwordChange');
-    await sendEmail(existingUser.email, 'Yoola Password Change', passwordChangeHtml);
+    await sendEmail(existingUser.email, 'Funola Password Change', passwordChangeHtml);
 
     return res.status(200).send('Successfully changed your password!')
 }

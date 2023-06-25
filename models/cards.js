@@ -1,4 +1,5 @@
 const { Schema, model } = require("mongoose");
+const { funolaValidCurrencies } = require("../utils/utils");
 
 // creating a new schema
 const cardSchema = new Schema({
@@ -14,7 +15,7 @@ const cardSchema = new Schema({
     cardType: {
         type: String,
         required: true,
-        enum: ['NGN', 'USD'],
+        enum: funolaValidCurrencies,
     },
 }, { timestamps: true })
 

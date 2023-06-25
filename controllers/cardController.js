@@ -1,8 +1,9 @@
 const Flutterwave = require('flutterwave-node-v3');
 const { formatDateAndTime } = require("../utils/dateUtil");
 const { Card } = require('../models/cards');
+const { funolaValidCurrencies } = require('../utils/utils');
 
-const flw = new Flutterwave(process.env.FLW_PUBLIC_KEY, process.env.FLW_SECRET_KEY);
+exports.flw = new Flutterwave(process.env.FLW_PUBLIC_KEY, process.env.FLW_SECRET_KEY);
 
 exports.create_new_card = async (req, res) => {
     // validating request parameters and sending back appropriate error messages if any
@@ -14,7 +15,7 @@ exports.create_new_card = async (req, res) => {
     // validating request body and sending back appropriate error messages if any
     const { currency } = req.body;
     if (!currency) return res.status(400).send("'currency' required");
-    if (!['NGN', 'USD'].includes(currency)) return res.status(400).send("'currency' can only be one of 'NGN', 'USD'");
+    if (!funolaValidCurrencies.includes(currency)) return res.status(400).send(`'currency' can only be one of ${funolaValidCurrencies.join(', ')}`);
 
     // checking if the user's account has not yet been verified
     if (!req.user.accountVerified) return res.status(401).send('Kindly verify your account first');
@@ -59,7 +60,7 @@ exports.get_card_detail = async (req, res) => {
     // validating request body and sending back appropriate error messages if any
     const { cardType } = req.body;
     if (!cardType) return res.status(400).send("'cardId' required");
-    if (!['NGN', 'USD'].includes(cardType)) return res.status(400).send("'cardType' can only be one of 'NGN', 'USD'");
+    if (!funolaValidCurrencies.includes(cardType)) return res.status(400).send(`'cardType' can only be one of ${funolaValidCurrencies.join(', ')}`);
 
     // validating card exists for user
     const cardDetailsForUser = await Card.findOne({ owner: req.user._id, cardId: id, cardType: cardType });
@@ -81,7 +82,7 @@ exports.fund_card = async (req, res) => {
     const { cardType, id } = req.params;
     
     // validating request param and sending back appropriate error messages if any
-    if (!['NGN', 'USD'].includes(cardType)) return res.status(400).send("'cardType' can only be one of 'NGN', 'USD'");
+    if (!funolaValidCurrencies.includes(cardType)) return res.status(400).send(`'cardType' can only be one of ${funolaValidCurrencies.join(', ')}`);
     
     // validating request body and sending back appropriate error messages if any
     const { amount } = req.body;
@@ -116,7 +117,7 @@ exports.fetch_card_transactions = async (req, res) => {
     const { cardType, id } = req.params;
 
     // validating request param and sending back appropriate error messages if any
-    if (!['NGN', 'USD'].includes(cardType)) return res.status(400).send("'cardType' can only be one of 'NGN', 'USD'");
+    if (!funolaValidCurrencies.includes(cardType)) return res.status(400).send(`'cardType' can only be one of ${funolaValidCurrencies.join(', ')}`);
     
     // validating card exists for user
     const cardExistsForUser = await Card.findOne({ owner: req.user._id, cardId: id, cardType: cardType });
