@@ -26,6 +26,12 @@ exports.funolaValidCurrencies = [
     'USD',
 ]
 
+// card types accepted on the funola banking application
+exports.funolaValidCardTypes = [
+    'virtual', 
+    'physical'
+]
+
 exports.checkWalletRequestBodyErrors = (requestBody) => {
     /**
      * Validates the request body for the presence of amount and currency

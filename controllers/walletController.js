@@ -340,7 +340,7 @@ exports.request_fund = async (req, res) => {
     if (!isValidUserId) return res.status(400).send("Invalid 'creditorId' passed");
 
     // checking that the logged in user and the proposed creditor are not the same 
-    // if (req.user._id === creditorId) return res.status(403).send("You cannot request for funding from yourself");
+    if (req.user._id === creditorId) return res.status(403).send("You cannot request for funding from yourself");
 
     // checking if the crediting user exists
     const creditingUser = await User.findById(creditorId);

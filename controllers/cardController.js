@@ -1,14 +1,14 @@
 const Flutterwave = require('flutterwave-node-v3');
 const { formatDateAndTime } = require("../utils/dateUtil");
 const { Card } = require('../models/cards');
-const { funolaValidCurrencies } = require('../utils/utils');
+const { funolaValidCurrencies, funolaValidCardTypes } = require('../utils/utils');
 
 exports.flw = new Flutterwave(process.env.FLW_PUBLIC_KEY, process.env.FLW_SECRET_KEY);
 
 exports.create_new_card = async (req, res) => {
     // validating request parameters and sending back appropriate error messages if any
     const { cardType } = req.params;
-    if (!['virtual', 'physical'].includes(cardType)) return res.status(400).send("'cardType' can only be one of 'virtual', 'physical'");
+    if (!funolaValidCardTypes.includes(cardType)) return res.status(400).send(`'cardType' can only be one of ${funolaValidCardTypes.join(', ')}`);
 
     if (cardType === 'physical') return res.status(202).send("Feature still in development");
 
@@ -21,8 +21,8 @@ exports.create_new_card = async (req, res) => {
     if (!req.user.accountVerified) return res.status(401).send('Kindly verify your account first');
     
     // checking if the user already has requested virtual card with the passed 'currency'
-    const userHasCard = await Card.findOne({ owner: req.user._id, cardType: currency });
-    if (userHasCard) return res.status(409).send('Dollar virtual card creation failed because user already has one');
+    const userHasCard = await Card.findOne({ owner: req.user._id, currency: currency });
+    if (userHasCard) return res.status(409).send(`${currency} ${cardType} card creation failed because user already has one`);
 
     try {
         // payload for creating a new virtual card
@@ -44,7 +44,8 @@ exports.create_new_card = async (req, res) => {
         // await Card.create({
         //     owner: req.user._id,
         //     cardId: ,
-        //     cardType: currency,
+        //     cardType: cardType,
+        //     currency: currency,
         // })
         return res.status(200).send('Still in development.');
 
@@ -55,15 +56,19 @@ exports.create_new_card = async (req, res) => {
 }
 
 exports.get_card_detail = async (req, res) => {
-    const { id } = req.params;
-
     // validating request body and sending back appropriate error messages if any
-    const { cardType } = req.body;
-    if (!cardType) return res.status(400).send("'cardId' required");
-    if (!funolaValidCurrencies.includes(cardType)) return res.status(400).send(`'cardType' can only be one of ${funolaValidCurrencies.join(', ')}`);
+    const { cardType, currency, id } = req.body;
+    if (!cardType) return res.status(400).send("'cardType' required");
+    if (!currency) return res.status(400).send("'currency' required");
+    if (!funolaValidCardTypes.includes(cardType)) return res.status(400).send(`'cardType' can only be one of ${funolaValidCardTypes.join(', ')}`);
+    if (!funolaValidCurrencies.includes(currency)) return res.status(400).send(`'currency' can only be one of ${funolaValidCurrencies.join(', ')}`);
+
+    if (cardType === 'physical') return res.status(200).send('Still in development');
+
+    if (!id) return res.status(400).send("'id' required");
 
     // validating card exists for user
-    const cardDetailsForUser = await Card.findOne({ owner: req.user._id, cardId: id, cardType: cardType });
+    const cardDetailsForUser = await Card.findOne({ owner: req.user._id, cardId: id, currency: currency });
     if (!cardDetailsForUser) return res.status(404).send('Virtual card not found for user.');
 
     try {
@@ -79,18 +84,24 @@ exports.get_card_detail = async (req, res) => {
 }
 
 exports.fund_card = async (req, res) => {
-    const { cardType, id } = req.params;
+    const { currency } = req.params;
     
     // validating request param and sending back appropriate error messages if any
-    if (!funolaValidCurrencies.includes(cardType)) return res.status(400).send(`'cardType' can only be one of ${funolaValidCurrencies.join(', ')}`);
+    if (!funolaValidCurrencies.includes(currency)) return res.status(400).send(`'currency' can only be one of ${funolaValidCurrencies.join(', ')}`);
     
     // validating request body and sending back appropriate error messages if any
-    const { amount } = req.body;
+    const { amount, cardType, id } = req.body;
     if (!amount) return res.status(400).send("'amount' required.");
     if (isNaN(Number(amount))) return res.status(400).send("'number' must be a number");
+    if (!cardType) return res.status(400).send("'cardType' required");
+    if (!funolaValidCardTypes.includes(cardType)) return res.status(400).send(`'cardType' can only be one of ${funolaValidCardTypes.join(', ')}`);
+    
+    if (cardType === 'physical') return res.status(200).send('Still in development');
+
+    if (!id) return res.status(400).send("'id' required");
 
     // validating card exists for user
-    const cardDetailsForUser = await Card.findOne({ owner: req.user._id, cardId: id, cardType: cardType });
+    const cardDetailsForUser = await Card.findOne({ owner: req.user._id, cardId: id, currency: currency });
     if (!cardDetailsForUser) return res.status(404).send('Virtual card not found for user.');
 
     try {
@@ -114,13 +125,22 @@ exports.fund_card = async (req, res) => {
 
 
 exports.fetch_card_transactions = async (req, res) => {
-    const { cardType, id } = req.params;
-
-    // validating request param and sending back appropriate error messages if any
-    if (!funolaValidCurrencies.includes(cardType)) return res.status(400).send(`'cardType' can only be one of ${funolaValidCurrencies.join(', ')}`);
+    const { currency } = req.params;
     
+    // validating request param and sending back appropriate error messages if any
+    if (!funolaValidCurrencies.includes(currency)) return res.status(400).send(`'currency' can only be one of ${funolaValidCurrencies.join(', ')}`);
+
+    // validating request body and sending back appropriate error messages if any
+    const { cardType, id } = req.body;
+    if (!cardType) return res.status(400).send("'cardType' required");
+    if (!funolaValidCardTypes.includes(cardType)) return res.status(400).send(`'cardType' can only be one of ${funolaValidCardTypes.join(', ')}`);
+    
+    if (cardType === 'physical') return res.status(200).send('Still in development');
+
+    if (!id) return res.status(400).send("'id' required");
+
     // validating card exists for user
-    const cardExistsForUser = await Card.findOne({ owner: req.user._id, cardId: id, cardType: cardType });
+    const cardExistsForUser = await Card.findOne({ owner: req.user._id, cardId: id, currency: currency });
     if (!cardExistsForUser) return res.status(404).send('Transactions fetching failed because virtual card cannot be found for user.');
 
     try {
