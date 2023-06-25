@@ -1136,6 +1136,7 @@ REQUEST BODY/PARAMS
 Create a new deposit for a user.
 
 REQUEST BODY
+
 <table>
     <tr>
         <td>
