@@ -67,6 +67,9 @@ const userSchema = new Schema({
     nairaVirtualCardId: {
         type: String,
     },
+    transactionPin: {
+        type: String,
+    },
 })
 
 function validateNewUserDetails(userDetails) {
@@ -116,6 +119,16 @@ function validateUserUpdateDetails(userDetails, typeOfUpdate) {
         case 'email':
             schema = Joi.object({
                 email: Joi.string().email({ minDomainSegments: 2 }).required(),
+            })
+            break;
+        case 'profilePhoto':
+            schema = Joi.object({
+                profilePhoto: Joi.string().required(),
+            })
+            break;
+        case 'pin':
+            schema = Joi.object({
+                transactionPin: Joi.string().length(6).required(),
             })
             break;
         default:

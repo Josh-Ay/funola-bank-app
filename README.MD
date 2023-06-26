@@ -696,7 +696,7 @@ Update a user's details.
 
 REQUEST PARAMS
 
-updateType - `name | email | profilePhoto ` 
+updateType - `name | email | profilePhoto | pin ` 
 
 REQUEST BODY
 1. updateType - `name`
@@ -738,6 +738,20 @@ REQUEST BODY
 </table>
 
 3. updateType - `profilePhoto` (`NOT IMPLEMENTED YET`)
+
+4. updateType - `pin`
+<table>
+    <tr>
+        <td>
+            transactionPin
+        </td>
+        <td>
+            Number
+            <br />
+            <span style="font-size: 0.9rem;">(required) 6-digit pin you would like to be set for a user's transaction pin.</span>
+        </td>
+    </tr>
+</table>
 
 ### GET `/user/notifications`
 

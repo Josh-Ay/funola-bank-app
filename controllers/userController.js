@@ -2,6 +2,7 @@ const { InvalidTokens } = require("../models/invalidTokens");
 const { Notification } = require("../models/notifications");
 const { User, validateUserUpdateDetails } = require("../models/user");
 const { compileHtml, sendEmail } = require("../utils/emailUtils");
+const bcrypt = require('bcrypt');
 
 exports.get_user_profile = async (req, res) => {
     // sending back the user's details
@@ -62,6 +63,19 @@ exports.update_user_detail = async (req, res) => {
         // updating the user's profile photo
         case 'profilePhoto':
             return res.status(200).send("Still in development");
+        
+        // updating the user's transaction pin
+        case 'pin':
+            // validating transactionPin passed is numeric
+            if (isNaN(Number(validUserDetails.value.transactionPin))) return res.status(400).send("'transactionPin' must be a number");
+            
+            // hashing and salting the pin
+            const hashAndSaltedPin = await bcrypt.hash(validUserDetails.value.transactionPin, Number(process.env.SALT_ROUNDS));
+            foundUser.transactionPin = hashAndSaltedPin;
+            await foundUser.save();
+
+            return res.status(200).send("Pin successfully updated");
+        
         default:
             return res.status(400).send("Invalid update type passed");
     }

@@ -5,6 +5,7 @@ const { compileHtml, sendEmail } = require('../utils/emailUtils');
 const { validateMongooseId, checkWalletRequestBodyErrors, funolaValidCurrencies } = require('../utils/utils');
 const { Notification } = require("../models/notifications");
 const { get_currency_rate } = require("../utils/convertUtil");
+const bcrypt = require('bcrypt');
 
 exports.create_wallet = async (req, res) => {
     // checking the user has verified account
@@ -99,9 +100,10 @@ exports.transfer_fund = async (req, res) => {
         return res.status(200).send("Working on bank");
     }
 
-    // validating the request body for 'receiverId' and sending back an appropriate error message if any
-    const { receiverId } = req.body;
+    // validating the request body and sending back an appropriate error message if any
+    const { receiverId, pin } = req.body;
     if (!receiverId) return res.status(400).send("'receiverId' required");
+    if (!pin) return res.status(400).send("'pin' required");
     if (!validateMongooseId(receiverId)) return res.status(400).send("Invalid receiver user id passed");
     if (receiverId === req.user._id) return res.status(403).send("You cannot transfer funds from yourself to yourself");
 
@@ -112,6 +114,11 @@ exports.transfer_fund = async (req, res) => {
     // checking the receiver user exists
     const receivingUser = await User.findById(receiverId);
     if (!receivingUser) return res.status(403).send("Transfer failed. User not found");
+
+    // checking the pin passed is correct
+    const currentUser = await User.findById(req.user._id);
+    const isValidPin = await bcrypt.compare(pin, currentUser.transactionPin);
+    if (!isValidPin) return res.status(401).send('Invalid transaction pin');
 
     // checking if the user and receiver have a wallet in the requested currency
     const [ existingWalletOfSender, existingWalletOfReceiver ] = await Promise.all([
@@ -194,14 +201,22 @@ exports.transfer_fund = async (req, res) => {
 }
 
 exports.withdraw_from_wallet = async (req, res) => {
+    const { pin } = req.body
+
     // validating the request body and sending back an appropriate error message if any
     const { errorMsg, amount, currency } = checkWalletRequestBodyErrors(req.body);
     if (errorMsg) return res.status(400).send(errorMsg);
+    if (!pin) return res.status(400).send("'pin' required");
 
     // validating the user has a wallet with sufficient balance in the requested currency
     const existingWallet = await Wallet.findOne({ owner: req.user._id, currency: currency });
     if (!existingWallet) return res.status(403).send(`Withdrawal failed. You do not have a ${currency} wallet.`);
     if (existingWallet.balance < amount) return res.status(403).send("You do not have sufficient funds to initiate this withdrawal.");
+
+    // checking the pin passed is correct
+    const currentUser = await User.findById(req.user._id);
+    const isValidPin = await bcrypt.compare(pin, currentUser.transactionPin);
+    if (!isValidPin) return res.status(401).send('Invalid transaction pin');
 
     // updating the user's balance
     existingWallet.balance -= amount;
@@ -243,9 +258,12 @@ exports.withdraw_from_wallet = async (req, res) => {
 }
 
 exports.swap_currency = async (req, res) => {
+    const { pin } = req.body
+
     // validating the request body and sending back an appropriate error message if any
     const { errorMsg, amount, currency } = checkWalletRequestBodyErrors(req.body);
     if (errorMsg) return res.status(400).send(errorMsg);
+    if (!pin) return res.status(400).send("'pin' required");
 
     const { outputCurrency } = req.body;
     if (!outputCurrency) return res.status(400).send("'outputCurrency' required");
@@ -264,6 +282,11 @@ exports.swap_currency = async (req, res) => {
 
     // returning an error message if the user does not have enough in the originating wallet
     if (userWalletInInputCurrency.balance < amount) return res.status(403).send("You do not have sufficient funds to initiate this swap.");
+
+    // checking the pin passed is correct
+    const currentUser = await User.findById(req.user._id);
+    const isValidPin = await bcrypt.compare(pin, currentUser.transactionPin);
+    if (!isValidPin) return res.status(401).send('Invalid transaction pin');
 
     try {
         const result = (await get_currency_rate(amount, currency, outputCurrency)).data;

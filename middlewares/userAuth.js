@@ -14,7 +14,7 @@ exports.userAuth = async (req, res, next) => {
         const decodedUser = jwt.verify(authToken, process.env.ACCESS_TOKEN_SECRET);
 
         // checking if the decoded user exists
-        const existingUser = await User.findById(decodedUser._id).select('-password -refreshToken');
+        const existingUser = await User.findById(decodedUser._id).select('-password -refreshToken -transactionPin');
         if (!existingUser) return res.status(401).send('Access denied, token invalid or missing.');
 
         req.user = decodedUser;
