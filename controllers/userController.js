@@ -68,9 +68,10 @@ exports.update_user_detail = async (req, res) => {
         case 'pin':
             // validating transactionPin passed is numeric
             if (isNaN(Number(validUserDetails.value.transactionPin))) return res.status(400).send("'transactionPin' must be a number");
+            if (String(validUserDetails.value.transactionPin).length !== 6) return res.status(400).send("Please enter a 6-digit number")
             
             // hashing and salting the pin
-            const hashAndSaltedPin = await bcrypt.hash(validUserDetails.value.transactionPin, Number(process.env.SALT_ROUNDS));
+            const hashAndSaltedPin = await bcrypt.hash(String(validUserDetails.value.transactionPin), Number(process.env.SALT_ROUNDS));
             foundUser.transactionPin = hashAndSaltedPin;
             await foundUser.save();
 

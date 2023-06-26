@@ -11,6 +11,7 @@ Live API Link: `https://yoola-bank-app.onrender.com`
 - [Summary of routes](#summary-of-routes)
 - [Built with](#built-with)
 - [How to run](#how-to-run)
+- [Helpful technical stuff](#helpful-technical-stuff)
 - [Detailed routes description](#detailed-routes-description)
 
 ### Summary of routes
@@ -105,6 +106,10 @@ $ npm install
     13. FLW_SECRET_KEY=''
     14. FLW_ENCRYPTION_KEY=''
 
+    <br />
+
+    15. COOKIE_SECRET=secret
+
 - When done, save all changes then run the server using:
 
 ```bash
@@ -117,6 +122,12 @@ $ node app.js
 <br />
 
 **Happy hacking!**
+
+<br />
+
+### Helpful technical stuff
+- [Postman Documentation Link](#helpful-technical-stuff)
+- [Database Entity-Relationship Diagram](#helpful-technical-stuff)
 
 <br />
 

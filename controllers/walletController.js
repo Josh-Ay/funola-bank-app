@@ -104,6 +104,10 @@ exports.transfer_fund = async (req, res) => {
     const { receiverId, pin } = req.body;
     if (!receiverId) return res.status(400).send("'receiverId' required");
     if (!pin) return res.status(400).send("'pin' required");
+
+    if (isNaN(Number(pin))) return res.status(400).send("'pin' must be a number");
+    if (String(pin).length !== 6) return res.status(400).send("Please enter a 6-digit number for the 'pin'");
+
     if (!validateMongooseId(receiverId)) return res.status(400).send("Invalid receiver user id passed");
     if (receiverId === req.user._id) return res.status(403).send("You cannot transfer funds from yourself to yourself");
 
@@ -115,10 +119,13 @@ exports.transfer_fund = async (req, res) => {
     const receivingUser = await User.findById(receiverId);
     if (!receivingUser) return res.status(403).send("Transfer failed. User not found");
 
-    // checking the pin passed is correct
+    // checking the user has set a  pin
     const currentUser = await User.findById(req.user._id);
-    const isValidPin = await bcrypt.compare(pin, currentUser.transactionPin);
-    if (!isValidPin) return res.status(401).send('Invalid transaction pin');
+    if (!currentUser.transactionPin) return res.status(403).send("Please set a transaction pin first");
+
+    // checking the pin passed is correct
+    const isValidPin = await bcrypt.compare(String(pin), currentUser.transactionPin);
+    if (!isValidPin) return res.status(401).send('Incorrect transaction pin');
 
     // checking if the user and receiver have a wallet in the requested currency
     const [ existingWalletOfSender, existingWalletOfReceiver ] = await Promise.all([
@@ -208,15 +215,21 @@ exports.withdraw_from_wallet = async (req, res) => {
     if (errorMsg) return res.status(400).send(errorMsg);
     if (!pin) return res.status(400).send("'pin' required");
 
+    if (isNaN(Number(pin))) return res.status(400).send("'pin' must be a number");
+    if (String(pin).length !== 6) return res.status(400).send("Please enter a 6-digit number for the 'pin'");
+
     // validating the user has a wallet with sufficient balance in the requested currency
     const existingWallet = await Wallet.findOne({ owner: req.user._id, currency: currency });
     if (!existingWallet) return res.status(403).send(`Withdrawal failed. You do not have a ${currency} wallet.`);
     if (existingWallet.balance < amount) return res.status(403).send("You do not have sufficient funds to initiate this withdrawal.");
 
-    // checking the pin passed is correct
+    // checking the user has set a pin
     const currentUser = await User.findById(req.user._id);
-    const isValidPin = await bcrypt.compare(pin, currentUser.transactionPin);
-    if (!isValidPin) return res.status(401).send('Invalid transaction pin');
+    if (!currentUser.transactionPin) return res.status(403).send("Please set a transaction pin first");
+
+    // checking the pin passed is correct
+    const isValidPin = await bcrypt.compare(String(pin), currentUser.transactionPin);
+    if (!isValidPin) return res.status(401).send('Incorrect transaction pin');
 
     // updating the user's balance
     existingWallet.balance -= amount;
@@ -265,6 +278,9 @@ exports.swap_currency = async (req, res) => {
     if (errorMsg) return res.status(400).send(errorMsg);
     if (!pin) return res.status(400).send("'pin' required");
 
+    if (isNaN(Number(pin))) return res.status(400).send("'pin' must be a number");
+    if (String(pin).length !== 6) return res.status(400).send("Please enter a 6-digit number for the 'pin'");
+
     const { outputCurrency } = req.body;
     if (!outputCurrency) return res.status(400).send("'outputCurrency' required");
     if (!funolaValidCurrencies.includes(outputCurrency)) return res.status(400).send(`'outputCurrency' can only be one of ${funolaValidCurrencies.join(', ')}`);
@@ -283,10 +299,13 @@ exports.swap_currency = async (req, res) => {
     // returning an error message if the user does not have enough in the originating wallet
     if (userWalletInInputCurrency.balance < amount) return res.status(403).send("You do not have sufficient funds to initiate this swap.");
 
-    // checking the pin passed is correct
+    // checking the user has set a pin
     const currentUser = await User.findById(req.user._id);
-    const isValidPin = await bcrypt.compare(pin, currentUser.transactionPin);
-    if (!isValidPin) return res.status(401).send('Invalid transaction pin');
+    if (!currentUser.transactionPin) return res.status(403).send("Please set a transaction pin first");
+
+    // checking the pin passed is correct
+    const isValidPin = await bcrypt.compare(String(pin), currentUser.transactionPin);
+    if (!isValidPin) return res.status(401).send('Incorrect transaction pin');
 
     try {
         const result = (await get_currency_rate(amount, currency, outputCurrency)).data;
@@ -313,8 +332,8 @@ exports.swap_currency = async (req, res) => {
         if (validNewTransaction.error) return res.status(400).send(validNewTransaction.error.details[0].message);
 
         // crediting/debiting the respective amounts to/from both wallets
-        userWalletInInputCurrency -= amount,
-        userWalletInOutputCurrency += result.value
+        userWalletInInputCurrency.balance -= amount,
+        userWalletInOutputCurrency.balance += result.value
 
         await Promise.all([
             // creating a new transaction

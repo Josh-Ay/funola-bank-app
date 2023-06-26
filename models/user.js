@@ -128,7 +128,7 @@ function validateUserUpdateDetails(userDetails, typeOfUpdate) {
             break;
         case 'pin':
             schema = Joi.object({
-                transactionPin: Joi.string().length(6).required(),
+                transactionPin: Joi.required(),
             })
             break;
         default:
