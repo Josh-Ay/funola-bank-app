@@ -76,7 +76,7 @@ exports.register_user = async (req, res) => {
     delete copyOfValidUserDetails.password;
 
     // creating a verification token for the new user
-    const verificationToken = await generateToken(copyOfValidUserDetails, 'verification');
+    const { token: verificationToken } = await generateToken(copyOfValidUserDetails, 'verification');
     newUser.verificationToken = verificationToken;
 
     // compiling the verification html mail to send to the new user
@@ -145,18 +145,30 @@ exports.login_user = async (req, res) => {
     const copyOfExistingUser = {...existingUser};
     delete copyOfExistingUser.password;
     delete copyOfExistingUser.refreshToken;
+    delete copyOfExistingUser.verificationToken;
+    delete copyOfExistingUser.transactionPin;
 
     // creating new access and refresh tokens for the user
-    const accessToken = await generateToken(copyOfExistingUser, 'access');
-    const refreshToken = await generateToken(copyOfExistingUser, 'refresh');
+    const { token: accessToken, expirationTime: accessTokenExpires } = await generateToken(copyOfExistingUser, 'access');
+    const { token: refreshToken, expirationTime: refreshTokenExpires } = await generateToken(copyOfExistingUser, 'refresh');
 
     await User.findByIdAndUpdate(existingUser._id, { $set: { refreshToken: refreshToken } });
 
-    res.status(200)
-    .set('access-token', accessToken)
-    .set('refresh-token', refreshToken)
-    .set("Access-Control-Expose-Headers", "access-token, refresh-token")
-    .json({ accessToken })
+    res.cookie('accessToken', accessToken, {
+        httpOnly: true,
+        maxAge: accessTokenExpires,
+        signed: true,
+        // secure: true,
+    })
+
+    res.cookie('refreshToken', refreshToken, {
+        httpOnly: true,
+        maxAge: refreshTokenExpires,
+        signed: true,
+        // secure: true,
+    })
+    
+    res.status(200).send("Successfully logged in");
 }
 
 exports.request_password_reset = async (req, res) => {
@@ -169,7 +181,7 @@ exports.request_password_reset = async (req, res) => {
     const existingUser = await User.findOne({ email: email });
 
     if (existingUser) {
-        const resetPasswordToken = await generateToken({email: existingUser.email, firstName: existingUser.firstName, lastName: existingUser.lastName, _id: existingUser._id}, 'reset');
+        const { token: resetPasswordToken } = await generateToken({email: existingUser.email, firstName: existingUser.firstName, lastName: existingUser.lastName, _id: existingUser._id}, 'reset');
         
         existingUser.resetPasswordToken = resetPasswordToken;
 
@@ -295,17 +307,34 @@ exports.refresh_user_token = async (req, res) => {
     // checking that the user has verified account
     if (!existingUser.accountVerified) return res.status(401).send('Kindly verify your account first');
 
+    // creating a copy of the existing user object
+    const copyOfExistingUser = {...existingUser};
+    delete copyOfExistingUser.password;
+    delete copyOfExistingUser.refreshToken;
+    delete copyOfExistingUser.verificationToken;
+    delete copyOfExistingUser.transactionPin;
+    
     // creating new access and refresh tokens for the user
-    const accessToken = await generateToken(existingUser, 'access');
-    const refreshToken = await generateToken(existingUser, 'refresh');
+    const { token: accessToken, expirationTime: accessTokenExpires } = await generateToken(copyOfExistingUser, 'access');
+    const { token: refreshToken, expirationTime: refreshTokenExpires } = await generateToken(copyOfExistingUser, 'refresh');
 
     await User.findByIdAndUpdate(existingUser._id, { $set: { refreshToken: refreshToken } });
 
-    res.status(200)
-    .set('access-token', accessToken)
-    .set('refresh-token', refreshToken)
-    .set("Access-Control-Expose-Headers", "access-token, refresh-token")
-    .json({ accessToken })
+    res.cookie('accessToken', accessToken, {
+        httpOnly: true,
+        maxAge: accessTokenExpires,
+        signed: true,
+        // secure: true,
+    })
+
+    res.cookie('refreshToken', refreshToken, {
+        httpOnly: true,
+        maxAge: refreshTokenExpires,
+        signed: true,
+        // secure: true,
+    })
+
+    res.status(200).send("Successfully refreshed token!");
 }
 
 exports.get_login_status = async (req, res) =>  res.status(200).send(`${req.user.firstName} ${req.user.lastName} still has access`);

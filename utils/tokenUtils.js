@@ -7,12 +7,18 @@ exports.generateToken = async (plainObj, tokenType) => {
      * @param plainObj The javascript object you will like to validate.
      * @param tokenType The type of token you are generating. It can only be one of 'access', 'verification', 'refresh', 'reset'.
      * 
-     * @returns A new jwt token.
+     * @returns An object containing the new jwt token and its expiration time in milliseconds.
      */
 
     const validTokenTypes = ['access', 'verification', 'refresh', 'reset'];
-    if (!validTokenTypes.includes(tokenType)) throw Error("'tokenType' must be one of 'access', 'verification', 'refresh', 'reset'");
+    if (!validTokenTypes.includes(tokenType)) throw Error(`'tokenType' must be one of ${validTokenTypes.join(', ')}`);
 
+    const expirationTime = tokenType === 'verification' || tokenType === 'reset' ? 
+        '2h' : 
+        tokenType === 'access' ? 
+        '1d' : 
+    '7d';
+    
     const token = await jwt.sign(
         plainObj, 
         tokenType === 'access' ? 
@@ -23,11 +29,11 @@ exports.generateToken = async (plainObj, tokenType) => {
             process.env.RESET_TOKEN_SECRET :
             process.env.REFRESH_TOKEN_SECRET,
         { 
-            expiresIn: tokenType === 'verification' || tokenType === 'reset' ? '2h' : tokenType === 'access' ? '1d' : '7d'
+            expiresIn: expirationTime,
         },
     );
 
-    return token
+    return { token: token, expirationTime: this.getValueOfTimeStringInMilliSeconds(expirationTime) }
 }
 
 exports.validateToken = (token, tokenType) => {
@@ -59,4 +65,26 @@ exports.validateToken = (token, tokenType) => {
     } catch (error) {
         return false
     }
+}
+
+
+exports.getValueOfTimeStringInMilliSeconds = (timeStr) => {
+    /**
+     * Converts a simple time string to milliseconds.
+     * 
+     * @param timeStr The string you will like to convert to milliseconds.
+     * 
+     * @returns The time in milliseconds.
+     */
+
+    if (typeof timeStr !== 'string') throw Error("'timeStr' must be a string");
+    
+    const validUnits = ['d', 'h'];
+    const [ value, unit ] = [ timeStr.slice(0, -1), timeStr.toLocaleLowerCase().slice(-1) ];
+    
+    if (!validUnits.includes(unit)) throw Error(`'timeStr' must include one of these units: ${validUnits.join(', ')}`);
+
+    if (unit === 'd') return value * 24 * 60 * 60 * 1000
+
+    return value * 60 * 60 * 1000
 }

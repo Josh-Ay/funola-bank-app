@@ -36,7 +36,7 @@ exports.update_user_detail = async (req, res) => {
         case 'email':
 
             // fetching the authentication token used
-            const authToken = req.headers['auth-token'];
+            const authToken = req.signedCookies['accessToken'];
 
             // validating the user wants to make changes to their account
             if (foundUser.email !== req.user.email) return res.status(401).send("You can only update your email");

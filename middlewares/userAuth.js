@@ -4,7 +4,7 @@ const { User } = require('../models/user');
 
 
 exports.userAuth = async (req, res, next) => {
-    const authToken = req.headers['auth-token'];
+    const authToken = req.signedCookies['accessToken'];
     if (!authToken) return res.status(401).send('Access denied, token invalid or missing.');
 
     const tokenIsInvalid = await InvalidTokens.findOne({ token: authToken });
@@ -21,6 +21,9 @@ exports.userAuth = async (req, res, next) => {
         // console.log(decodedUser);
         next();
     } catch (error) {
+        res.clearCookie('accessToken');
+        res.clearCookie('refreshToken');
+        
         return res.status(401).send('Access denied, token invalid or missing.');
     }
 }
