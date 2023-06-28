@@ -127,7 +127,7 @@ $ node app.js
 
 ### Helpful technical stuff
 - [Postman Documentation Link](#helpful-technical-stuff)
-- [Database Entity-Relationship Diagram](#helpful-technical-stuff)
+- [Database Entity-Relationship Diagram](https://app.eraser.io/workspace/0DTqxwHdSSSo1Jqu6sfr?origin=share)
 
 <br />
 
