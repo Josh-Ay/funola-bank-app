@@ -11,9 +11,25 @@ exports.verificationMailHtmlContent = `
         <p>Thank you for signing up to Funola!</p>
         <br />
         <p>
-            Kindly finish up your account setup by using this link to verify: 
-            <a href={{content}} target='_blank' rel='noreferrer noopener'>Verify account</a>
+            Kindly finish up your account setup by clicking the button below: 
         </p>
+        <a 
+            style='
+                display: block;
+                text-align: center;
+                padding: 0.7rem 0;
+                text-decoration: none;
+                background: #2573d5;
+                color: #fff;
+                width: 8rem;
+                border-radius: 8px;
+            '
+            href="{{ content }}"
+            target='_blank' 
+            rel='noreferrer noopener'
+        >
+            Verify Account
+        </a>
     </div>
 </div>
 `;

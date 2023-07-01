@@ -11,9 +11,25 @@ exports.resetPasswordHtmlContent = `
         <p>You requested to reset your password on Funola. If this was not you, kindly ignore this email and contact customer support.</p>
         <br />
         <p>
-            Kindly use this link to reset your password: 
-            <a href={{content}} target='_blank' rel='noreferrer noopener'>Reset password</a>
+            Kindly use this button below to reset your password: 
         </p>
+        <a 
+            href={{content}} 
+            target='_blank' 
+            rel='noreferrer noopener'
+            style='
+                display: block;
+                text-align: center;
+                padding: 0.7rem 0;
+                text-decoration: none;
+                background: #2573d5;
+                color: #fff;
+                width: 8rem;
+                border-radius: 8px;
+            '
+        >
+            Reset password
+        </a>
     </div>
 </div>
 `;
