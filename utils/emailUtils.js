@@ -8,6 +8,7 @@ const { newDepositTemplate } = require('../templates/cashFlowTemplates/newDeposi
 const { newFundingTemplate } = require('../templates/cashFlowTemplates/newFundingTemplate');
 const { newDebitTemplate } = require('../templates/cashFlowTemplates/newDebitTemplate');
 const { newSwapTemplate } = require('../templates/cashFlowTemplates/newSwapTemplate');
+const { newVerifyNumberTemplate } = require('../templates/numberActionTemplates/verifyNumberTemplate');
 
 exports.sendEmail = async (receiver, subject, htmlTemplate) => {
     /**
@@ -113,6 +114,13 @@ exports.compileHtml = (nameOfUser, title, content, type, cashFlowType='') => {
             })
         case 'swap':
             template = Handlebars.compile(newSwapTemplate);
+            return template({
+                title: title,
+                name: nameOfUser,
+                content: content,
+            })
+        case 'verifyNumber':
+            template = Handlebars.compile(newVerifyNumberTemplate);
             return template({
                 title: title,
                 name: nameOfUser,

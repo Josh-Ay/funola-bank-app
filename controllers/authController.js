@@ -13,18 +13,26 @@ exports.send_verification_code = async (req, res) => {
 
     // validating the request body
     if (!req.body.number) return res.status(400).send("'number' is required");
+    if (!req.body.email) return res.status(400).send("'email' is required");
 
-    const [ number , verificationCode ] = [ req.body.number, Math.floor(Math.random() * 8328) ];
+    const [ number , verificationCode, email ] = [ req.body.number, Math.floor(Math.random() * 8328), req.body.email ];
 
-    // sending an sms containing the code to the user
-    await sendSms(number, `Please use this CODE to verify your account: ${verificationCode}.\n\nIt expires in 5 minutes`);
+    const verificationHtml = compileHtml(`${number}`, 'Verify your number', verificationCode, 'verifyNumber');
 
-    // creating a new verification code
-    await VerificationCodes.create({
-        code: verificationCode,
-        codeExpiresAt: new Date(new Date().getTime() + 300000),
-        number: number,
-    })
+    await Promise.all([
+        // sending an sms containing the code to the user
+        await sendSms(number, `Please use this CODE to verify your account: ${verificationCode}.\n\nIt expires in 5 minutes`),
+
+        // also sending an email containing the code
+        await sendEmail(email, 'Verify your number on Funola', verificationHtml),
+
+        // creating a new verification code
+        await VerificationCodes.create({
+            code: verificationCode,
+            codeExpiresAt: new Date(new Date().getTime() + 300000),
+            number: number,
+        })
+    ])
 
     return res.status(200).send(`Successfully sent verification code to ${number}`);
 }
