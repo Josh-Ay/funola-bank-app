@@ -21,6 +21,7 @@ exports.sendEmail = async (receiver, subject, htmlTemplate) => {
      * @returns An object with one property: 'success' or 'error' depending on the mail dispatch status.
      */
 
+    if (!this.validateEmail(receiver)) throw Error("Receiver email passed is not valid");
     // configuring the mail transport instance
     const transporter = nodemailer.createTransport({
         service: 'gmail',
@@ -130,4 +131,10 @@ exports.compileHtml = (nameOfUser, title, content, type, cashFlowType='') => {
             console.log('Invalid type passed');
             return '<div></div>'
     }
+}
+
+exports.validateEmail = (email) => {
+    //eslint-disable-next-line
+    const re = /^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
+    return re.test(email);
 }

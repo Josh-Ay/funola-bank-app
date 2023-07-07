@@ -4,7 +4,7 @@ const { sendSms } = require("../utils/smsUtil");
 const path = require("path");
 const { VerificationCodes } = require("../models/codes");
 const { generateToken, validateToken } = require("../utils/tokenUtils");
-const { compileHtml, sendEmail } = require("../utils/emailUtils");
+const { compileHtml, sendEmail, validateEmail } = require("../utils/emailUtils");
 const { Notification } = require("../models/notifications");
 
 exports.send_verification_code = async (req, res) => {
@@ -14,6 +14,7 @@ exports.send_verification_code = async (req, res) => {
     // validating the request body
     if (!req.body.number) return res.status(400).send("'number' is required");
     if (!req.body.email) return res.status(400).send("'email' is required");
+    if (!validateEmail(req.body.email)) return res.status(400).send("'email' must be a valid email");
 
     const [ number , verificationCode, email ] = [ req.body.number, Math.floor(Math.random() * 8328), req.body.email ];
 
