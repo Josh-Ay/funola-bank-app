@@ -21,7 +21,9 @@ exports.sendEmail = async (receiver, subject, htmlTemplate) => {
      * @returns An object with one property: 'success' or 'error' depending on the mail dispatch status.
      */
 
+
     if (!this.validateEmail(receiver)) throw Error("Receiver email passed is not valid");
+
     // configuring the mail transport instance
     const transporter = nodemailer.createTransport({
         service: 'gmail',
