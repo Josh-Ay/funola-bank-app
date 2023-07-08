@@ -35,7 +35,7 @@ exports.send_verification_code = async (req, res) => {
         })
     ])
 
-    return res.status(200).send(`Successfully sent verification code to ${number}`);
+    return res.status(200).send(`Successfully sent verification code to ${number} and ${email}`);
 }
 
 exports.verify_code = async (req, res) => {
