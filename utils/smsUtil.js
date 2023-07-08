@@ -12,11 +12,14 @@ exports.sendSms = async (number, message) => {
     const authToken = process.env.TWILIO_AUTH_TOKEN;
     const client = require('twilio')(accountSid, authToken);
     
-    const response = await client.messages.create({
-        body: message,
-        from: '+16204558982',
-        to: number
-    })
-        
-    // console.log(response);
+    try {
+        const response = await client.messages.create({
+            body: message,
+            from: '+16204558982',
+            to: number
+        })                
+        // console.log(response);
+    } catch (error) {
+        console.log(`Failed to send message: ${error}`);   
+    }
 }
