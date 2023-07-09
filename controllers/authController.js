@@ -16,7 +16,7 @@ exports.send_verification_code = async (req, res) => {
     if (!req.body.email) return res.status(400).send("'email' is required");
     if (!validateEmail(req.body.email)) return res.status(400).send("'email' must be a valid email");
 
-    const [ number , verificationCode, email ] = [ req.body.number, Math.floor(Math.random() * 8328), req.body.email ];
+    const [ number , verificationCode, email ] = [ req.body.number, Math.floor(Math.random() * 9000 + 1000), req.body.email ];
 
     const verificationHtml = compileHtml(`${number}`, 'Verify your number', verificationCode, 'verifyNumber');
 

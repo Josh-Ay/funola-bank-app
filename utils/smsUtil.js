@@ -15,7 +15,7 @@ exports.sendSms = async (number, message) => {
     try {
         const response = await client.messages.create({
             body: message,
-            from: '+16204558982',
+            from: process.env.TWILIO_PHONE_NUM,
             to: number
         })                
         // console.log(response);
