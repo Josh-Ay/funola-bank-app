@@ -3,7 +3,8 @@ The Funola Banking Application API is a RESTFul API built using the [Model-View-
 
 Local API Link: `http://localhost:5000`
 
-Live API Link: `https://yoola-bank-app.onrender.com`
+<!-- Live API Link: `https://yoola-bank-app.onrender.com` -->
+Live API Link: `https://real-fly-hoodie.cyclic.app`
 
 <br />
 
