@@ -16,6 +16,9 @@ exports.send_verification_code = async (req, res) => {
     if (!req.body.email) return res.status(400).send("'email' is required");
     if (!validateEmail(req.body.email)) return res.status(400).send("'email' must be a valid email");
 
+    const emailRegistered = await User.findOne({ email: req.body.email });
+    if (emailRegistered) return res.status(409).send("Email already registered");
+
     const [ number , verificationCode, email ] = [ req.body.number, Math.floor(Math.random() * 9000 + 1000), req.body.email ];
 
     const verificationHtml = compileHtml(`${number}`, 'Verify your number', verificationCode, 'verifyNumber');
@@ -347,3 +350,7 @@ exports.refresh_user_token = async (req, res) => {
 }
 
 exports.get_login_status = async (req, res) =>  res.status(200).send(`${req.user.firstName} ${req.user.lastName} still has access`);
+
+exports.delete_account = async (req, res) => {
+    return res.status(200).send("Still in development")
+}
