@@ -1,7 +1,6 @@
 const { validateNewDepositDetails, Deposit } = require("../models/deposits")
 const { Wallet } = require("../models/wallet");
 const { Card } = require("../models/cards");
-const { flw } = require("../controllers/cardController");
 const { compileHtml, sendEmail } = require("../utils/emailUtils");
 const { formatDateAndTime } = require("../utils/dateUtil");
 
@@ -30,24 +29,18 @@ exports.make_new_deposit = async (req, res) => {
     if (Number(validNewDeposit.value.duration) < 0 || Number(validNewDeposit.value.duration) > 12) return res.status(400).send("Duration must be between 1 to 12");
     if (Number(validNewDeposit.value.rate) < 0 || Number(validNewDeposit.value.rate) > 25) return res.status(400).send("Rate must be between 1 and 25");
 
+    let userItemToDeductFrom = {};
+
     // payment via card
     if (validNewDeposit.value.paymentMethod === 'card') {
         // validating the user has an appropriate card to fund the deposit
-        const userCardInPassedCurrency = await Card.findOne({ owner: req.user._id, cardType: validNewDeposit.value.currency });
-        if (!userCardInPassedCurrency) return res.status(403).send(`Deposit cannot be made because user does not have a ${validNewDeposit.value.currency} wallet.`)
+        const userCardInPassedCurrency = await Card.findOne({ owner: req.user._id, currency: validNewDeposit.value.currency });
+        if (!userCardInPassedCurrency) return res.status(403).send(`Deposit cannot be made because user does not have a ${validNewDeposit.value.currency} card.`)
 
-        try {
-            // fetching the card details from flutterwave
-            const cardResponse = await flw.VirtualCard.fetch({ "id": userCardInPassedCurrency.id });
-
-            // checking the user has enough funds to make a deposit
-
-            return res.status(200).send('card ish')
-        
-        } catch (error) {
-            console.log(error);
-            return res.status(500).send('Deposit failed because virtual card could not be fetched');
-        }
+        // checking the user has enough funds to make a deposit
+        if (userCardInPassedCurrency.balance < Number(validNewDeposit.value.depositAmount)) return res.status(403).send('Insufficient funds!');
+ 
+        userItemToDeductFrom = userCardInPassedCurrency;
     } 
 
     // payment via wallet
@@ -59,44 +52,46 @@ exports.make_new_deposit = async (req, res) => {
         // checking the user has enough funds to make a deposit
         if (userWalletInPassedCurrency.balance < Number(validNewDeposit.value.depositAmount)) return res.status(403).send('Insufficient funds!');
  
-        // constructing the new deposit record
-        const newDeposit = {
-            ...validNewDeposit.value,
-            paybackDate: new Date(new Date().getTime() + validNewDeposit.value.duration * 30 * 24 * 60 * 60 * 1000 ), // the duration passed is in months
-            paybackAmount: validNewDeposit.value.depositAmount + (validNewDeposit.value.rate / 100) * validNewDeposit.value.depositAmount,
-        }
-
-        // updating the user's balance
-        userWalletInPassedCurrency.balance -= validNewDeposit.value.depositAmount;
-
-        // compiling the email to send to the user notifying of the deposit made
-        const newDepositMailContent = compileHtml(
-            `${req.user.firstName} ${req.user.lastName}`, 
-            'New Deposit!', 
-            { 
-                currency: validNewDeposit.value.currency, 
-                amount: validNewDeposit.value.depositAmount, 
-                rate: validNewDeposit.value.rate, 
-                returns: newDeposit.paybackAmount, 
-                paybackDate: formatDateAndTime(newDeposit.paybackDate)
-            },
-            'newDeposit'
-        );
-
-        const [depositCreated, updateResponse, emailResponse] = await Promise.all([
-            // creating a new deposit in db
-            Deposit.create(newDeposit),
-
-            // saving the update to the wallet used
-            userWalletInPassedCurrency.save(),
-
-            // sending an email to the user
-            sendEmail(req.user.email, `You successfully made a deposit of ${validNewDeposit.value.currency} ${validNewDeposit.value.depositAmount}`, newDepositMailContent),
-        ])
-
-        return res.status(201).send(depositCreated);
+        userItemToDeductFrom = userWalletInPassedCurrency;
     }
+
+    // additional check
+    if (Object.keys(userItemToDeductFrom).length < 1 || !userItemToDeductFrom.balance) return res.status(500).send("Card or Wallet details failed to fetch");
     
-    // invalid payment(THOUGH IT SHOULD NEVER GET HERE)
-    res.status(500).send('Deposit funding failed.')
+    // constructing the new deposit record
+    const newDeposit = {
+        ...validNewDeposit.value,
+        paybackDate: new Date(new Date().getTime() + validNewDeposit.value.duration * 30 * 24 * 60 * 60 * 1000 ), // the duration passed is in months
+        paybackAmount: validNewDeposit.value.depositAmount + (validNewDeposit.value.rate / 100) * validNewDeposit.value.depositAmount,
+    }
+
+    // updating the user's balance
+    userItemToDeductFrom.balance -= validNewDeposit.value.depositAmount;
+
+    // compiling the email to send to the user notifying of the deposit made
+    const newDepositMailContent = compileHtml(
+        `${req.user.firstName} ${req.user.lastName}`, 
+        'New Deposit!', 
+        { 
+            currency: validNewDeposit.value.currency, 
+            amount: validNewDeposit.value.depositAmount, 
+            rate: validNewDeposit.value.rate, 
+            returns: newDeposit.paybackAmount, 
+            paybackDate: formatDateAndTime(newDeposit.paybackDate)
+        },
+        'newDeposit'
+    );
+
+    const [depositCreated, updateResponse, emailResponse] = await Promise.all([
+        // creating a new deposit in db
+        Deposit.create(newDeposit),
+
+        // saving the update to the wallet/card used
+        userItemToDeductFrom?.save(),
+
+        // sending an email to the user
+        sendEmail(req.user.email, `You successfully made a deposit of ${validNewDeposit.value.currency} ${validNewDeposit.value.depositAmount}`, newDepositMailContent),
+    ])
+
+    return res.status(201).send(depositCreated);
 }

@@ -101,15 +101,15 @@ $ npm install
 
     <br />
     
-    Follow this [link](https://developer.flutterwave.com/docs/quickstart) to get the values for the following variables: `FLW_PUBLIC_KEY`, `FLW_SECRET_KEY`, `FLW_ENCRYPTION_KEY`.
+    <!-- Follow this [link](https://developer.flutterwave.com/docs/quickstart) to get the values for the following variables: `FLW_PUBLIC_KEY`, `FLW_SECRET_KEY`, `FLW_ENCRYPTION_KEY`.
 
     12. FLW_PUBLIC_KEY=''
     13. FLW_SECRET_KEY=''
     14. FLW_ENCRYPTION_KEY=''
 
-    <br />
+    <br /> -->
 
-    15. COOKIE_SECRET=secret
+    12. COOKIE_SECRET=secret
 
 - When done, save all changes then run the server using:
 

@@ -55,3 +55,9 @@ exports.checkWalletRequestBodyErrors = (requestBody) => {
 
     return { amount, currency };
 }
+
+// network types for cards accepted on the funola banking application
+exports.funolaValidCardPaymentNetworks = [
+    'Visa', 
+    'Mastercard'
+]
