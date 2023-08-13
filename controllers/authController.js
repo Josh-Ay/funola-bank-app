@@ -351,6 +351,14 @@ exports.refresh_user_token = async (req, res) => {
 
 exports.get_login_status = async (req, res) =>  res.status(200).send(`${req.user.firstName} ${req.user.lastName} still has access`);
 
+exports.logout_user = (req, res) => {
+    // console.log(req.user);
+    res.clearCookie('accessToken');
+    res.clearCookie('refreshToken');
+
+    res.status(200).send("Successfully logged out");
+}
+
 exports.delete_account = async (req, res) => {
     return res.status(200).send("Still in development")
 }
