@@ -31,6 +31,14 @@ const cardSchema = new Schema({
         required: true,
         enum: funolaValidCardPaymentNetworks,
     },
+    expiryDate: {
+        type: Date,
+        required: true,
+    },
+    cvv: {
+        type: Number,
+        required: true,
+    },
 }, { timestamps: true })
 
 function validateNewCardDetails (newCardDetails) {

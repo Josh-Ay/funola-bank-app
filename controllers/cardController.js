@@ -36,10 +36,14 @@ exports.create_new_card = async (req, res) => {
     })
     if (validNewCardDetails.error) return res.status(400).send(validNewCardDetails.error.details[0].message);
 
+    // getting today's date
+    const today = new Date();
+
     try {
 
         // creating a new virtual card
-        const newCard = await Card.create(validNewCardDetails.value);
+
+        const newCard = await Card.create({...validNewCardDetails.value, expiryDate: new Date(today.setFullYear(today.getFullYear() + 4)), cvv: Math.floor(Math.random() * 900 + 100)});
         // console.log(newCard);
         return res.status(201).send(newCard);
 
