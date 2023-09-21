@@ -38,17 +38,10 @@ exports.create_wallet = async (req, res) => {
 
 exports.get_wallet_balance = async (req, res) => {
     // getting the wallets for the user
-    const existingWalletsForUser = await Wallet.find({ owner: req.user._id });
+    const existingWalletsForUser = await Wallet.find({ owner: req.user._id }).lean();
     if (existingWalletsForUser.length < 1) return res.status(200).send([]);
 
-    // mapping the balance for respective wallets
-    const balances = existingWalletsForUser.map(wallet => ({
-        balance: wallet.balance,
-        pendingBalance: wallet.unclearedBalance,
-        currency: wallet.currency,
-    }))
-
-    return res.status(200).send(balances);
+    return res.status(200).send(existingWalletsForUser);
 }
 
 exports.fund_wallet = async (req, res) => {
