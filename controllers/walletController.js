@@ -27,7 +27,7 @@ exports.create_wallet = async (req, res) => {
     })
 
     // creating a new notification for the user
-    await new Notification.create({
+    await Notification.create({
         owner: req.user._id,
         content: `Fund your new ${currency} wallet now!`,
     })
