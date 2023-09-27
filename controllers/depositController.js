@@ -62,7 +62,7 @@ exports.make_new_deposit = async (req, res) => {
     const newDeposit = {
         ...validNewDeposit.value,
         paybackDate: new Date(new Date().getTime() + validNewDeposit.value.duration * 30 * 24 * 60 * 60 * 1000 ), // the duration passed is in months
-        paybackAmount: validNewDeposit.value.depositAmount + (validNewDeposit.value.rate / 100) * validNewDeposit.value.depositAmount,
+        paybackAmount: validNewDeposit.value.depositAmount + ( ((validNewDeposit.value.rate / 100) / validNewDeposit.value.duration) * validNewDeposit.value.depositAmount ),
     }
 
     // updating the user's balance
