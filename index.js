@@ -1,4 +1,5 @@
 require('dotenv').config();
+const { connectToDb } = require('./config/db');
 
 // making the necessary imports
 const express = require('express');
@@ -11,7 +12,12 @@ const app = express();
 require('./config/config')(app);
 
 
-// configuring the application to listen on a dedicated port
-app.listen(PORT, () => {
-    console.log('Server up and running on port: ', PORT)
-})
+// connecting to the database
+connectToDb().then(() => {
+    // configuring the application to listen on a dedicated port
+    app.listen(PORT, () => {
+        console.log('Server up and running on port: ', PORT)
+    })
+}).catch(err => {
+    return { error: 'Failed to connect to DB' }
+});

@@ -1,6 +1,5 @@
 const morgan = require("morgan");
 const express = require('express');
-const { connectToDb } = require("./db");
 const compression = require("compression");
 const cookieParser = require("cookie-parser");
 
@@ -16,7 +15,4 @@ module.exports = (app) => {
 
     // adding all the routes of the application
     require('../routes/index')(app);
-
-    // connecting to the database
-    connectToDb();
 }
