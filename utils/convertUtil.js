@@ -1,6 +1,6 @@
 const { default: axios } = require("axios")
 
-const convertLiveBaseURL = 'https://currency-converter-c2zx.onrender.com';
+const convertLiveBaseURL = 'https://kind-plum-hedgehog-robe.cyclic.app';
 const convertLocalBaseURL = 'http://127.0.0.1:6404';
 
 const convertAxiosInstance = axios.create({
