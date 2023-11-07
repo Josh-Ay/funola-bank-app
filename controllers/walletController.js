@@ -54,7 +54,7 @@ exports.fund_wallet = async (req, res) => {
     if (!existingWalletOfUser) return res.status(403).send(`Funding failed. You do not have a ${currency} wallet.`);
 
     // constructing and validating a transaction object record
-    const validNewTransaction = validateNewTransactionDetails(generateNewTransactionObj(req.user._id, 'credit', 'Wallet funding', amount, 'pending', currency));
+    const validNewTransaction = validateNewTransactionDetails(generateNewTransactionObj(req.user._id, 'credit', 'Wallet funding', amount, 'success', currency));
     if (validNewTransaction.error) return res.status(400).send(validNewTransaction.error.details[0].message);
     
     // sending a mail to inform of successful wallet funding
@@ -69,8 +69,8 @@ exports.fund_wallet = async (req, res) => {
         'wallet'
     );
 
-    // updating the user's uncleared balance
-    existingWalletOfUser.unclearedBalance += amount;
+    // updating the user's balance
+    existingWalletOfUser.balance += amount;
     
     await Promise.all([
 
