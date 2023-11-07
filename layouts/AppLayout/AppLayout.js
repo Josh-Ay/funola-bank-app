@@ -18,6 +18,7 @@ import { handleAPICallAndSubsequentStateUpdate } from "./apiHelper";
 import { fullSnapPoints, miniSnapPoints } from "./utils";
 import SingleWalletItem from "./components/SingleWalletItem/SingleWalletItem";
 import BottomNavigationBar from "../../components/BottomNavigationBar/BottomNavigationBar";
+import ModalOverlay from "./components/ModalOverlay/ModalOverlay";
 
 
 const AppLayout = ({ 
