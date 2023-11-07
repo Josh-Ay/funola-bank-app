@@ -23,7 +23,9 @@ import BottomSheet, { BottomSheetView } from "@gorhom/bottom-sheet";
 import { appLayoutStyles } from "../../layouts/AppLayout/styles";
 import { fullSnapPoints, miniSnapPoints } from "../../layouts/AppLayout/utils";
 import ModalOverlay from "../../layouts/AppLayout/components/ModalOverlay/ModalOverlay";
-
+import TextInputComponent from "../../components/TextInputComponent/TextInputComponent";
+import CustomButton from "../../components/CustomButton/CustomButton";
+import { ConvertServices } from "../../services/convertServices";
 
 const HomeScreen = ({ navigation }) => {
 
@@ -54,6 +56,10 @@ const HomeScreen = ({ navigation }) => {
         setShowAddWalletModal,
         showAllWalletsModal,
         setShowAllWalletsModal,
+        newWalletFundDetails,
+        walletSwapFundDetails,
+        handleUpdateWalletActionStateDetail,
+        resetWalletActionStateDetail,
     } = useWalletContext();
     const {
         deposits,
@@ -83,17 +89,21 @@ const HomeScreen = ({ navigation }) => {
     const sheetPanelRef = useRef(null);
     const [ sheetModalIsOpen, setSheetModalIsOpen ] = useState(false);
     const [ currentUserAction, setCurrentUserAction ] = useState(null);
+    const [ loading, setLoading ] = useState(false);
+    const [ swapExchangeResult, setSwapExchangeResult ] = useState(0);
 
     const [
         userService, 
         walletService, 
         cardService, 
         depositService,
+        convertService,
     ] = [
         new UserServices(),
         new WalletServices(),
         new CardServices(),
         new DepositServices(),
+        new ConvertServices(),
     ];
 
     const showToastMessage = (message, type) => {
@@ -246,6 +256,21 @@ const HomeScreen = ({ navigation }) => {
 
     }, [showAddWalletModal, showAddDepositModal, showAddCardModal, showAllWalletsModal])
 
+    useEffect(() => {
+        if (
+            !currentUserAction ||
+            currentUserAction !== userItemActions.walletSwap ||
+            walletSwapFundDetails?.amount?.length < 1
+        ) return setSwapExchangeResult(0);
+        
+        convertService.getCurrencyRate(walletSwapFundDetails?.amount, currentWallet?.currency, walletSwapFundDetails?.outputCurrency).then(res => {
+            setSwapExchangeResult(res.data?.value);
+        }).catch(error => {
+            console.log('err converting: ', error);
+        })
+
+    }, [walletSwapFundDetails?.amount])
+
     const handleSwitchWallets = (indexPassed) => {
         if (!wallets[indexPassed]) return
         setCurrentWallet(wallets[indexPassed]);
@@ -321,10 +346,105 @@ const HomeScreen = ({ navigation }) => {
                 setCurrentUserAction(itemAction);
                 setSheetModalIsOpen(true);
                 break;
-        
+            case userItemActions.walletSwap:
+                const userHasWalletInOtherCurrency = wallets?.find(wallet => wallet?.currency !== currentWallet?.currency);
+
+                if (!userHasWalletInOtherCurrency) {
+                    showToastMessage('Please create a wallet in another currency to use this feature', 'info')
+                    break;
+                }
+                
+                setCurrentUserAction(itemAction);
+                setSheetModalIsOpen(true);
+                handleUpdateWalletActionStateDetail('swap', 'outputCurrency', userHasWalletInOtherCurrency?.currency);
+                handleUpdateWalletActionStateDetail('swap', 'currency', currentWallet?.currency);
+                break;
             default:
                 console.log(itemAction);
                 break;
+        }
+    }
+
+    const handleCompleteWalletUserAction = async () => {
+        if (!currentWallet) return
+
+        const copyOfCurrentWallet = {  ...currentWallet };
+        const copyOfWallets = wallets?.slice();
+
+        if (currentUserAction === userItemActions.walletFund) {
+            if (newWalletFundDetails.amount.length < 1) return showToastMessage('Please enter an amount', 'info')
+
+            setLoading(true);
+
+            try {
+                const res = (await walletService.fundWallet({ ...newWalletFundDetails, currency: currentWallet?.currency})).data;
+                console.log(res);
+
+                const newWalletBalance = Number(currentWallet?.balance) + Number(newWalletFundDetails?.amount);
+                copyOfCurrentWallet.balance = newWalletBalance;
+                
+                const foundWalletIndex = copyOfWallets.findIndex(wallet => wallet?._id === currentWallet?._id);
+                if (foundWalletIndex !== -1) copyOfWallets[foundWalletIndex].balance = newWalletBalance;
+
+                setCurrentWallet(copyOfCurrentWallet);
+                setWallets(copyOfWallets);
+
+                resetWalletActionStateDetail('fund');
+                handleCloseBottomSheet();
+                setLoading(false);
+
+                showToastMessage(res, 'success');
+            } catch (error) {
+                console.log('err funding: ', error);
+
+                setLoading(false);
+                showToastMessage('Something went wrong while trying to fund your wallet', 'danger');
+            }
+            
+            return
+        }
+
+        if (currentUserAction === userItemActions.walletSwap) {
+            if (walletSwapFundDetails.amount.length < 1) return showToastMessage('Please enter an amount', 'info')
+
+            setLoading(true);
+
+            try {
+                const { 
+                    message, 
+                    newBalOfCreditedWallet, 
+                    newBalOfDebitedWallet 
+                } = (await walletService.swapFundsBetweenWallet(walletSwapFundDetails)).data;
+
+                copyOfCurrentWallet.balance = newBalOfDebitedWallet;
+
+                const [
+                    foundDebitingWalletIndex,
+                    foundCreditingWalletIndex
+                ] = [
+                    copyOfWallets.findIndex(wallet => wallet?._id === currentWallet?._id),
+                    copyOfWallets?.findIndex(wallet => wallet?.currency !== currentWallet?.currency)
+                ]
+                
+                if (foundDebitingWalletIndex !== -1) copyOfWallets[foundDebitingWalletIndex].balance = newBalOfDebitedWallet;
+                if (foundCreditingWalletIndex !== -1) copyOfWallets[foundCreditingWalletIndex].balance = newBalOfCreditedWallet;
+
+                setWallets(copyOfWallets);
+                setCurrentWallet(copyOfCurrentWallet);
+                setLoading(false);
+                
+                resetWalletActionStateDetail('swap');
+                handleCloseBottomSheet();
+
+                showToastMessage(message, 'success');
+            } catch (error) {
+                console.log('err swapping: ', error);
+
+                const errorMsg = error.response ? error.response.data : error.message;
+                showToastMessage(errorMsg.toLocaleLowerCase().includes('html') ? 'Something went wrong trying to swap your funds. Please try again' : errorMsg, 'danger');
+                setLoading(false);
+            }
+            return
         }
     }
 
@@ -388,7 +508,10 @@ const HomeScreen = ({ navigation }) => {
                                             <></>
                                         }
                                         <Text>{currentWallet?.currency}</Text>
-                                        <Ionicons name="swap-vertical" size={24} color={colors.deepBlue} />
+                                        {
+                                            wallets.length > 1 &&
+                                            <Ionicons name="swap-vertical" size={18} color={colors.deepBlue} />
+                                        }
                                     </TouchableOpacity>
                                     <Text style={homePageStyles.balanceText}>
                                         {
@@ -579,6 +702,7 @@ const HomeScreen = ({ navigation }) => {
                 }
             </View>
             
+            {/* HOME PAGE SHEET MODAL */}
             {
                 sheetModalIsOpen && 
                 <ModalOverlay>
@@ -592,17 +716,92 @@ const HomeScreen = ({ navigation }) => {
                         onClose={handleCloseBottomSheet}
                     >
                         <BottomSheetView style={appLayoutStyles.modalContainer}>
-                            <Text style={appLayoutStyles.modalTitleText}>
-                                {console.log('this->', currentUserAction)}
-                                {console.log('against->', userItemActions.walletFund)}
-                                {
-                                    currentUserAction == userItemActions.walletFund ?
-                                        'Fund wallet'
-                                    :
-                                    'd'
-                                }
-                            </Text>
+                            <View style={homePageStyles.modalContentWrapper}>
+                                <Text style={appLayoutStyles.modalTitleText}>
+                                    {
+                                        currentUserAction == userItemActions.walletFund ?
+                                            'Fund wallet'
+                                        :
+                                        currentUserAction === userItemActions.walletSwap ?
+                                            'Change Funds'
+                                        :
+                                        ''
+                                    }
+                                </Text>
 
+                                <View style={appLayoutStyles.modalInputItemWrapper}>
+                                    <Text style={appLayoutStyles.modalInputHeaderText}>Amount</Text>
+                                    <TextInputComponent 
+                                        value={
+                                            currentUserAction === userItemActions.walletFund ?
+                                                newWalletFundDetails.amount
+                                            :
+                                            currentUserAction === userItemActions.walletSwap ?
+                                                walletSwapFundDetails.amount
+                                            :
+                                            ''
+                                        }
+                                        name={'amount'}
+                                        handleInputChange={
+                                            (name, val) => handleUpdateWalletActionStateDetail(
+                                                currentUserAction === userItemActions.walletFund ?
+                                                    'fund' 
+                                                : 
+                                                currentUserAction === userItemActions.walletSwap ?
+                                                    'swap'
+                                                : 
+                                                '',
+                                                name,
+                                                val,
+                                            )
+                                        }
+                                        placeholder={'10'}
+                                        isNumericInput={true}
+                                        isEditable={loading ? false : true}
+                                    />
+                                </View>
+                                
+                                {
+                                    currentUserAction === userItemActions.walletSwap &&
+                                    <>
+                                        <View style={appLayoutStyles.modalInputItemWrapper}>
+                                            <Text style={appLayoutStyles.modalInputHeaderText}>Currency to convert to</Text>
+                                            <TextInputComponent 
+                                                value={walletSwapFundDetails?.outputCurrency}
+                                                isEditable={false}
+                                            />
+                                        </View>
+                                        <View style={appLayoutStyles.modalInputItemWrapper}>
+                                            <Text style={appLayoutStyles.modalInputHeaderText}>
+                                                You will get <Text style={homePageStyles.swapResultText}>{swapExchangeResult}</Text> {walletSwapFundDetails?.outputCurrency}
+                                            </Text>
+                                        </View>
+                                    </>
+                                }
+
+                                <CustomButton 
+                                    buttonText={
+                                        loading ? 'Please wait..'
+                                        :
+                                        currentUserAction == userItemActions.walletFund ?
+                                            'Fund'
+                                        :
+                                        currentUserAction == userItemActions.walletSwap ?
+                                            'Change'
+                                        :
+                                        ''
+                                    }
+                                    btnStyle={
+                                        loading ?
+                                            Object.assign({}, appLayoutStyles.modalBtnStyle, appLayoutStyles.disabledModalBtn)
+                                        :
+                                        appLayoutStyles.modalBtnStyle
+                                    }
+                                    textContentStyle={appLayoutStyles.modalBtnTextStyle}
+                                    handleBtnPress={handleCompleteWalletUserAction}
+                                    disabled={loading}
+                                />
+                            </View>
                         </BottomSheetView>
                     </BottomSheet>
                 </ModalOverlay>

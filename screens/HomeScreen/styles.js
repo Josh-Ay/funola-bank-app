@@ -141,8 +141,8 @@ export const homePageStyles = StyleSheet.create({
         alignItems: 'center',
         backgroundColor: colors.paleBlue,
         width: 120,
-        paddingTop: 8,
-        paddingBottom: 8,
+        paddingTop: 11,
+        paddingBottom: 11,
         paddingLeft: 20,
         paddingRight: 20,
         borderRadius: 20,
@@ -159,5 +159,11 @@ export const homePageStyles = StyleSheet.create({
         color: colors.blue,
         fontFamily: 'Poppins',
         textAlign: 'center',
-    }
+    },
+    modalContentWrapper: {
+        marginTop: 10,
+    },
+    swapResultText: {
+        color: colors.blue,
+    },
 })
