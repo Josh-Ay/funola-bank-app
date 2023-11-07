@@ -1,7 +1,7 @@
 import { Dimensions, StyleSheet } from "react-native";
 import { colors } from "../../utils/colors";
 
-const { width, height } = Dimensions.get('window');
+const { width, height } = Dimensions.get('screen');
 
 export const dropdownStyles = StyleSheet.create({
     customDropdown: {

@@ -18,7 +18,7 @@ export const authStyles = StyleSheet.create({
     },
     subtitleText: {
         fontFamily: 'Poppins',
-        width: '80%',
+        width: '100%',
     },
     topContent: {
         flex: 0.2,
@@ -36,20 +36,22 @@ export const authStyles = StyleSheet.create({
     btn: {
         backgroundColor: colors.blue,
         width: '100%',
-        flex: 0.5,
+        // flex: 0.5,
         alignItems: 'center',
         justifyContent: 'center',
         borderRadius: 10,
         marginBottom: 5,
+        height: 60,
     },
     btn_: {
         backgroundColor: colors.blue,
         width: '100%',
-        flex: 0.4,
+        // flex: 0.4,
         alignItems: 'center',
         justifyContent: 'center',
         borderRadius: 10,
         marginBottom: 5,
+        height: 60,
     },
     btnText: {
         color: colors.white,

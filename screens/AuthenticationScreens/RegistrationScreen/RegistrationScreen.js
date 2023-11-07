@@ -41,9 +41,9 @@ const RegistrationScreen = ({ navigation }) => {
         handleUpdateUserDetail('country', val?.name?.common);
     }
 
-    const showToastInfoMessage = (message) => {
+    const showToastMessage = (message, type) => {
         toast.show(message, {
-            type: 'normal',
+            type: type ? type : 'normal',
             placement: 'top'
         })
     }
@@ -51,11 +51,11 @@ const RegistrationScreen = ({ navigation }) => {
     const handleStartBtnClick = async () => {
         // console.log(details);
 
-        if (details.country.length < 1) return showToastInfoMessage('Please enter a location');
-        if (details.number.length < 1) return showToastInfoMessage('Please enter a number');
-        if (details.email.length < 1) return showToastInfoMessage('Please enter an email');
-        if (details.number.length < 9) return showToastInfoMessage('Please enter a valid number');
-        if (!validateEmail(details.email)) return showToastInfoMessage('Please enter a valid email');
+        if (details.country.length < 1) return showToastMessage('Please enter a location');
+        if (details.number.length < 1) return showToastMessage('Please enter a number');
+        if (details.email.length < 1) return showToastMessage('Please enter an email');
+        if (details.number.length < 9 || details.number.length > 12) return showToastMessage('Please enter a valid number');
+        if (!validateEmail(details.email)) return showToastMessage('Please enter a valid email');
 
         if (dataLoading) return
 
@@ -77,10 +77,7 @@ const RegistrationScreen = ({ navigation }) => {
             setDataLoading(false);
             setDataLoaded(true);
 
-            toast.show(res, {
-                type: 'success',
-                placement: 'top',
-            });
+            showToastMessage(res, 'success');
             navigation.navigate('Verification', { ...details });
 
         } catch (error) {
@@ -88,10 +85,7 @@ const RegistrationScreen = ({ navigation }) => {
             // console.log(errorMsg);
 
             setDataLoading(false);
-            toast.show(errorMsg, {
-                type: 'danger',
-                placement: 'top'
-            })
+            showToastMessage(errorMsg.toLocaleLowerCase().includes('html') ? 'Something went wrong trying to register your details. Please try again' : errorMsg, 'danger')
         }
     }
 

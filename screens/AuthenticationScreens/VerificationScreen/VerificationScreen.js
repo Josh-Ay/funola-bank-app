@@ -73,6 +73,13 @@ const VerificationScreen = ({ navigation, route }) => {
         if (passedName === 'thirdNum' && passedVal.length > 0) fourthInputRef.current.focus();
     }
 
+    const showToastMessage = (message, type) => {
+        toast.show(message, {
+            type: type ? type : 'normal',
+            placement: 'top'
+        })
+    }
+
     const handleContinueBtnClick = async () => {
         if (
             verificationCode.firstNum.length < 1 ||
@@ -97,10 +104,7 @@ const VerificationScreen = ({ navigation, route }) => {
             setDataLoading(false);
             setNumberVerified(true);
 
-            toast.show(res, {
-                type: 'success',
-                placement: 'top',
-            });
+            showToastMessage(res, 'success');
             navigation.navigate('Onboarding', { ...route.params });
 
         } catch (error) {
@@ -108,10 +112,7 @@ const VerificationScreen = ({ navigation, route }) => {
             // console.log(errorMsg);
 
             setDataLoading(false);
-            toast.show(errorMsg, {
-                type: 'danger',
-                placement: 'top'
-            })
+            showToastMessage(errorMsg.toLocaleLowerCase().includes('html') ? 'Something went wrong trying to verify your details. Please try again' : errorMsg, 'danger');
             setVerificationCode(initialVerificationCode);
         }
     }
@@ -132,20 +133,14 @@ const VerificationScreen = ({ navigation, route }) => {
             setResetLoading(false);
             setResetTimeLeftInSecs(50);
 
-            toast.show(res, {
-                type: 'success',
-                placement: 'top',
-            });
+            showToastMessage(res, 'success');
 
         } catch (error) {
             const errorMsg = error.response ? error.response.data : error.message;
             // console.log(errorMsg);
 
             setResetLoading(false);
-            toast.show(errorMsg, {
-                type: 'danger',
-                placement: 'top'
-            })
+            showToastMessage(errorMsg.toLocaleLowerCase().includes('html') ? 'Something went wrong trying to send a verification code. Please try again' : errorMsg, 'danger');
         }
     }
 

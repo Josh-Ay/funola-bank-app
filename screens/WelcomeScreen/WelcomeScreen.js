@@ -4,7 +4,7 @@ import { useEffect } from "react";
 import { useAppContext } from "../../contexts/AppContext";
 import { CountryServices } from "../../services/countriesServices";
 
-const WelcomeScreen = ({ navigation }) => {    
+const WelcomeScreen = ({ navigation, route }) => {    
 
     const { countries, setCountries, setCountriesLoaded } = useAppContext();
     const countryService = new CountryServices();

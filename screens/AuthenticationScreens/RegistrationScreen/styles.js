@@ -26,13 +26,14 @@ export const registrationStyles = StyleSheet.create({
     verticalLine: {
         height: '50%',
         width: 1,
-        backgroundColor: colors.grey,
+        backgroundColor: colors.lightGrey,
         alignSelf: 'center'
     },
     textItem: {
         flex: 1,
         height: '100%',
         width: '10%',
+        shadowColor: colors.white,
     },
     locationText: {
         width: '80%',

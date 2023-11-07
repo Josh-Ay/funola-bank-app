@@ -54,7 +54,7 @@ const AuthLayout = ({
           </Text>
         </View>
         <View style={authStyles.mainContent}>
-          <ScrollView contentContainerStyle={{ flexGrow: 1 }}>
+          <ScrollView contentContainerStyle={{ flexGrow: 1, paddingBottom: 40 }}>
             <KeyboardAvoidingView
               behavior={Platform.OS === "ios" ? "padding" : "height"}
             >

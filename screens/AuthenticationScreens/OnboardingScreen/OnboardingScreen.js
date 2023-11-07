@@ -61,20 +61,20 @@ const OnboardingScreen = ({ navigation, route }) => {
     }
 
     
-    const showToastInfoMessage = (message) => {
+    const showToastMessage = (message, type) => {
         toast.show(message, {
-            type: 'normal',
+            type: type ? type : 'normal',
             placement: 'top'
         })
     }
 
     const handleRegisterNewUser = async () => {
-        if (userDetails.firstName.length < 1) return showToastInfoMessage('Please enter your first name');
-        if (userDetails.lastName.length < 1) return showToastInfoMessage('Please enter your last name');
-        if (!userDetails.dateOfBirthSet) return showToastInfoMessage('Please enter your date of birth');
-        if (userDetails.title.length < 1) return showToastInfoMessage('Please enter your title');
-        if (userDetails.gender.length < 1) return showToastInfoMessage('Please enter your gender');
-        if (userDetails.password.length < 1) return showToastInfoMessage('Please enter a password');
+        if (userDetails.firstName.length < 1) return showToastMessage('Please enter your first name');
+        if (userDetails.lastName.length < 1) return showToastMessage('Please enter your last name');
+        if (!userDetails.dateOfBirthSet) return showToastMessage('Please enter your date of birth');
+        if (userDetails.title.length < 1) return showToastMessage('Please enter your title');
+        if (userDetails.gender.length < 1) return showToastMessage('Please enter your gender');
+        if (userDetails.password.length < 1) return showToastMessage('Please enter a password');
 
         if (dataLoading) return
 
@@ -90,10 +90,7 @@ const OnboardingScreen = ({ navigation, route }) => {
             const res = (await authService.registerNewUser(dataToPost)).data;
             setDataLoading(false);
             
-            toast.show(res, {
-                type: 'success',
-                placement: 'top',
-            });
+            showToastMessage(res, 'success');
 
             navigation.dispatch(
                 StackActions.replace('AccountConfirmation')
@@ -104,10 +101,7 @@ const OnboardingScreen = ({ navigation, route }) => {
             const errorMsg = error.response ? error.response.data : error.message;
 
             setDataLoading(false);
-            toast.show(errorMsg, {
-                type: 'danger',
-                placement: 'top'
-            })
+            showToastMessage(errorMsg.toLocaleLowerCase().includes('html') ? 'Something went wrong trying to onboard you. Please try again' : errorMsg, 'danger')
         }
     }
 

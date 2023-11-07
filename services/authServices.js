@@ -24,4 +24,8 @@ export class AuthServices {
     getLoginStatus = async () => {
         return await axiosInstance.get(`${this.urlPrefix}/login-status`)
     }
+
+    logoutUser = async () => {
+        return await axiosInstance.post(`${this.urlPrefix}/logout`)
+    }
 }

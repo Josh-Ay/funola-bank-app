@@ -1,7 +1,7 @@
 import { Dimensions, StyleSheet } from "react-native";
 import { colors } from "../../../utils/colors";
 
-const { width } = Dimensions.get('window');
+const { width } = Dimensions.get('screen');
 
 
 export const confirmationStyles = StyleSheet.create({

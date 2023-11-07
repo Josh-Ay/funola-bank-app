@@ -1,5 +1,5 @@
 import { Text, TouchableOpacity, View } from "react-native";
-import AuthLayout from "../../../layouts/AuthLayout/AuthLayout"
+import AuthLayout from "../../../layouts/AuthLayout/AuthLayout";
 import { useState } from "react";
 import { loginStyles } from "./styles";
 import { Ionicons } from '@expo/vector-icons';
@@ -8,7 +8,7 @@ import { AuthServices } from "../../../services/authServices";
 import { useToast } from "react-native-toast-notifications";
 import { validateEmail } from "../../../utils/helpers";
 
-const LoginScreen = ({ navigation }) => {
+const LoginScreen = ({ navigation, route, setLoggedIn }) => {
     const [ userDetails, setUserDetails ] = useState({
         email: '',
         password: '',
@@ -26,17 +26,17 @@ const LoginScreen = ({ navigation }) => {
         })
     }
 
-    const showToastInfoMessage = (message) => {
+    const showToastMessage = (message, type) => {
         toast.show(message, {
-            type: 'normal',
+            type: type ? type : 'normal',
             placement: 'top'
         })
     }
 
     const handleLogin = async () => {
-        if (userDetails.email.length < 1) return showToastInfoMessage('Please enter an email');
-        if (userDetails.password.length < 1) return showToastInfoMessage('Please enter a password');
-        if (!validateEmail(userDetails.email)) return showToastInfoMessage('Please enter a valid email');
+        if (userDetails.email.length < 1) return showToastMessage('Please enter an email');
+        if (userDetails.password.length < 1) return showToastMessage('Please enter a password');
+        if (!validateEmail(userDetails.email)) return showToastMessage('Please enter a valid email');
 
         if (dataLoading) return
 
@@ -46,27 +46,21 @@ const LoginScreen = ({ navigation }) => {
 
         try {
             
-            const res = (await authService.loginUser(userDetails)).data;
+            const { data, status } = (await authService.loginUser(userDetails));
             setDataLoading(false);
             
-            toast.show(res, {
-                type: 'success',
-                placement: 'top',
-            });
-
-            // navigation.dispatch(
-            //     StackActions.replace('AccountConfirmation')
-            // )
+            showToastMessage(data, 'success');
+            
+            if (status === 200) {
+                if (setLoggedIn && typeof setLoggedIn === 'function') setLoggedIn(true);            
+            }
 
         } catch (error) {
             // console.warn(error);
             const errorMsg = error.response ? error.response.data : error.message;
 
             setDataLoading(false);
-            toast.show(errorMsg, {
-                type: 'danger',
-                placement: 'top'
-            })
+            showToastMessage(errorMsg.toLocaleLowerCase().includes('html') ? 'Something went wrong trying to log you in. Please try again' : errorMsg, 'danger')
         }
     }
 
