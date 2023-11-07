@@ -264,15 +264,9 @@ exports.withdraw_from_wallet = async (req, res) => {
 }
 
 exports.swap_currency = async (req, res) => {
-    const { pin } = req.body
-
     // validating the request body and sending back an appropriate error message if any
     const { errorMsg, amount, currency } = checkWalletRequestBodyErrors(req.body);
     if (errorMsg) return res.status(400).send(errorMsg);
-    if (!pin) return res.status(400).send("'pin' required");
-
-    if (isNaN(Number(pin))) return res.status(400).send("'pin' must be a number");
-    if (String(pin).length !== 6) return res.status(400).send("Please enter a 6-digit number for the 'pin'");
 
     const { outputCurrency } = req.body;
     if (!outputCurrency) return res.status(400).send("'outputCurrency' required");
@@ -291,14 +285,6 @@ exports.swap_currency = async (req, res) => {
 
     // returning an error message if the user does not have enough in the originating wallet
     if (userWalletInInputCurrency.balance < amount) return res.status(403).send("You do not have sufficient funds to initiate this swap.");
-
-    // checking the user has set a pin
-    const currentUser = await User.findById(req.user._id);
-    if (!currentUser.transactionPin) return res.status(403).send("Please set a transaction pin first");
-
-    // checking the pin passed is correct
-    const isValidPin = await bcrypt.compare(String(pin), currentUser.transactionPin);
-    if (!isValidPin) return res.status(401).send('Incorrect transaction pin');
 
     try {
         const result = (await get_currency_rate(amount, currency, outputCurrency)).data;
@@ -346,7 +332,15 @@ exports.swap_currency = async (req, res) => {
             }),
         ])
 
-        return res.status(200).send(successMessage)
+        return res.status(200).json({
+            message: successMessage,
+            rateOfExchange: result.rate,
+            currencyOfDebitedWallet: userWalletInInputCurrency.currency,
+            newBalOfDebitedWallet: userWalletInInputCurrency.balance,
+            newBalOfCreditedWallet: userWalletInOutputCurrency.balance,
+            currencyOfCreditedWallet: userWalletInOutputCurrency.currency,
+        })
+
     } catch (error) {
         console.log(error);
         return res.status(
