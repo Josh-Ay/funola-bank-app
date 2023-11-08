@@ -39,6 +39,18 @@ const cardSchema = new Schema({
         type: Number,
         required: true,
     },
+    contactlessPaymentEnabled: {
+        type: Boolean,
+        default: false,
+    },
+    onlinePaymentEnabled: {
+        type: Boolean,
+        default: false,
+    },
+    atmWithdrawalsEnabled: {
+        type: Boolean,
+        default: false,
+    },
 }, { timestamps: true })
 
 function validateNewCardDetails (newCardDetails) {
