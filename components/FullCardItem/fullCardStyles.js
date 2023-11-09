@@ -23,7 +23,7 @@ export const fullCardStyles = StyleSheet.create({
         fontFamily: 'Poppins',
         color: colors.white,
         textTransform: 'uppercase',
-        fontSize: 16,
+        fontSize: 15,
     },
     cardNumberText: {
         fontFamily: 'Poppins',

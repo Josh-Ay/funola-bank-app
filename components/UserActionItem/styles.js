@@ -7,7 +7,7 @@ export const userActionItemStyles = StyleSheet.create({
         gap: 10,
         alignItems: 'center',
         justifyContent: 'center',
-        marginRight: 30,
+        // marginRight: 30,
     },
     actionItemIcon: {
         backgroundColor: colors.paleBlue,

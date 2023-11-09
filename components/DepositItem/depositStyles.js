@@ -31,6 +31,7 @@ export const depositStyles = StyleSheet.create({
         fontSize: 16,
         fontFamily: 'Poppins',
         marginBottom: 4,
+        textTransform: 'capitalize',
     },
     userItemSubContentText: {
         fontSize: 10,
@@ -47,4 +48,7 @@ export const depositStyles = StyleSheet.create({
         fontSize: 10,
         fontFamily: 'Poppins',
     },
+    creditBal: {
+        color: colors.green,
+    }
 })

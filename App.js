@@ -21,6 +21,7 @@ import CardsScreen from './screens/CardsScreen/CardsScreen';
 import MapsScreen from './screens/MapsScreen/MapsScreen';
 import ProfileScreen from './screens/ProfileScreen/ProfileScreen';
 import NotificationScreen from './screens/NotificationScreen/NotificationScreen';
+import CardSettingsScreen from './screens/CardSettingsScreen/CardSettingsScreen';
 
 const Stack = createNativeStackNavigator();
 
@@ -66,6 +67,10 @@ export default function App() {
                   <Stack.Screen
                     name='Cards'
                     component={CardsScreen}
+                  />
+                  <Stack.Screen
+                    name='CardSettings'
+                    component={CardSettingsScreen}
                   />
                   <Stack.Screen
                     name='Map'

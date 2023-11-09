@@ -178,9 +178,12 @@ const CardsScreen = ({ navigation }) => {
                         {cards?.filter(card => card.cardType === 'physical')?.length} physical card, {cards?.filter(card => card.cardType === 'virtual')?.length} virtual card
                     </Text>
                 </View>
-                <TouchableOpacity>
-                    <MaterialCommunityIcons name="dots-horizontal" size={34} color="black" />
-                </TouchableOpacity>
+                {
+                    cards?.length > 0 &&
+                    <TouchableOpacity onPress={() => navigation.navigate('CardSettings')}>
+                        <MaterialCommunityIcons name="dots-horizontal" size={34} color="black" />
+                    </TouchableOpacity>
+                }
             </View>
 
             <View style={cardScreenStyles.cardTypeSelection}>

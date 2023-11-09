@@ -46,3 +46,20 @@ export const formatDate = (date) => {
 
     return `${validDate.getDay() < 10 ? '0' + validDate.getDay() : validDate.getDay()}.${validDate.getMonth() < 10 ? '0' + validDate.getMonth() : validDate.getMonth()}.${validDate.getFullYear()}`
 }
+
+export const formatDateToMonthAndDay = (date) => {
+    /**
+     * Formats a date to display only its month and day
+     * 
+     * @param date date you will like to format
+     * 
+     * @returns string containing formatted date. Sample output: Aug 23 
+     * 
+     */
+
+    const validDate = new Date(date);
+
+    if (validDate == "Invalid Date" ) return "Jan 01";
+
+    return `${validDate.toLocaleString('en-us', { month: 'short' })} ${validDate.getDate()}`
+}

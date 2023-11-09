@@ -17,12 +17,12 @@ export class CardServices {
         return await axiosInstance.get(`${this.urlPefix}/single-card-detail/${id}`)
     }
 
-    fundCard = async (data, cardCurrency) => {
-        return await axiosInstance.post(`${this.urlPefix}/fund/${cardCurrency}`, data)
+    fundCard = async (data, id) => {
+        return await axiosInstance.post(`${this.urlPefix}/fund/${id}`, data)
     }
 
-    getCardTransactions = async (cardCurrency) => {
-        return await axiosInstance.get(`${this.urlPefix}/transactions/${cardCurrency}`)
+    getCardTransactions = async (id) => {
+        return await axiosInstance.get(`${this.urlPefix}/transactions/${id}`)
     }
 
     updateCardSetting = async (id, type, data) => {

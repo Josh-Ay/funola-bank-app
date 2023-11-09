@@ -1,3 +1,15 @@
+export const userItemActions = {
+    walletFund: 'fund-wallet',
+    walletSend: 'send-wallet',
+    walletRequest: 'request-wallet',
+    walletHistory: 'history-wallet',
+    walletSwap: 'swap-wallet',
+    cardSend: 'send-card',
+    cardRequest: 'request-card',
+    cardHistory: 'history-card',
+    cardSwap: 'swap-card',
+}
+
 export const userTitles = [
     {
         title: 'Mr',

@@ -16,7 +16,7 @@ import { DepositServices } from "../../services/depositServices";
 import { Ionicons } from '@expo/vector-icons';
 import UserActionItem from "../../components/UserActionItem/UserActionItem";
 import { MaterialIcons } from '@expo/vector-icons';
-import { userItemActions, walletItemActionsList } from "./utils";
+import { walletItemActionsList } from "./utils";
 import CardItem from "../../components/CardItem/Carditem";
 import DepositItem from "../../components/DepositItem/DepositItem";
 import BottomSheet, { BottomSheetView } from "@gorhom/bottom-sheet";
@@ -26,6 +26,7 @@ import ModalOverlay from "../../layouts/AppLayout/components/ModalOverlay/ModalO
 import TextInputComponent from "../../components/TextInputComponent/TextInputComponent";
 import CustomButton from "../../components/CustomButton/CustomButton";
 import { ConvertServices } from "../../services/convertServices";
+import { userItemActions } from "../../utils/utils";
 
 const HomeScreen = ({ navigation }) => {
 
@@ -578,11 +579,10 @@ const HomeScreen = ({ navigation }) => {
                         <FlatList
                             data={walletItemActionsList}
                             renderItem={
-                                ({item}) => <UserActionItem item={item} handleItemPress={handleActionItemPress} />
+                                ({item}) => <UserActionItem item={item} handleItemPress={handleActionItemPress} style={{ marginRight: 30 }} />
                             }
                             keyExtractor={item => item.id}
                             horizontal={true}
-                            style={homePageStyles.actionItemsWrapper}
                         />
                     </SafeAreaView>
                     :

@@ -17,6 +17,7 @@ export default CardContextProvider = ({ children }) => {
     const [ cardsLoading, setCardsLoading ] = useState(true);
     const [ showAddCardModal, setShowAddCardModal ] = useState(false);
     const [ newCardDetails, setNewCardDetails ] = useState(initialNewCardState);
+    const [ cardTransactions, setCardTransactions ] = useState({});
 
     const handleUpdateNewCardDetails = (keyToUpdate, valueToUpdateTo) => {
         setNewCardDetails((prevDetails) => {
@@ -45,6 +46,8 @@ export default CardContextProvider = ({ children }) => {
                 newCardDetails,
                 handleUpdateNewCardDetails,
                 resetNewCardDetailState,
+                cardTransactions,
+                setCardTransactions,
             }}
         >
             { children }
