@@ -17,6 +17,6 @@ router.put("/change-password", userAuth, authController.change_user_password);
 router.post("/refresh-token", authController.refresh_user_token);
 router.get("/login-status", userAuth, authController.get_login_status);
 router.delete("/delete-account", userAuth, authController.delete_account);
-router.post("/logout", userAuth, authController.logout_user);
+router.get("/logout", userAuth, authController.logout_user);
 
 module.exports = router;
