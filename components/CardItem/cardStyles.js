@@ -7,6 +7,12 @@ export const cardStyles = StyleSheet.create({
         justifyContent: 'space-between',
         padding: 5,
         marginBottom: 8,
+        alignItems: 'center',
+    },
+    cardSettingItem: {
+        backgroundColor: colors.white,
+        borderRadius: 10,
+        padding: 14,
     },
     cardLeftContent: {
         flexDirection: 'row',
@@ -49,6 +55,11 @@ export const cardStyles = StyleSheet.create({
     cardDateText: {
         color: colors.grey,
         fontSize: 10,
+        fontFamily: 'Poppins',
+    },
+    cardSettingContentText: {
+        color: colors.deepBlue,
+        fontSize: 14,
         fontFamily: 'Poppins',
     },
 })

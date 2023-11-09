@@ -1,14 +1,66 @@
 import { Image, Text, TouchableOpacity, View } from 'react-native';
 import { formatDateToMonthAndYear } from '../../utils/helpers';
 import { cardStyles } from './cardStyles';
+import Toggle from 'react-native-toggle-input'
+import { colors } from '../../utils/colors';
 
 export default function CardItem ({ 
     card, 
     modalIsOpen,
     handleCardClick,
+    isCardSettingItem,
+    cardSettingType,
+    cardSettingTypeKey,
+    handleCardSettingChange,
 }) {
     if (!card) return <></>
 
+    if (isCardSettingItem) return <>
+        <View
+            style={
+                Object.assign({}, cardStyles.singleUserItem, cardStyles.cardSettingItem)
+            }
+        >
+            <View style={cardStyles.cardLeftContent}>
+                <View style={cardStyles.cardImageWrapper}>
+                    <Image 
+                        source={
+                            cardSettingTypeKey === 'contactlessPaymentEnabled' ?
+                                require('../../assets/cardSettingIcons/qr-code-scan.png')
+                            :
+                            cardSettingTypeKey === 'onlinePaymentEnabled' ?
+                                require('../../assets/cardSettingIcons/online-payment.png')
+                            :
+                            cardSettingTypeKey === 'atmWithdrawalsEnabled' ?
+                                require('../../assets/cardSettingIcons/atm.png')
+                            :
+                            require('../../assets/cardSettingIcons/settings.png')
+                        }
+                        style={cardStyles.cardImage}
+                    />
+                </View>
+                <View>
+                    <Text style={cardStyles.cardSettingContentText}>{cardSettingType}</Text>
+                </View>
+            </View>
+            <View style={cardStyles.cardRightContent}>
+                <Toggle 
+                    color={colors.green}
+                    size={20}
+                    filled={true}
+                    circleColor={colors.white}
+                    toggle={card[cardSettingTypeKey]}
+                    setToggle={
+                        handleCardSettingChange && typeof handleCardSettingChange === 'function' ?
+                            (val) => handleCardSettingChange(val)
+                        :
+                        (val) => console.log(val)
+                    }
+                />
+            </View>
+        </View>
+    </>
+    
     return <>
         <TouchableOpacity 
             style={cardStyles.singleUserItem}

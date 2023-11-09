@@ -9,4 +9,5 @@ export const colors = {
     grey: '#808080',
     lightGrey: '#D3D3D3',
     bgOverlay: 'rgba(0,0,0,.5)',
+    green: '#5caf80',
 }

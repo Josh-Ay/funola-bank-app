@@ -284,18 +284,6 @@ const HomeScreen = ({ navigation }) => {
     }
 
     const handleRefresh = async () => {
-        const [
-            userService, 
-            walletService, 
-            cardService, 
-            depositService,
-        ] = [
-            new UserServices(),
-            new WalletServices(),
-            new CardServices(),
-            new DepositServices(),
-        ];
-
         setRefreshing(true);
         setShowAddWalletModal(false);
         setShowAddDepositModal(false);
