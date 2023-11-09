@@ -78,8 +78,14 @@ export default function App() {
                   />
                   <Stack.Screen
                     name='Profile'
-                    component={ProfileScreen}
-                  />
+                  >
+                    { 
+                      props => <ProfileScreen 
+                        {...props} 
+                        setLoggedIn={setUserLoggedIn} 
+                      /> 
+                    }
+                  </Stack.Screen>
                   <Stack.Screen
                     name='Notifications'
                     component={NotificationScreen}

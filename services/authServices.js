@@ -26,6 +26,6 @@ export class AuthServices {
     }
 
     logoutUser = async () => {
-        return await axiosInstance.post(`${this.urlPrefix}/logout`)
+        return await axiosInstance.get(`${this.urlPrefix}/logout`)
     }
 }
