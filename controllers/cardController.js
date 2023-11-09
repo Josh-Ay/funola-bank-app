@@ -1,4 +1,4 @@
-const { Card, validateNewCardDetails } = require('../models/cards');
+const { Card, validateNewCardDetails, validCardSettingsUpdate } = require('../models/cards');
 const { funolaValidCurrencies, funolaValidCardTypes, funolaValidCardPaymentNetworks } = require('../utils/utils');
 const { generateNewTransactionObj, validateNewTransactionDetails, Transaction } = require("../models/transaction");
 const { Notification } = require("../models/notifications");
@@ -141,4 +141,58 @@ exports.fetch_card_transactions = async (req, res) => {
     // fetching top 50 transactions
     const transactions = await Transaction.find({ owner: req.user._id, cardId: cardExistsForUser._id, currency: cardExistsForUser.currency }).sort({ createdAt: -1 }).limit(50).lean();
     return res.status(200).send(transactions);
+}
+
+exports.get_single_card_detail = async (req, res) => {
+    const { id } = req.params;
+
+    try {
+        // checking if there is a card matching the 'id' passed that exists for the logged in user
+        const foundCard = await Card.findOne({ owner: req.user._id, _id: id });
+        if (!foundCard) return res.status(404).send('No matching card found for user')   
+
+        // sending the details
+        return res.status(200).send(foundCard);     
+    } catch (error) {
+        console.log(error);
+        return res.status(500).send('An error occurred while trying to fetch your card detail')
+    }
+
+}
+
+exports.update_card_setting = async (req, res) => {
+    const { id, type } = req.params;
+    const { newValue } = req.body;
+
+    // validating request params and sending back appropriate error messages if any
+    if (!type) return res.status(400).send("'type' missing in request params");
+    if (!validCardSettingsUpdate.includes(type)) return res.status(400).send(`'type' can only be one of ${validCardSettingsUpdate.join(', ')}`);
+
+    // validating request body and sending back appropriate error messages if any
+    if (!newValue) return res.status(400).send("'newValue' missing in request body");
+    if (typeof newValue !== 'boolean') return res.status(400).send("'newValue' can only be a boolean");
+
+    let foundCard;
+
+    try {
+        // checking if there is a card matching the 'id' passed that exists for the logged in user
+        foundCard = await Card.findOne({ owner: req.user._id, _id: id });
+    } catch (error) {
+        console.log(error);
+        return res.status(500).send('An error occurred while trying to update your card detail')
+    }
+
+    if (!foundCard) return res.status(404).send('No matching card found for user');
+
+    // updating the card detail
+    foundCard[type] = newValue;
+
+    try {
+        // saving the updates made
+        await foundCard.save();
+        return res.status(200).send(foundCard);
+    } catch (error) {
+        console.log(error);
+        return res.status(500).send('An error occurred while trying to update your card detail')
+    }
 }

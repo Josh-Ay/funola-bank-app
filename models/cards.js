@@ -74,6 +74,11 @@ function validateNewCardDetails (newCardDetails) {
     return schema.validate(newCardDetails);
 }
 
+const validCardSettingsUpdate = [
+    'contactlessPaymentEnabled',
+    'onlinePaymentEnabled',
+    'atmWithdrawalsEnabled',
+]
 
 // creating a new model
 const Card = model('card', cardSchema);
@@ -81,4 +86,5 @@ const Card = model('card', cardSchema);
 module.exports = {
     Card,
     validateNewCardDetails,
+    validCardSettingsUpdate,
 }
