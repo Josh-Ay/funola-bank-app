@@ -170,7 +170,16 @@ exports.update_card_setting = async (req, res) => {
 
     // validating request body and sending back appropriate error messages if any
     if (!newValue) return res.status(400).send("'newValue' missing in request body");
-    if (typeof newValue !== 'boolean') return res.status(400).send("'newValue' can only be a boolean");
+
+    let passedVal;
+    try {
+        passedVal = JSON.parse(newValue);
+    } catch (error) {
+        console.log("'newValue'parse error: ", error);
+        return res.status(400).send("'newValue' can only be a boolean");
+    }
+
+    if (typeof passedVal !== 'boolean') return res.status(400).send("'newValue' can only be a boolean");
 
     let foundCard;
 
