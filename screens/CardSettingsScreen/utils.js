@@ -28,10 +28,10 @@ export const cardItemActionsList = [
         id: 69,
         action: userItemActions.cardHistory,
     },
-    {
-        title: 'Change',
-        icon: <Ionicons name="ios-swap-horizontal-sharp" size={20} color="black" />,
-        id: 79,
-        action: userItemActions.cardSwap,
-    },
+    // {
+    //     title: 'Change',
+    //     icon: <Ionicons name="ios-swap-horizontal-sharp" size={20} color="black" />,
+    //     id: 79,
+    //     action: userItemActions.cardSwap,
+    // },
 ]

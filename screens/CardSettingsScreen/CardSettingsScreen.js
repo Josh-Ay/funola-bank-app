@@ -166,12 +166,14 @@ const CardSettingsScreen = ({ navigation, route }) => {
                                 <UserActionItem 
                                     item={item} 
                                     handleItemPress={handleActionItemPress} 
-                                    style={{ marginRight: 30 }} 
+                                    // style={{ marginRight: 30 }} 
                                 />
                             }
                             keyExtractor={item => item.id}
                             horizontal={true}
                             contentContainerStyle={{
+                                justifyContent: 'space-between',
+                                width: '100%',
                                 paddingLeft: 8,
                                 paddingRight: 8,
                             }}
