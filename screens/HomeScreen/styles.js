@@ -16,21 +16,18 @@ export const homePageStyles = StyleSheet.create({
     },
     balanceText: {
         color: colors.white,
-        fontFamily: 'Poppins',
-        fontSize: 36,
-        fontWeight: '700',
+        fontFamily: 'Poppins-Medium',
+        fontSize: 34,
     },
     balanceTextIndicator: {
         color: colors.lightGrey,
         fontFamily: 'Poppins',
         fontSize: 14,
-        fontWeight: 'bold',
     },
     pendingBalanceTextIndicator: {
         color: colors.lightGrey,
-        fontFamily: 'Poppins',
-        fontSize: 9,
-        fontWeight: 'bold',
+        fontSize: 10,
+        fontFamily: 'Poppins-Medium',
         marginTop: 8,
     },
     notificationIcon: {

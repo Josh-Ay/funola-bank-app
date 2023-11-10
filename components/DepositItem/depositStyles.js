@@ -40,8 +40,7 @@ export const depositStyles = StyleSheet.create({
     cardBalance: {
         color: colors.deepBlue,
         fontSize: 16,
-        fontFamily: 'Poppins',
-        fontWeight: 'bold',
+        fontFamily: 'Poppins-Medium',
     },
     cardDateText: {
         color: colors.grey,

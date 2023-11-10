@@ -45,6 +45,7 @@ export const confirmationStyles = StyleSheet.create({
     },
     startBtnText: {
         color: colors.white,
+        fontFamily: 'Poppins-Medium',
     },
     textContentWrapper: {
         width: '70%',
@@ -52,7 +53,7 @@ export const confirmationStyles = StyleSheet.create({
         marginRight: 'auto',
     },
     successText: {
-        fontWeight: 'bold',
+        fontFamily: 'Poppins-Bold',
         fontSize: 20,
         textAlign: 'center',
         marginBottom: 10,

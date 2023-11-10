@@ -5,6 +5,12 @@ import { MaterialCommunityIcons } from '@expo/vector-icons';
 
 export const cardItemActionsList = [
     {
+        title: 'Fund',
+        icon: <Ionicons name="ios-add" size={20} color="black" />,
+        id: 19,
+        action: userItemActions.cardFund,
+    },
+    {
         title: 'Send',
         icon: <Ionicons name="cash-outline" size={20} color="black" />,
         id: 49,

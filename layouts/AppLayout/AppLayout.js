@@ -261,7 +261,7 @@ const AppLayout = ({
             {/* BOTTOM SHEET MODAL */}
             {
                 modalIsOpen && 
-                <ModalOverlay>
+                <ModalOverlay handleClickOutside={handleCloseBottomSheet}>
                     <BottomSheet 
                         ref={sheetPanelRef}
                         snapPoints={

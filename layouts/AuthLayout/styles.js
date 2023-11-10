@@ -55,7 +55,7 @@ export const authStyles = StyleSheet.create({
     },
     btnText: {
         color: colors.white,
-        fontFamily: 'Poppins',
+        fontFamily: 'Poppins-Medium',
         fontSize: 14,
     },
     legalContentText: {

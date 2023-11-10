@@ -579,7 +579,12 @@ const HomeScreen = ({ navigation }) => {
                         <FlatList
                             data={walletItemActionsList}
                             renderItem={
-                                ({item}) => <UserActionItem item={item} handleItemPress={handleActionItemPress} style={{ marginRight: 30 }} />
+                                ({item}) => 
+                                <UserActionItem 
+                                    item={item} 
+                                    handleItemPress={handleActionItemPress} 
+                                    style={{ marginRight: 30 }} 
+                                />
                             }
                             keyExtractor={item => item.id}
                             horizontal={true}
@@ -693,7 +698,9 @@ const HomeScreen = ({ navigation }) => {
             {/* HOME PAGE SHEET MODAL */}
             {
                 sheetModalIsOpen && 
-                <ModalOverlay>
+                <ModalOverlay
+                    handleClickOutside={handleCloseBottomSheet}
+                >
                     <BottomSheet
                         ref={sheetPanelRef}
                         snapPoints={

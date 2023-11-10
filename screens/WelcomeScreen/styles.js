@@ -31,7 +31,7 @@ export const welcomeStyles = StyleSheet.create({
     },
     getStartedText: {
         textAlign: 'center',
-        fontFamily: 'Poppins',
+        fontFamily: 'Poppins-Medium',
         fontSize: 30,
         marginBottom: 10,
     },
@@ -58,12 +58,12 @@ export const welcomeStyles = StyleSheet.create({
     },
     createBtnText: {
         color: colors.white,
-        fontFamily: 'Poppins',
+        fontFamily: 'Poppins-Medium',
         fontSize: 14,
     },
     loginBtnText: {
         color: colors.blue,
-        fontFamily: 'Poppins',
+        fontFamily: 'Poppins-Medium',
         fontSize: 14,
     },
 })

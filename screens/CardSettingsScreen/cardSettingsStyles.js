@@ -14,7 +14,7 @@ export const cardSettingStyles = StyleSheet.create({
         marginTop: 15,
     },
     titleText: {
-        fontFamily: 'Poppins',
+        fontFamily: 'Poppins-Medium',
         color: colors.white,
         fontSize: 26,
     },
@@ -37,10 +37,9 @@ export const cardSettingStyles = StyleSheet.create({
         justifyContent: 'space-between',
     },
     cardsTitleWrapText: {
-        fontFamily: 'Poppins',
         color: colors.deepBlue,
         fontSize: 18,
-        fontWeight: 'bold',
+        fontFamily: 'Poppins-Medium',
     },
     cardsTitleWrapBtn: {
         fontFamily: 'Poppins',

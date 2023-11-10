@@ -17,7 +17,7 @@ import { cardItemActionsList } from "./utils";
 import { SafeAreaView } from "react-native";
 import DepositItem from "../../components/DepositItem/DepositItem";
 
-const CardSettingsScreen = ({ navigation }) => {
+const CardSettingsScreen = ({ navigation, route }) => {
     const {
         cards,
         setCards,
@@ -34,6 +34,8 @@ const CardSettingsScreen = ({ navigation }) => {
     const toast = useToast();
     const [ currentSlide, setCurrentSlide ] = useState(0);
     const [ currentCardToDisplay, setCurrentCardToDisplay ] = useState(null);
+    const cardListingRef = useRef();
+
     const cardService = new CardServices();
     
     const viewabilityConfig = {
@@ -61,7 +63,7 @@ const CardSettingsScreen = ({ navigation }) => {
 
     useEffect(() => {
         setRefreshing(false);
-        
+
         if (!cardsLoaded) {
             setCardsLoading(true);
 
@@ -80,6 +82,16 @@ const CardSettingsScreen = ({ navigation }) => {
         }
 
     }, [])
+
+    useEffect(() => {
+        if (!route?.params?.currentActiveCard) return
+
+        const foundCardIndex = cards?.findIndex(card => card?._id === route?.params?.currentActiveCard?._id);
+        if (foundCardIndex === -1) return
+
+        setCurrentSlide(foundCardIndex);
+        setCurrentCardToDisplay(route?.params?.currentActiveCard);
+    }, [route])
 
     useEffect(() => {
         if (Array.isArray(cards) && cards[currentSlide]) return setCurrentCardToDisplay(cards[currentSlide]);
@@ -150,13 +162,16 @@ const CardSettingsScreen = ({ navigation }) => {
                         <FlatList
                             data={cardItemActionsList}
                             renderItem={
-                                ({item}) => <UserActionItem item={item} handleItemPress={handleActionItemPress} />
+                                ({item}) => 
+                                <UserActionItem 
+                                    item={item} 
+                                    handleItemPress={handleActionItemPress} 
+                                    style={{ marginRight: 30 }} 
+                                />
                             }
                             keyExtractor={item => item.id}
                             horizontal={true}
                             contentContainerStyle={{
-                                justifyContent: 'space-between',
-                                width: '100%',
                                 paddingLeft: 8,
                                 paddingRight: 8,
                             }}
@@ -196,6 +211,14 @@ const CardSettingsScreen = ({ navigation }) => {
                             viewabilityConfigCallbackPairs={viewabilityConfigCallbackPairs.current}
                             // onViewableItemsChanged={handleViewableItemsChange}
                             showsHorizontalScrollIndicator={false}
+                            ref={cardListingRef}
+                            initialScrollIndex={currentSlide}
+                            onScrollToIndexFailed={info => {
+                                const scrollPromise = new Promise(resolve => setTimeout(resolve, 500));
+                                scrollPromise.then(() => {
+                                  cardListingRef.current?.scrollToIndex({ index: currentSlide, animated: true });
+                                });
+                            }}
                         />
                     }
                 </View>

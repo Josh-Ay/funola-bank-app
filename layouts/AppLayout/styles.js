@@ -20,8 +20,7 @@ export const appLayoutStyles = StyleSheet.create({
         backgroundColor: colors.white
     },
     modalTitleText: {
-        fontFamily: 'Poppins',
-        fontWeight: 600,
+        fontFamily: 'Poppins-Medium',
         fontSize: 20,
         marginTop: 15,
         marginBottom: 15,
@@ -110,7 +109,6 @@ export const appLayoutStyles = StyleSheet.create({
     },
     balanceText: {
         fontFamily: 'Poppins',
-        fontWeight: 'bold',
         fontSize: 16,
     },
     modalOverlay: {

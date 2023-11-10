@@ -4,6 +4,7 @@ export const userItemActions = {
     walletRequest: 'request-wallet',
     walletHistory: 'history-wallet',
     walletSwap: 'swap-wallet',
+    cardFund: 'fund-card',
     cardSend: 'send-card',
     cardRequest: 'request-card',
     cardHistory: 'history-card',

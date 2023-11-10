@@ -36,8 +36,8 @@ const CardsScreen = ({ navigation }) => {
     }
 
     const onViewableItemsChanged = ({ viewableItems, changed }) => {
-        console.log("Active item index", changed[0]?.index);
-        console.log("Active item", changed[0]?.item);
+        // console.log("Active item index", changed[0]?.index);
+        // console.log("Active item", changed[0]?.item);
         setCurrentSlide(changed[0]?.index);
     };
 
@@ -222,6 +222,8 @@ const CardsScreen = ({ navigation }) => {
                             <FullCardItem 
                                 card={listItem.item} 
                                 defaultBg={(listItem.index + 1) % 2 === 0 ? false : true} 
+                                pressable={true}
+                                handlePress={() => navigation.navigate('CardSettings', { currentActiveCard: currentCardToDisplay })}
                             />
                         }
                         keyExtractor={(item) => {

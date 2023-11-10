@@ -32,17 +32,15 @@ export const profileStyles = StyleSheet.create({
         borderRadius: 130 / 2,
     },
     username: {
-        fontFamily: 'Poppins',
+        fontFamily: 'Poppins-Medium',
         color: colors.lightGrey,
         textAlign: 'center',
         fontSize: 16,
-        fontWeight: 'bold',
     },
     profileSettingHeading: {
-        fontFamily: 'Poppins',
+        fontFamily: 'Poppins-Medium',
         color: colors.deepBlue,
-        fontWeight: 'bold',
-        fontSize: 16,
+        fontSize: 18,
     },
     logoutItem: {
         width: 100,
@@ -50,10 +48,13 @@ export const profileStyles = StyleSheet.create({
         justifyContent: 'center',
         alignItems: 'center',
         height: 35,
+        marginTop: 15,
+        marginBottom: 15,
     },
     logoutItemText: {
         fontFamily: 'Poppins',
         color: colors.red,
+        fontSize: 16
     },
     profileOptionListing: {
         gap: 10,

@@ -1,4 +1,4 @@
-import { StyleSheet } from "react-native";
+import { Platform, StyleSheet } from "react-native";
 import { colors } from "../../utils/colors";
 
 const cardIndicatorSize = 10;
@@ -7,15 +7,14 @@ export const cardScreenStyles = StyleSheet.create({
     topContentWrapper: {
         paddingLeft: 25,
         paddingRight: 25,
-        paddingTop: 30,
+        paddingTop: Platform.OS === "ios" ? 30 : 40,
         paddingBottom: 20,
         flexDirection: 'row',
         alignItems: 'flex-start',
         justifyContent: 'space-between',
     },
     topTitleText: {
-        fontFamily: 'Poppins',
-        fontWeight: 700,
+        fontFamily: 'Poppins-Medium',
         fontSize: 26,
     },
     topSubtitleText: {
@@ -86,9 +85,8 @@ export const cardScreenStyles = StyleSheet.create({
         marginBottom: 20,
     },
     cardSettingsTitle: {
-        fontFamily: 'Poppins',
+        fontFamily: 'Poppins-Medium',
         color: colors.deepBlue,
         fontSize: 18,
-        fontWeight: 'bold'
     }
 })
