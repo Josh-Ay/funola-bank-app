@@ -128,7 +128,7 @@ exports.verify_new_account = async (req, res) => {
     await existingUser.save();
 
     // notifying the user of successful account verification
-    await new Notification.create({
+    await Notification.create({
         owner: existingUser._id,
         content: 'You have successfully verified your account on Funola!',
     })
