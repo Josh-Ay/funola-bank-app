@@ -49,6 +49,8 @@ exports.fund_wallet = async (req, res) => {
     const { errorMsg, amount, currency } = checkWalletRequestBodyErrors(req.body);
     if (errorMsg) return res.status(400).send(errorMsg);
     
+    // if (Number(amount) > 10000) return res.status(403).send("Amount must be 10000 or less");
+
     // checking if the user has a wallet in the requested currency
     const existingWalletOfUser = await Wallet.findOne({ owner: req.user._id, currency: currency });
     if (!existingWalletOfUser) return res.status(403).send(`Funding failed. You do not have a ${currency} wallet.`);

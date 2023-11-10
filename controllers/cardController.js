@@ -3,6 +3,7 @@ const { funolaValidCurrencies, funolaValidCardTypes, funolaValidCardPaymentNetwo
 const { generateNewTransactionObj, validateNewTransactionDetails, Transaction } = require("../models/transaction");
 const { Notification } = require("../models/notifications");
 const { compileHtml, sendEmail } = require("../utils/emailUtils");
+const { Wallet } = require('../models/wallet');
 
 exports.create_new_card = async (req, res) => {
     // validating request parameters and sending back appropriate error messages if any
@@ -61,62 +62,132 @@ exports.get_card_detail = async (req, res) => {
 
 exports.fund_card = async (req, res) => {    
     const { id } = req.params;
+    const { amount, currency } = req.body;
 
     // validating request body and sending back appropriate error messages if any
-    const { amount } = req.body;
     if (!amount) return res.status(400).send("'amount' required.");
-    if (isNaN(Number(amount))) return res.status(400).send("'number' must be a number");
-    if (Number(amount) > 10000) return res.status(403).send("Amount must be 10000 or less");
+    if (!currency) return res.status(400).send("'currency' required.");
+    if (!funolaValidCurrencies.includes(currency)) return res.status(400).send(`'currency' can only be one of ${funolaValidCurrencies.join(', ')}`);
+    // if (isNaN(Number(amount))) return res.status(400).send("'number' must be a number");
     // if (!cardType) return res.status(400).send("'cardType' required");
     // if (!funolaValidCardTypes.includes(cardType)) return res.status(400).send(`'cardType' can only be one of ${funolaValidCardTypes.join(', ')}`);
     
     // if (cardType === 'physical') return res.status(200).send('Still in development');
 
+    // checking if the user has a wallet in the requested currency
+    const existingWalletOfUser = await Wallet.findOne({ owner: req.user._id, currency: currency });
+    if (!existingWalletOfUser) return res.status(403).send(`Funding failed. You do not have a ${currency} wallet.`);
+
+    // validating the user has a wallet with sufficient balance in the requested currency
+    if (existingWalletOfUser.balance < amount) return res.status(403).send("You do not have sufficient funds to initiate this funding.");
+
     // validating card exists for user
     const cardDetailsForUser = await Card.findOne({ owner: req.user._id, _id: id });
     if (!cardDetailsForUser) return res.status(404).send('Virtual card not found for user.');
 
+    // updating the wallet balance of the user
+    existingWalletOfUser.balance -= Number(amount);
 
     // updating the card balance of the user
     cardDetailsForUser.balance += Number(amount);
 
-    // creating and validating a new transaction 
-    const newValidTransaction = validateNewTransactionDetails(
-        generateNewTransactionObj(
-            req.user._id,
-            'credit',
-            'Card funding',
-            amount,
-            'success',
-            cardDetailsForUser.currency,
-        )
-    )
-    if (newValidTransaction.error) return res.status(400).send(newValidTransaction.error.details[0].message);
+    // creating and validating new transactions for the wallet and card updates
+    const [
+        newValidCardTransaction,
+        newValidWalletTransaction,
+    ] = [
+        validateNewTransactionDetails(
+            generateNewTransactionObj(
+                req.user._id,
+                'credit',
+                'Card funding',
+                amount,
+                'success',
+                cardDetailsForUser.currency,
+            )
+        ),
+        validateNewTransactionDetails(
+            generateNewTransactionObj(
+                req.user._id,
+                'debit',
+                'Wallet debit for card funding',
+                amount,
+                'success',
+                existingWalletOfUser.currency,
+            )
+        ),
+    ]
+    if (newValidCardTransaction.error) return res.status(400).send(newValidCardTransaction.error.details[0].message);
+    if (newValidWalletTransaction.error) return res.status(400).send(newValidWalletTransaction.error.details[0].message);
 
-    // contructing an email of the transaction
-    const newFundingMailContent = compileHtml(
-        `${req.user.firstName} ${req.user.lastName}`, 
-        `You successfully funded your card with ${cardDetailsForUser.currency} ${amount}`,
-        { 
-            currency: cardDetailsForUser.currency, 
-            amount: amount,
-        },
-        'newFunding',
-        'card'
-    )
+    // contructing emails of the transactions
+    const [
+        newFundingMailContent,
+        newWithdrawalMailContent,
+    ] = [
+        compileHtml(
+            `${req.user.firstName} ${req.user.lastName}`, 
+            `You successfully funded your card with ${cardDetailsForUser.currency} ${amount}`,
+            { 
+                currency: cardDetailsForUser.currency, 
+                amount: amount,
+            },
+            'newFunding',
+            'card'
+        ),
+        compileHtml(
+            `${req.user.firstName} ${req.user.lastName}`, 
+            `Your ${currency} wallet was successfully debited ${currency} ${amount} to fund your card.`,
+            { 
+                currency: currency, 
+                amount: amount,
+            },
+            'debit',
+            'withdrawal'
+        ),
+    ]
+
+    const [
+        newTransactionForCard,
+        newNotificationForCard,
+        newTransactionForWallet,
+        newNotificationForWallet,
+    ] = [
+        new Transaction({...newValidCardTransaction.value, cardId: cardDetailsForUser._id}),
+        new Notification({
+            owner: req.user._id,
+            content: `You successfuly funded your card with ${cardDetailsForUser.currency} ${amount}`,
+        }),
+        new Transaction(newValidWalletTransaction.value),
+        new Notification({
+            owner: req.user._id,
+            content: `Your wallet was successfuly debited ${existingWalletOfUser.currency} ${amount} to fund your card`,
+        }),
+    ]
 
     try {
         await Promise.all([
+            existingWalletOfUser.save(),
             cardDetailsForUser.save(),
-            Transaction.create({...newValidTransaction.value, cardId: cardDetailsForUser._id}),
-            Notification.create({
-                owner: req.user._id,
-                content: `You successfuly funded your wallet with ${cardDetailsForUser.currency} ${amount}`,
-            }),
+            
+            newTransactionForCard.save(),
+            newNotificationForCard.save(),
+
+            newTransactionForWallet.save(),
+            newNotificationForWallet.save(),
+
             sendEmail(req.user.email, 'Card Funding', newFundingMailContent),
+            sendEmail(req.user.email, 'Wallet Debit', newWithdrawalMailContent),
         ])    
 
-        return res.status(200).send(cardDetailsForUser);
+        return res.status(200).send({
+            updatedDebitedWalletDetails: existingWalletOfUser,
+            updatedCardDetails: cardDetailsForUser,
+            newCardTransaction: newTransactionForCard,
+            notificationForCard: newNotificationForCard,
+            newWalletTransaction: newTransactionForWallet,
+            notificationForWallet: newNotificationForWallet,
+        });
     } catch (error) {
         console.log(error);
         return res.status(500).send('Card funding failed');
