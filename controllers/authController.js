@@ -12,15 +12,16 @@ exports.send_verification_code = async (req, res) => {
     if (!req.body) return res.status(400).send('Request body cannot be empty');
 
     // validating the request body
-    if (!req.body.number) return res.status(400).send("'number' is required");
-    if (!req.body.email) return res.status(400).send("'email' is required");
-    if (!validateEmail(req.body.email)) return res.status(400).send("'email' must be a valid email");
+    const { number, email } = req.body;
+    if (!number) return res.status(400).send("'number' is required");
+    if (number.length < 10 || number.length > 15) return res.status(400).send("Please provide a valid number");
+    if (!email) return res.status(400).send("'email' is required");
+    if (!validateEmail(email)) return res.status(400).send("'email' must be a valid email");
 
-    const emailRegistered = await User.findOne({ email: req.body.email });
+    const emailRegistered = await User.findOne({ email: email });
     if (emailRegistered) return res.status(409).send("Email already registered");
 
-    const [ number , verificationCode, email ] = [ req.body.number, Math.floor(Math.random() * 9000 + 1000), req.body.email ];
-
+    const verificationCode = Math.floor(Math.random() * 9000 + 1000);
     const verificationHtml = compileHtml(`${number}`, 'Verify your number', verificationCode, 'verifyNumber');
 
     await Promise.all([
