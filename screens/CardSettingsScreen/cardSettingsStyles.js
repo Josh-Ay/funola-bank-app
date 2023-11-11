@@ -66,4 +66,12 @@ export const cardSettingStyles = StyleSheet.create({
         backgroundColor: colors.white,
         padding: 15,
     },
+    modalContentWrapper: {
+        height: '100%',
+        paddingTop: 20,
+    },
+    modalTitle: {
+        fontFamily: 'Poppins-Medium',
+        fontSize: 20,
+    },
 })

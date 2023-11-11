@@ -16,6 +16,11 @@ import UserActionItem from "../../components/UserActionItem/UserActionItem";
 import { cardItemActionsList } from "./utils";
 import { SafeAreaView } from "react-native";
 import DepositItem from "../../components/DepositItem/DepositItem";
+import { userItemActions } from "../../utils/utils";
+import ModalOverlay from "../../layouts/AppLayout/components/ModalOverlay/ModalOverlay";
+import { appLayoutStyles } from "../../layouts/AppLayout/styles";
+import { fullSnapPoints } from "../../layouts/AppLayout/utils";
+import BottomSheet, { BottomSheetView } from "@gorhom/bottom-sheet";
 
 const CardSettingsScreen = ({ navigation, route }) => {
     const {
@@ -34,6 +39,11 @@ const CardSettingsScreen = ({ navigation, route }) => {
     const toast = useToast();
     const [ currentSlide, setCurrentSlide ] = useState(0);
     const [ currentCardToDisplay, setCurrentCardToDisplay ] = useState(null);
+    const sheetPanelRef = useRef();
+    const [ sheetModalIsOpen, setSheetModalIsOpen ] = useState(false);
+    const [ currentUserAction, setCurrentUserAction ] = useState(null);
+    const [ loading, setLoading ] = useState(false);
+    
     const cardListingRef = useRef();
 
     const cardService = new CardServices();
@@ -59,6 +69,11 @@ const CardSettingsScreen = ({ navigation, route }) => {
             type: type ? type : 'normal',
             placement: 'top'
         })
+    }
+
+    const handleCloseBottomSheet = () => {
+        setSheetModalIsOpen(false);
+        setCurrentUserAction(null);
     }
 
     useEffect(() => {
@@ -142,7 +157,18 @@ const CardSettingsScreen = ({ navigation, route }) => {
     }
 
     const handleActionItemPress = (action) => {
+        if (sheetModalIsOpen) return
+
         console.log(action);
+        switch (action) {
+            case userItemActions.cardFund:
+                setCurrentUserAction(action);
+                setSheetModalIsOpen(true);
+                break;
+            default:
+                console.log(action);
+                break;
+        }
     } 
 
     return <>
@@ -278,6 +304,39 @@ const CardSettingsScreen = ({ navigation, route }) => {
                 }
 
             </View>
+
+            {/* CARD SETTINGS PAGE SHEET MODAL */}
+            {
+                sheetModalIsOpen && 
+                <ModalOverlay
+                    handleClickOutside={handleCloseBottomSheet}
+                >
+                    <BottomSheet
+                        ref={sheetPanelRef}
+                        snapPoints={
+                            fullSnapPoints
+                        }
+                        style={appLayoutStyles.modalWrapper}
+                        enablePanDownToClose={true}
+                        onClose={handleCloseBottomSheet}
+                    >
+                        <BottomSheetView style={appLayoutStyles.modalContainer}>
+                            <View style={cardSettingStyles.modalContentWrapper}>
+                                <Text style={cardSettingStyles.modalTitle}>Fund Card</Text>
+
+                                <View style={appLayoutStyles.modalInputItemWrapper}>
+                                    <Text style={appLayoutStyles.modalInputHeaderText}>Amount</Text>
+                                </View>
+
+                                <View style={appLayoutStyles.modalInputItemWrapper}>
+                                    <Text style={appLayoutStyles.modalInputHeaderText}>Wallet Being Debited</Text>
+                                    
+                                </View>
+                            </View>
+                        </BottomSheetView>
+                    </BottomSheet>
+                </ModalOverlay>
+            }
         </AppLayout>
     </>
 }
