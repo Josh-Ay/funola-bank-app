@@ -125,6 +125,7 @@ const ProfileScreen = ({ navigation, setLoggedIn }) => {
                         React.Children.toArray(securitySettingItems.map(item => {
                             return <UserProfileItme 
                                 item={item}
+                                dangerItem={item?.type === 'danger' ? true : false}
                             />
                         }))
                     }

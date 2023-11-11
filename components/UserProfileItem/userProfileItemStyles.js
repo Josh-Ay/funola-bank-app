@@ -26,4 +26,11 @@ export const userProfileItemStyles = StyleSheet.create({
         color: colors.grey,
         fontSize: 11,
     },
+    redColorText: {
+        color: colors.red,
+    },
+    fadedRedColorText: {
+        color: colors.red,
+        opacity: 0.6,
+    },
 })

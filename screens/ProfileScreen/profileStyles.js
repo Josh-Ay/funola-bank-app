@@ -53,7 +53,7 @@ export const profileStyles = StyleSheet.create({
     },
     logoutItemText: {
         fontFamily: 'Poppins',
-        color: colors.red,
+        color: colors.blue,
         fontSize: 16
     },
     profileOptionListing: {
