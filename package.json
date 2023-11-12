@@ -28,7 +28,8 @@
     "react-native-screens": "~3.20.0",
     "react-native-toast-notifications": "^3.3.1",
     "react-native-toggle-input": "^1.0.12",
-    "lottie-react-native": "5.1.4"
+    "lottie-react-native": "5.1.4",
+    "@react-native-community/slider": "4.4.2"
   },
   "devDependencies": {
     "@babel/core": "^7.20.0"

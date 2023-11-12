@@ -176,6 +176,7 @@ const CardSettingsScreen = ({ navigation, route }) => {
             navigation={navigation}
             pageRefreshing={refreshing}
             handlePageRefresh={handleRefresh}
+            sheetModalIsOpen={sheetModalIsOpen}
         >
             <View style={cardSettingStyles.topContentWrapper}>
                 <TouchableOpacity onPress={() => navigation.pop()}>

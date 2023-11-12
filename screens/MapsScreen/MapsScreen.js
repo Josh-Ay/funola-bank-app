@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import AppLayout from "../../layouts/AppLayout/AppLayout";
 import { SafeAreaView, Text, TouchableOpacity, View } from "react-native";
 import { colors } from "../../utils/colors";
@@ -17,9 +17,41 @@ import { useAtmContext } from "../../contexts/AtmsContext";
 import SingleAtmItem from "../../components/SingleAtmItem/SingleAtmItem";
 import { FlatList } from "react-native";
 import AnimatedLoader from "react-native-animated-loader";
+import BottomSheet, { BottomSheetView } from "@gorhom/bottom-sheet";
+import ModalOverlay from "../../layouts/AppLayout/components/ModalOverlay/ModalOverlay";
+import { mapSnapPoints } from "../../layouts/AppLayout/utils";
+import { appLayoutStyles } from "../../layouts/AppLayout/styles";
+import Slider from "@react-native-community/slider";
+import { AntDesign } from '@expo/vector-icons';
 
 const AnimatedLottieView = Animated.createAnimatedComponent(LottieView);
 const { width, height } = Dimensions.get('screen');
+const distancesOptions = [
+    {
+        id: '11',
+        option: 100,
+    }, 
+    {
+        id: '22',
+        option: 200,
+    },
+    {
+        id: '33',
+        option: 300,
+    },
+    {
+        id: '44',
+        option: 400,
+    },
+    {
+        id: '55',
+        option: 500,
+    },
+    {
+        id: '66',
+        option: 600
+    },
+]
 
 const generatePosition = (width, height) => {
     const topPos = Math.floor(Math.random() * ((height * 0.5) - (height * 0.2) + 1)) + height * 0.2;
@@ -29,6 +61,17 @@ const generatePosition = (width, height) => {
         top: topPos,
         right: rightPos,
     }
+}
+
+const QuickDistanceItem = ({ item, handlePress }) => {
+    return <>
+        <TouchableOpacity 
+            onPress={() => handlePress(item.option)}
+            style={mapStyles.quickDistanceBtn}
+        >
+            <Text style={mapStyles.quickDistanceText}>{item.option}m</Text>
+        </TouchableOpacity>
+    </>
 }
 
 
@@ -53,8 +96,12 @@ const MapsScreen = ({ navigation }) => {
     const [ refreshing, setRefreshing ] = useState(false);
     const animationProgress = useRef(new Animated.Value(0));
     const  [ floatingUserIconPosition, setFloatingUserIconPosition ] = useState(generatePosition(width, height));
-    const [ distance, setDistance ] = useState('10');
+    const [ distance, setDistance ] = useState(10);
     const [ loading, setLoading ] = useState(false);
+    const sheetPanelRef = useRef();
+    const [ sheetModalIsOpen, setSheetModalIsOpen ] = useState(false);
+    const [ results, setResults ] = useState(null);
+    
     const toast = useToast();
 
     const [
@@ -113,6 +160,12 @@ const MapsScreen = ({ navigation }) => {
         }
     }, [])
 
+    const handleCloseBottomSheet = (resetDistance=true) => {
+        setSheetModalIsOpen(false);
+        // setResults(null);
+        // setDistance(10);
+    }
+
     const handleRefresh = async () => {
         setRefreshing(true);
 
@@ -145,14 +198,28 @@ const MapsScreen = ({ navigation }) => {
     }
 
     const handleDotsButtonPress = () => {
+        setSheetModalIsOpen(true);
+    }
+
+    const handleGetATMsInDistance = async () => {
         setLoading(true);
 
-        setTimeout(() => {
+        try {
+            const res = (await atmService.findAtmWithinDistance({ distance: distance })).data;
+            // console.log(res);
+            setResults(res);
             setLoading(false);
-
+            
             replayMapAnimation();
             setFloatingUserIconPosition(generatePosition(width, height));
-        }, 2000)
+            handleCloseBottomSheet();
+
+            showToastMessage(`Found ${res?.length} atms in a ${distance}m radius!`, 'success');
+        } catch (error) {
+            const errorMsg = error.response ? error.response.data : error.message;
+            showToastMessage(errorMsg.toLocaleLowerCase().includes('html') ? 'Something went wrong trying to get atms within the distance you passed' : errorMsg, 'danger');
+            setLoading(false);
+        }
     }
 
     return <>
@@ -160,6 +227,7 @@ const MapsScreen = ({ navigation }) => {
             navigation={navigation}
             pageRefreshing={refreshing}
             handlePageRefresh={handleRefresh}
+            sheetModalIsOpen={sheetModalIsOpen}
         >
             <SafeAreaView style={{ flex: 1 }}>
                 <View style={mapStyles.mapWrapper}>
@@ -190,9 +258,23 @@ const MapsScreen = ({ navigation }) => {
                     />
 
                     <View style={mapStyles.nearbyWrapper}>
-                        <Text style={mapStyles.nearbyAtmText}>Related Nearby</Text>
+                        <Text style={mapStyles.nearbyAtmText}>
+                            {
+                                results && Array.isArray(results) ? 
+                                    `${results?.length} ATMS found in a ${distance}m radius`
+                                :
+                                'Related Nearby'
+                            }</Text>
                         <FlatList
-                            data={Array.isArray(atms) ? atms : []}
+                            data={
+                                results && Array.isArray(results) ? 
+                                    results
+                                :
+                                Array.isArray(atms) ? 
+                                    atms 
+                                : 
+                                []
+                            }
                             renderItem={
                                 ({item}) => 
                                 <SingleAtmItem item={item} />
@@ -215,6 +297,93 @@ const MapsScreen = ({ navigation }) => {
                         {`Fetching ATMs within a ${distance} metre radius...`}
                     </Text>
                 </AnimatedLoader>
+
+                {/* MAPs PAGE SHEET MODAL */}
+                {
+                    sheetModalIsOpen && 
+                    <ModalOverlay
+                        handleClickOutside={handleCloseBottomSheet}
+                    >
+                        <BottomSheet
+                            ref={sheetPanelRef}
+                            snapPoints={
+                                mapSnapPoints
+                            }
+                            style={appLayoutStyles.modalWrapper}
+                            enablePanDownToClose={true}
+                            onClose={handleCloseBottomSheet}
+                        >
+                            <BottomSheetView style={appLayoutStyles.modalContainer}>
+                                <View style={mapStyles.modalContentWrapper}>
+                                    <Text style={mapStyles.modalTitle}>Set radius</Text>
+                                    <View style={mapStyles.distanceTextWrap}>
+                                        <TouchableOpacity 
+                                            onPress={
+                                                distance - 100 >= 100 ? 
+                                                    () => setDistance(distance - 100)
+                                                :
+                                                () => {}
+                                            }
+                                            style={mapStyles.distanceBtn}
+                                        >
+                                            <AntDesign name="minus" size={24} color={colors.grey} />
+                                        </TouchableOpacity>
+                                        <Text style={mapStyles.distanceText}>{distance}m</Text>
+                                        <TouchableOpacity
+                                            onPress={
+                                                distance + 100 <= 1800 ? 
+                                                    () => setDistance(distance + 100)
+                                                :
+                                                () => {}
+                                            }
+                                            style={mapStyles.distanceBtn}
+                                        >
+                                            <AntDesign name="plus" size={24} color={colors.grey} />
+                                        </TouchableOpacity>
+                                    </View>
+                                    <Slider
+                                        style={mapStyles.slider}
+                                        minimumValue={100}
+                                        maximumValue={1800}
+                                        minimumTrackTintColor={colors.blue}
+                                        maximumTrackTintColor={colors.grey}
+                                        thumbTintColor={colors.blue}
+                                        value={distance}
+                                        onValueChange={(val) => setDistance(val)}
+                                        step={10}
+                                        lowerLimit={100}
+                                        upperLimit={1800}
+                                    />
+                                    <FlatList
+                                        data={distancesOptions}
+                                        renderItem={
+                                            ({item}) => 
+                                            <QuickDistanceItem item={item} handlePress={(itemVal) => setDistance(itemVal)} />
+                                        }
+                                        keyExtractor={item => item.id}
+                                        horizontal={true}
+                                        showsHorizontalScrollIndicator={false}
+                                        contentContainerStyle={mapStyles.quickDistances}
+                                    />
+                                    <View style={mapStyles.actionsWrap}>
+                                        <TouchableOpacity 
+                                            style={mapStyles.cancelBtn}
+                                            onPress={handleCloseBottomSheet}
+                                        >
+                                            <Text style={mapStyles.cancelBtnText}>Cancel</Text>
+                                        </TouchableOpacity>
+                                        <TouchableOpacity
+                                            style={mapStyles.acceptBtn}
+                                            onPress={handleGetATMsInDistance}
+                                        >
+                                            <Text style={mapStyles.acceptBtnText}>Accept</Text>
+                                        </TouchableOpacity>
+                                    </View>
+                                </View>
+                            </BottomSheetView>
+                        </BottomSheet>
+                    </ModalOverlay>
+                }
             </SafeAreaView>
         </AppLayout>
     </>
