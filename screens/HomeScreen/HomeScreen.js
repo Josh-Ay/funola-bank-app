@@ -628,6 +628,7 @@ const HomeScreen = ({ navigation }) => {
                             }
                             keyExtractor={item => item.id}
                             horizontal={true}
+                            showsHorizontalScrollIndicator={false}
                         />
                     </SafeAreaView>
                     :
