@@ -55,7 +55,7 @@ const cardSchema = new Schema({
 
 function validateNewCardDetails (newCardDetails) {
     /**
-     * Validates the heys and values for a new card object.
+     * Validates the keys and values for a new card object.
      * 
      * @param cardDetails
      * 
