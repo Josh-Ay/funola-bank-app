@@ -27,6 +27,9 @@ import TextInputComponent from "../../components/TextInputComponent/TextInputCom
 import CustomButton from "../../components/CustomButton/CustomButton";
 import { ConvertServices } from "../../services/convertServices";
 import { userItemActions } from "../../utils/utils";
+import UserProfileImage from "../../components/UserProfileImage/UserProfileImage";
+import { useAtmContext } from "../../contexts/AtmsContext";
+import { AtmServices } from "../../services/atmServices";
 
 const HomeScreen = ({ navigation }) => {
 
@@ -82,6 +85,16 @@ const HomeScreen = ({ navigation }) => {
         showAddCardModal,
         setShowAddCardModal,
     } = useCardContext();
+
+    const {
+        atms,
+        setAtms,
+        atmsLoading,
+        setAtmsLoading,
+        atmsLoaded,
+        setAtmsLoaded,
+    } = useAtmContext();
+
     const toast = useToast();
     const [ refreshing, setRefreshing ] = useState(false);
     const [ currentWallet, setCurrentWallet ] = useState(null);
@@ -99,12 +112,14 @@ const HomeScreen = ({ navigation }) => {
         cardService, 
         depositService,
         convertService,
+        atmService,
     ] = [
         new UserServices(),
         new WalletServices(),
         new CardServices(),
         new DepositServices(),
         new ConvertServices(),
+        new AtmServices(),
     ];
 
     const showToastMessage = (message, type) => {
@@ -140,6 +155,7 @@ const HomeScreen = ({ navigation }) => {
             setUserProfileLoaded(true);
             setUserProfileLoading(false);
             setAllOtherUserDataLoading(true);
+            setAtmsLoading(true);
 
             Promise.all([
                 userService.getNotifications(),
@@ -147,6 +163,7 @@ const HomeScreen = ({ navigation }) => {
                 walletService.getWalletsBalance(),
                 cardService.getCardsDetail(),
                 depositService.getDepositsDetail(),
+                atmService.getNearbyAtms(),
             ]).then(res => {
 
                 setNotifications(res[0]?.data);
@@ -154,6 +171,7 @@ const HomeScreen = ({ navigation }) => {
                 setWallets(res[2]?.data);
                 setCards(res[3]?.data);
                 setDeposits(res[4]?.data);
+                setAtms(res[5]?.data);
 
                 res[2] && Array.isArray(res[2].data) && res[2].data.length > 0 && setCurrentWallet(res[2].data[0]);
 
@@ -168,6 +186,9 @@ const HomeScreen = ({ navigation }) => {
 
                 setDepositsLoading(false);
                 setDepositsLoaded(true);
+
+                setAtmsLoaded(true);
+                setAtmsLoading(false);
 
             }).catch(err => {
 
@@ -239,11 +260,26 @@ const HomeScreen = ({ navigation }) => {
             .catch((err) => {
                 const errorMsg = err.response ? err.response.data : err.message;
                 showToastMessage(errorMsg.toLocaleLowerCase().includes('html') ? 'Something went wrong trying to get your deposit details. Please refresh' : errorMsg, 'danger');
-                setDepositsLoading(true);
+                setDepositsLoading(false);
+            })
+        }
+
+        if (!atmsLoaded) {
+            atmService.getNearbyAtms()
+            .then((res) => {
+                setAtms(res?.data);
+
+                setAtmsLoading(false);
+                setAtmsLoaded(true);
+            })
+            .catch((err) => {
+                const errorMsg = err.response ? err.response.data : err.message;
+                showToastMessage(errorMsg.toLocaleLowerCase().includes('html') ? 'Something went wrong trying to get atms close to you. Please refresh' : errorMsg, 'danger');
+                setAtmsLoading(false);
             })
         }
         
-    }, [walletsLoaded, cardsLoaded, depositsLoaded])
+    }, [walletsLoaded, cardsLoaded, depositsLoaded, atmsLoaded])
 
     useEffect(() => {
         if (
@@ -298,6 +334,7 @@ const HomeScreen = ({ navigation }) => {
             walletService.getWalletsBalance(),
             cardService.getCardsDetail(),
             depositService.getDepositsDetail(),
+            atmService.getNearbyAtms(),
         ]).then(res => {
             setCurrentUser(res[0]?.data);
             setNotifications(res[1]?.data);
@@ -305,6 +342,7 @@ const HomeScreen = ({ navigation }) => {
             setWallets(res[3]?.data);
             setCards(res[4]?.data);
             setDeposits(res[5]?.data);
+            setAtms(res[6]?.data);
 
             res[3] && Array.isArray(res[3].data) && res[3].data.length > 0 && setCurrentWallet(res[3].data[0]);
 
@@ -320,6 +358,9 @@ const HomeScreen = ({ navigation }) => {
 
             setDepositsLoading(false);
             setDepositsLoaded(true);
+
+            setAtmsLoaded(true);
+            setAtmsLoading(false);
         }).catch(err => {
             const errorMsg = err.response ? err.response.data : err.message;
             showToastMessage(errorMsg.toLocaleLowerCase().includes('html') ? 'Something went wrong trying to get your details. Please refresh' : errorMsg, 'danger');
@@ -563,14 +604,13 @@ const HomeScreen = ({ navigation }) => {
                                 
                             />
                         </TouchableOpacity>
-                        <TouchableOpacity style={homePageStyles.userImage} onPress={() => navigation.navigate('Profile')}>
-                            {
-                                currentUser?.gender === 'M' ?
-                                <Image style={homePageStyles.image} source={require('../../assets/man.jpg')} />
-                                :
-                                <Image style={homePageStyles.image} source={require('../../assets/woman.jpg')} />
-                            }
-                        </TouchableOpacity>
+                        <UserProfileImage 
+                            wrapperStyle={homePageStyles.userImage}
+                            imageStyle={homePageStyles.image}
+                            user={currentUser}
+                            pressable={true}
+                            handlePress={() => navigation.navigate('Profile')}
+                        />
                     </View>
                 </View>
                 {

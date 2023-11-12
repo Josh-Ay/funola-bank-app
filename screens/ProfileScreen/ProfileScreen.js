@@ -5,11 +5,11 @@ import { UserServices } from "../../services/userServices";
 import { useUserContext } from "../../contexts/UserContext";
 import { useToast } from "react-native-toast-notifications";
 import { profileStyles } from "./profileStyles";
-import { Image } from "react-native";
 import { TouchableOpacity } from "react-native";
 import { AuthServices } from "../../services/authServices";
 import { profileSettingItems, securitySettingItems } from "./utils";
 import { UserProfileItme } from "../../components/UserProfileItem/UserProfileItem";
+import UserProfileImage from "../../components/UserProfileImage/UserProfileImage";
 
 const ProfileScreen = ({ navigation, setLoggedIn }) => {
     const {
@@ -97,14 +97,11 @@ const ProfileScreen = ({ navigation, setLoggedIn }) => {
             handlePageRefresh={handleRefresh}
         >
             <View style={profileStyles.topContentWrapper}>
-                <View style={profileStyles.profileImageWrapper}>
-                    {
-                        currentUser?.gender === 'M' ?
-                        <Image style={profileStyles.image} source={require('../../assets/man.jpg')} />
-                        :
-                        <Image style={profileStyles.image} source={require('../../assets/woman.jpg')} />
-                    }
-                </View>
+                <UserProfileImage 
+                    user={currentUser}
+                    wrapperStyle={profileStyles.profileImageWrapper}
+                    imageStyle={profileStyles.image}
+                />
                 <Text style={profileStyles.username}>{currentUser?.firstName} {currentUser?.lastName}</Text>
             </View>
             <View style={profileStyles.contentWrapper}>

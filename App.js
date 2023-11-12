@@ -22,6 +22,7 @@ import MapsScreen from './screens/MapsScreen/MapsScreen';
 import ProfileScreen from './screens/ProfileScreen/ProfileScreen';
 import NotificationScreen from './screens/NotificationScreen/NotificationScreen';
 import CardSettingsScreen from './screens/CardSettingsScreen/CardSettingsScreen';
+import AtmContextProvider from './contexts/AtmsContext';
 
 const Stack = createNativeStackNavigator();
 
@@ -59,38 +60,40 @@ export default function App() {
           <WalletContextProvider>
             <CardContextProvider>
               <DepositContextProvider>
-                <Stack.Navigator initialRouteName='Home' screenOptions={{ headerShown: false }}>
-                  <Stack.Screen
-                    name='Home'
-                    component={HomeScreen}
-                  />
-                  <Stack.Screen
-                    name='Cards'
-                    component={CardsScreen}
-                  />
-                  <Stack.Screen
-                    name='CardSettings'
-                    component={CardSettingsScreen}
-                  />
-                  <Stack.Screen
-                    name='Map'
-                    component={MapsScreen}
-                  />
-                  <Stack.Screen
-                    name='Profile'
-                  >
-                    { 
-                      props => <ProfileScreen 
-                        {...props} 
-                        setLoggedIn={setUserLoggedIn} 
-                      /> 
-                    }
-                  </Stack.Screen>
-                  <Stack.Screen
-                    name='Notifications'
-                    component={NotificationScreen}
-                  />
-                </Stack.Navigator>
+                <AtmContextProvider>
+                  <Stack.Navigator initialRouteName='Home' screenOptions={{ headerShown: false }}>
+                    <Stack.Screen
+                      name='Home'
+                      component={HomeScreen}
+                    />
+                    <Stack.Screen
+                      name='Cards'
+                      component={CardsScreen}
+                    />
+                    <Stack.Screen
+                      name='CardSettings'
+                      component={CardSettingsScreen}
+                    />
+                    <Stack.Screen
+                      name='Map'
+                      component={MapsScreen}
+                    />
+                    <Stack.Screen
+                      name='Profile'
+                    >
+                      { 
+                        props => <ProfileScreen 
+                          {...props} 
+                          setLoggedIn={setUserLoggedIn} 
+                        /> 
+                      }
+                    </Stack.Screen>
+                    <Stack.Screen
+                      name='Notifications'
+                      component={NotificationScreen}
+                    />
+                  </Stack.Navigator>
+                </AtmContextProvider>
               </DepositContextProvider>
             </CardContextProvider>
           </WalletContextProvider>
