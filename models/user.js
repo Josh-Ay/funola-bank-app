@@ -70,6 +70,9 @@ const userSchema = new Schema({
     transactionPin: {
         type: String,
     },
+    adminUser: {
+        type: Boolean,
+    },
 })
 
 function validateNewUserDetails(userDetails) {

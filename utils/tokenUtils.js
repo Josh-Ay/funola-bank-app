@@ -1,11 +1,12 @@
 const jwt = require("jsonwebtoken");
 
-exports.generateToken = async (plainObj, tokenType) => {
+exports.generateToken = async (plainObj, tokenType, useAdminTokenSecret=false) => {
     /**
      * Generates a jwt token of a javascript object using stored secrets.
      * 
      * @param plainObj The javascript object you will like to validate.
      * @param tokenType The type of token you are generating. It can only be one of 'access', 'verification', 'refresh', 'reset'.
+     * @param useAdminTokenSecret Whether you will like to create a token using the admin token secret.
      * 
      * @returns An object containing the new jwt token and its expiration time in milliseconds.
      */
@@ -22,6 +23,9 @@ exports.generateToken = async (plainObj, tokenType) => {
     const token = await jwt.sign(
         plainObj, 
         tokenType === 'access' ? 
+            useAdminTokenSecret ?
+                process.env.ADMIN_ACCESS_TOKEN_SECRET
+            :
             process.env.ACCESS_TOKEN_SECRET :
         tokenType === 'verification' ?
             process.env.VERIFICATION_TOKEN_SECRET :

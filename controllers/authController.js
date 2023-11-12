@@ -162,7 +162,7 @@ exports.login_user = async (req, res) => {
     delete copyOfExistingUser.transactionPin;
 
     // creating new access and refresh tokens for the user
-    const { token: accessToken, expirationTime: accessTokenExpires } = await generateToken(copyOfExistingUser, 'access');
+    const { token: accessToken, expirationTime: accessTokenExpires } = await generateToken(copyOfExistingUser, 'access', copyOfExistingUser?.adminUser === true ? true : false);
     const { token: refreshToken, expirationTime: refreshTokenExpires } = await generateToken(copyOfExistingUser, 'refresh');
 
     await User.findByIdAndUpdate(existingUser._id, { $set: { refreshToken: refreshToken } });
