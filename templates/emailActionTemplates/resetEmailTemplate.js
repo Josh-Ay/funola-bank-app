@@ -27,6 +27,10 @@ exports.resetPasswordHtmlContent = `
                 color: #fff;
                 width: 8rem;
                 border-radius: 8px;
+                margin-left: auto;
+                margin-right: auto;
+                margin-top: 2.5rem;
+                margin-bottom: 1rem;
             '
         >
             Reset password
