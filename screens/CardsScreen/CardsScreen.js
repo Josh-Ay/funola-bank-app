@@ -213,7 +213,12 @@ const CardsScreen = ({ navigation }) => {
                 {
                     cards.filter(card => card?.cardType === activeTab)?.length < 1 ?
                         <View style={cardScreenStyles.noCardWrapper}>
-                            <Text style={cardScreenStyles.noCardsText}>You do not have any {activeTab} cards yet</Text> 
+                            {
+                                activeTab === 'physical' ?
+                                    <Text style={cardScreenStyles.noCardsText}>Physical card feature coming soon!</Text> 
+                                :
+                                <Text style={cardScreenStyles.noCardsText}>You do not have any {activeTab} cards yet</Text> 
+                            }
                         </View>
                     :
                     <FlatList 

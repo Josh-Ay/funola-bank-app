@@ -33,7 +33,7 @@ export const mapStyles = StyleSheet.create({
     },
     lottieWrapper: {
         width: width,
-        height: height * 0.75,
+        height: height * 0.7,
     },
     lottie: { 
         flex: 1,

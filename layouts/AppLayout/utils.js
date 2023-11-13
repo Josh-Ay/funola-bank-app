@@ -28,4 +28,4 @@ export const navigationItems = [
 
 export const miniSnapPoints = ['45%', '65%'];
 export const fullSnapPoints = ['65%', '90%'];
-export const mapSnapPoints = ['55%'];
+export const mapSnapPoints = ['60%'];

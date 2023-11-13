@@ -261,7 +261,7 @@ const MapsScreen = ({ navigation }) => {
                         <Text style={mapStyles.nearbyAtmText}>
                             {
                                 results && Array.isArray(results) ? 
-                                    `${results?.length} ATMS found in a ${distance}m radius`
+                                    `${results?.length} ${results?.length > 1 ? 'ATMS' : 'ATM'} found in a ${distance}m radius`
                                 :
                                 'Related Nearby'
                             }</Text>
@@ -294,7 +294,7 @@ const MapsScreen = ({ navigation }) => {
                     source={require("../../assets/json-animations/map-loading-animation.json")}
                 >
                     <Text style={mapStyles.loadingText}>
-                        {`Fetching ATMs within a ${distance} metre radius...`}
+                        {`Finding ATMs within a ${distance} metre radius...`}
                     </Text>
                 </AnimatedLoader>
 
@@ -343,7 +343,7 @@ const MapsScreen = ({ navigation }) => {
                                     </View>
                                     <Slider
                                         style={mapStyles.slider}
-                                        minimumValue={100}
+                                        minimumValue={10}
                                         maximumValue={1800}
                                         minimumTrackTintColor={colors.blue}
                                         maximumTrackTintColor={colors.grey}
@@ -351,7 +351,7 @@ const MapsScreen = ({ navigation }) => {
                                         value={distance}
                                         onValueChange={(val) => setDistance(val)}
                                         step={10}
-                                        lowerLimit={100}
+                                        lowerLimit={10}
                                         upperLimit={1800}
                                     />
                                     <FlatList
