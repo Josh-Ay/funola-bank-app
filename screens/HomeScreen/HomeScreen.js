@@ -594,12 +594,12 @@ const HomeScreen = ({ navigation }) => {
                         <TouchableOpacity onPress={() => navigation.navigate('Notifications')}>
                             <MaterialCommunityIcons 
                                 name={
-                                    notifications.length > 0 ? 
+                                    notifications.filter(notification => !notification.read)?.length > 0 ? 
                                         "bell-badge" : 
                                         "bell"
                                 } 
                                 size={24} 
-                                color={colors.paleBlue}
+                                color={notifications.filter(notification => !notification.read)?.length > 0 ? colors.paleBlue : colors.lightGrey}
                                 style={homePageStyles.notificationIcon}
                                 
                             />
