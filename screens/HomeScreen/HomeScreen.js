@@ -730,6 +730,14 @@ const HomeScreen = ({ navigation }) => {
                     Array.isArray(deposits) && deposits.length > 3 && 
                     <TouchableOpacity 
                         style={homePageStyles.seeAllBtn}
+                        onPress={
+                            () => navigation.navigate('Transactions', 
+                                {
+                                    typeOfItem: 'deposit',
+                                    transactions: deposits && Array.isArray(deposits) ? deposits : [],
+                                }
+                            )
+                        }
                     >
                         <Text style={homePageStyles.seeAllBtnText}>See all deposits</Text>
                     </TouchableOpacity>

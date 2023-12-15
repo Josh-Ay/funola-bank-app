@@ -331,7 +331,7 @@ const MapsScreen = ({ navigation }) => {
                                         <Text style={mapStyles.distanceText}>{distance}m</Text>
                                         <TouchableOpacity
                                             onPress={
-                                                distance + 100 <= 1800 ? 
+                                                distance + 100 <= 1000 ? 
                                                     () => setDistance(distance + 100)
                                                 :
                                                 () => {}
@@ -344,15 +344,15 @@ const MapsScreen = ({ navigation }) => {
                                     <Slider
                                         style={mapStyles.slider}
                                         minimumValue={10}
-                                        maximumValue={1800}
+                                        maximumValue={1000}
                                         minimumTrackTintColor={colors.blue}
                                         maximumTrackTintColor={colors.grey}
                                         thumbTintColor={colors.blue}
                                         value={distance}
                                         onValueChange={(val) => setDistance(val)}
-                                        step={10}
+                                        step={100}
                                         lowerLimit={10}
-                                        upperLimit={1800}
+                                        upperLimit={1000}
                                     />
                                     <FlatList
                                         data={distancesOptions}

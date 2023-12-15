@@ -59,6 +59,13 @@ export const cardScreenStyles = StyleSheet.create({
         alignItems: 'center',
         justifyContent: 'center',
     },
+    noCardsImage: {
+        maxWidth: '100%',
+        resizeMode: 'contain',
+        width: 300,
+        height: 300,
+        marginBottom: 20,
+    },
     noCardsText: {
         fontFamily: 'Poppins',
     },

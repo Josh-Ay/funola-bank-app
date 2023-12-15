@@ -34,7 +34,15 @@ export default function BottomNavigationBar ({
                                 item.icon && typeof item.icon === 'function' && 
                                 <View>
                                     {
-                                        item.icon(currentRouteName == item.routeName ? colors.blue : colors.grey)
+                                        item.icon(
+                                            (
+                                                currentRouteName == item.routeName ||
+                                                (item.otherRoutesToHighlight && Array.isArray(item?.otherRoutesToHighlight) && item?.otherRoutesToHighlight?.includes(currentRouteName))
+                                            ) ? 
+                                                colors.blue 
+                                                : 
+                                            colors.grey
+                                        )
                                     }
                                 </View>
                             }
@@ -43,7 +51,10 @@ export default function BottomNavigationBar ({
                                     Object.assign(
                                         {}, 
                                         bottomNavStyles.footerContentText,
-                                        currentRouteName == item.routeName ?
+                                        (
+                                            currentRouteName == item.routeName ||
+                                            (item.otherRoutesToHighlight && Array.isArray(item?.otherRoutesToHighlight) && item?.otherRoutesToHighlight?.includes(currentRouteName))
+                                        ) ?
                                             bottomNavStyles.activeItem :
                                             bottomNavStyles.nonActiveItem
                                     )

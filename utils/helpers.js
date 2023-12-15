@@ -63,3 +63,21 @@ export const formatDateToMonthAndDay = (date) => {
 
     return `${validDate.toLocaleString('en-us', { month: 'short' })} ${validDate.getDate()}`
 }
+
+export const getDateHoursAndMinutes = (date) => {
+    /**
+     * 
+     * Gets the hours and minutes of a date
+     * 
+     * @param date date you will like to extract its hours and minutes
+     * 
+     * @returns string containing its hours and minutes. Sample output: 09:56
+     * 
+     */
+
+    const validDate = new Date(date);
+
+    if (validDate == "Invalid Date" ) return "00:00";
+
+    return `${validDate.getHours() < 10 ? '0' + validDate.getHours() : validDate.getHours()}:${validDate.getMinutes() < 10 ? '0' + validDate.getMinutes() : validDate.getMinutes()}`
+}

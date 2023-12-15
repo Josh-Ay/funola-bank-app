@@ -56,6 +56,8 @@ export const cardSettingStyles = StyleSheet.create({
         textAlign: 'center',
         marginTop: 20,
         marginBottom: 20,
+        paddingLeft: 30,
+        paddingRight: 30,
     },
     transactionItemWrapper: {
         padding: 25,

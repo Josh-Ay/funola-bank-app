@@ -277,7 +277,17 @@ const CardSettingsScreen = ({ navigation, route }) => {
                     <Text style={cardSettingStyles.cardsTitleWrapText}>Recent Transactions</Text>
                     {
                         cardTransactions[currentCardToDisplay?._id] && cardTransactions[currentCardToDisplay?._id]?.transactions?.length > 0 &&
-                        <TouchableOpacity>
+                        <TouchableOpacity
+                            onPress={
+                                () => navigation.navigate('Transactions', 
+                                    {
+                                        title: currentCardToDisplay?.cardName,
+                                        typeOfItem: 'card',
+                                        transactions: cardTransactions && cardTransactions[currentCardToDisplay?._id] && cardTransactions[currentCardToDisplay?._id]?.transactions ? cardTransactions[currentCardToDisplay?._id]?.transactions : [],
+                                    }
+                                )
+                            }
+                        >
                             <Text style={cardSettingStyles.cardsTitleWrapBtn}>All</Text>
                         </TouchableOpacity>
                     }
@@ -286,7 +296,7 @@ const CardSettingsScreen = ({ navigation, route }) => {
                 {
                     !cardTransactions[currentCardToDisplay?._id] ? <Text style={cardSettingStyles.infoText}>Loading transactions...</Text>
                     :
-                    cardTransactions[currentCardToDisplay?._id]?.transactions?.length < 1 ? <Text style={cardSettingStyles.infoText}>You have not made any transactions yet</Text>
+                    cardTransactions[currentCardToDisplay?._id]?.transactions?.length < 1 ? <Text style={cardSettingStyles.infoText}>You have not made any transactions with this card yet</Text>
                     :
                     <View style={cardSettingStyles.transactionItemWrapper}>
                         <View style={cardSettingStyles.transactionItemWrap}>
@@ -296,6 +306,13 @@ const CardSettingsScreen = ({ navigation, route }) => {
                                         <DepositItem 
                                             transaction={transaction}
                                             isTransaction={true}
+                                            handleTransactionClick={
+                                                () => navigation.navigate('SingleTransaction', 
+                                                    { 
+                                                        transactionItem: transaction,
+                                                    }
+                                                )
+                                            }
                                         />
                                     </>
                                 }))

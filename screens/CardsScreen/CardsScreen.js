@@ -1,6 +1,6 @@
 import React, { useCallback, useEffect, useRef, useState } from "react";
 import AppLayout from "../../layouts/AppLayout/AppLayout";
-import { Text, View } from "react-native";
+import { Image, Text, View } from "react-native";
 import { useCardContext } from "../../contexts/CardContext";
 import { CardServices } from "../../services/cardServices";
 import { useToast } from "react-native-toast-notifications";
@@ -215,7 +215,13 @@ const CardsScreen = ({ navigation }) => {
                         <View style={cardScreenStyles.noCardWrapper}>
                             {
                                 activeTab === 'physical' ?
+                                <>
+                                    <Image 
+                                        source={require('../../assets/under-construction.png')} 
+                                        style={cardScreenStyles.noCardsImage}
+                                    />
                                     <Text style={cardScreenStyles.noCardsText}>Physical card feature coming soon!</Text> 
+                                </>
                                 :
                                 <Text style={cardScreenStyles.noCardsText}>You do not have any {activeTab} cards yet</Text> 
                             }

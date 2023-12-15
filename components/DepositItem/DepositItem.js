@@ -2,6 +2,8 @@ import { Text, TouchableOpacity, View } from "react-native";
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { formatDate, formatDateToMonthAndDay } from "../../utils/helpers";
 import { depositStyles } from "./depositStyles";
+import { colors } from "../../utils/colors";
+import { Ionicons } from '@expo/vector-icons';
 
 export default function DepositItem ({
     deposit, 
@@ -86,7 +88,12 @@ export default function DepositItem ({
                         depositStyles.cardImageWrapper
                     }
                 >
-                    <MaterialCommunityIcons name="bank-outline" size={24} color="black" />
+                    {
+                        new Date() < new Date(deposit?.paybackDate) ? 
+                            <MaterialCommunityIcons name="bank-outline" size={24} color={colors.black} />
+                        :
+                        <Ionicons name="checkmark-done-circle" size={24} color={colors.blue} />
+                    }
                 </View>
                 <View>
                     <Text style={depositStyles.userItemContentText}>{'For ' + deposit?.duration + ' months'}</Text>

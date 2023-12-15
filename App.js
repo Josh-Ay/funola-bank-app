@@ -23,6 +23,8 @@ import ProfileScreen from './screens/ProfileScreen/ProfileScreen';
 import NotificationScreen from './screens/NotificationScreen/NotificationScreen';
 import CardSettingsScreen from './screens/CardSettingsScreen/CardSettingsScreen';
 import AtmContextProvider from './contexts/AtmsContext';
+import SingleTransactionScreen from './screens/TransactionsScreens/SingleTransactionScreen/SingleTransactionScreen';
+import AllTransactionsScreen from './screens/TransactionsScreens/AllTransactionsScreen/AllTransactionsScreen';
 
 const Stack = createNativeStackNavigator();
 
@@ -91,6 +93,14 @@ export default function App() {
                     <Stack.Screen
                       name='Notifications'
                       component={NotificationScreen}
+                    />
+                    <Stack.Screen 
+                      name='Transactions'
+                      component={AllTransactionsScreen}
+                    />
+                    <Stack.Screen 
+                      name='SingleTransaction'
+                      component={SingleTransactionScreen}
                     />
                   </Stack.Navigator>
                 </AtmContextProvider>

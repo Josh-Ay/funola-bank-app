@@ -13,6 +13,9 @@ export const navigationItems = [
         routeName: 'Cards',
         displayName: 'Cards',
         icon: (color) => <Ionicons name="ios-wallet-outline" size={24} color={color} />,
+        otherRoutesToHighlight: [
+            'CardSettings',
+        ]
     },
     {
         routeName: 'Map',
