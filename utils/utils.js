@@ -1,3 +1,4 @@
+// Dictionary of user actions in the application
 export const userItemActions = {
     walletFund: 'fund-wallet',
     walletSend: 'send-wallet',
@@ -11,6 +12,7 @@ export const userItemActions = {
     cardSwap: 'swap-card',
 }
 
+// List of allowed titles for users in the application
 export const userTitles = [
     {
         title: 'Mr',
@@ -23,6 +25,7 @@ export const userTitles = [
     },
 ]
 
+// List of allowed gender options in the application
 export const userGenderChoices = [
     {
         gender: 'M'
@@ -33,6 +36,7 @@ export const userGenderChoices = [
 ]
 
 
+// List of allowed currencies in the application
 export const validFunolaCurrencies = [
     {
         'currency': 'USD'
@@ -42,6 +46,7 @@ export const validFunolaCurrencies = [
     },
 ]
 
+// List of allowed card payment networks in the application
 export const validFunolaCardPaymentNetworks = [
     {
         network: 'Visa', 
@@ -52,8 +57,13 @@ export const validFunolaCardPaymentNetworks = [
 ]
 
 
+// List of rates for a deposit ranging from 1 to 25
 export const validFunolaRates = [...Array(25).fill(0).map((val, idx) => ({ rate: `${idx + 1}` }))];
+
+// List of durations for a deposit ranging from 1 to 12 (months)
 export const validFunolaDurations = [...Array(12).fill(0).map((val, idx) => ({ duration: `${idx + 1}` }))];
+
+// List of allowed payment methods in the application
 export const validFunolaPaymentMethods = [
     {
         method: 'card',

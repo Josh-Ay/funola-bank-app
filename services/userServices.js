@@ -1,23 +1,57 @@
 import { axiosInstance } from "./config"
 
 export class UserServices {
+    /**
+     * Class defined to interact with all APIs pertaining to user actions.
+     * 
+     * @constructor A url prefix to route to user APIs is instantiated each time an object of this class is created.
+     * 
+     */
+
     constructor () {
-        this.urlPefix = 'user'
+        this.urlPrefix = 'user'
     }
 
     getUserProfile = async () => {
-        return await axiosInstance.get(`${this.urlPefix}/profile`)
+        /**
+         * Get the profile details for a user
+         * 
+         * @returns A promise
+         * 
+         */
+        return await axiosInstance.get(`${this.urlPrefix}/profile`)
     }
     
     updateUserProfile = async (data, updateType) => {
-        return await axiosInstance.put(`${this.urlPefix}/update-profile/${updateType}`)
+        /**
+         * Update the profile information of a user
+         * 
+         * @param data Request body containing the updated data you will like to use to replace the old data
+         * @param updateType The type of update you want to make to the user profile
+         * 
+         * @returns A promise
+         * 
+         */
+        return await axiosInstance.put(`${this.urlPrefix}/update-profile/${updateType}`)
     }
 
     getNotifications = async () => {
-        return await axiosInstance.get(`${this.urlPefix}/notifications`)
+        /**
+         * Get notifications for a user
+         * 
+         * @returns A promise
+         * 
+         */
+
+        return await axiosInstance.get(`${this.urlPrefix}/notifications`)
     }
 
     getOtherUsers = async () => {
-        return await axiosInstance.get(`${this.urlPefix}/users`)
+        /**
+         * Get other users on the application
+         * 
+         * @returns A promise
+         */
+        return await axiosInstance.get(`${this.urlPrefix}/users`)
     }
 }
