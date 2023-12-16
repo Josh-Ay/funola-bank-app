@@ -47,5 +47,5 @@ export const fullCardStyles = StyleSheet.create({
         textTransform: 'capitalize',
         color: colors.white,
         fontSize: 15,
-    }
+    },
 })

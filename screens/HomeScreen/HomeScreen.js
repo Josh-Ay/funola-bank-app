@@ -680,6 +680,14 @@ const HomeScreen = ({ navigation }) => {
                             return <CardItem 
                                 card={card} 
                                 modalIsOpen={appLayoutModalIsOpen || sheetModalIsOpen} 
+                                handleCardClick={
+                                    () => navigation.navigate(
+                                        'CardSettings', 
+                                        { 
+                                            currentActiveCard: card 
+                                        }
+                                    )
+                                }
                             />
                         }))
                     }
@@ -721,6 +729,14 @@ const HomeScreen = ({ navigation }) => {
                             return <DepositItem 
                                 deposit={deposit}
                                 modalIsOpen={appLayoutModalIsOpen || sheetModalIsOpen}
+                                handleDepositClick={
+                                    () => navigation.navigate('SingleTransaction', 
+                                        { 
+                                            transactionItem: deposit,
+                                            typeOfItem: 'deposit',
+                                        }
+                                    )
+                                }
                             />
                         }))
                     }

@@ -25,6 +25,7 @@ import CardSettingsScreen from './screens/CardSettingsScreen/CardSettingsScreen'
 import AtmContextProvider from './contexts/AtmsContext';
 import SingleTransactionScreen from './screens/TransactionsScreens/SingleTransactionScreen/SingleTransactionScreen';
 import AllTransactionsScreen from './screens/TransactionsScreens/AllTransactionsScreen/AllTransactionsScreen';
+import SendFundsScreen from './screens/SendFundsScreens/SendFundsScreen/SendFundsScreen';
 
 const Stack = createNativeStackNavigator();
 
@@ -102,6 +103,16 @@ export default function App() {
                       name='SingleTransaction'
                       component={SingleTransactionScreen}
                     />
+                    <Stack.Screen 
+                      name='SendFunds'
+                      component={SendFundsScreen}
+                    />
+                    {/* <Stack.Screen 
+                      name='SelectAmountToSend'
+                    />
+                    <Stack.Screen 
+                      name='SendMoneySuccess'
+                    /> */}
                   </Stack.Navigator>
                 </AtmContextProvider>
               </DepositContextProvider>

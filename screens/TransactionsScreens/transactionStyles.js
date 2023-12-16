@@ -20,6 +20,7 @@ export const transactionStyles = StyleSheet.create({
     allTransactionsHeaderSubtitle: {
         fontFamily: 'Poppins',
         color: colors.grey,
+        fontSize: 12,
     },
     transactionHeaderWrap: {
         flexDirection: 'row',
@@ -111,5 +112,29 @@ export const transactionStyles = StyleSheet.create({
         textAlign: 'center',
         fontSize: 12,
         color: colors.blue,
+    },
+    depositFilterWrap: {
+        flexDirection: 'row',
+        justifyContent: 'space-between',
+        alignItems: 'center',
+    },
+    depositFilterItem: {
+        gap: 7,
+        flex: 0.5,
+    },
+    depositFilterItemText: {
+        fontFamily: 'Poppins',
+        textAlign: 'center',
+        color: colors.grey,
+    },
+    activeFilter: {
+        color: colors.blue,
+    },
+    depositFilterIndicator: {
+        height: 3,
+        backgroundColor: colors.lightGrey,
+    },
+    blueDepositFilterIndicator: {
+        backgroundColor: colors.blue,
     },
 })

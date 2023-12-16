@@ -15,6 +15,7 @@ const { height } = Dimensions.get('window');
 
 const AllTransactionsScreen = ({ navigation, route }) => {
     const [ transactions, setTransactions ] = useState([]);
+    const [ showRedeemedDeposits, setShowRedeemedDeposits ] = useState(false);
 
     useEffect(() => {
         if (!route?.params?.transactions) {
@@ -44,9 +45,72 @@ const AllTransactionsScreen = ({ navigation, route }) => {
                     </View>
                 </View>
 
+                {
+                    route?.params?.typeOfItem === 'deposit' &&
+                    <View style={transactionStyles.depositFilterWrap}>
+                        <View style={transactionStyles.depositFilterItem}>
+                            <TouchableOpacity
+                                onPress={
+                                    () => setShowRedeemedDeposits(false)
+                                }
+                            >
+                                <Text 
+                                    style={
+                                        Object.assign(
+                                            {},
+                                            transactionStyles.depositFilterItemText,
+                                            showRedeemedDeposits ? {} : transactionStyles.activeFilter,
+                                        )
+                                    }
+                                >
+                                    Ongoing
+                                </Text>
+                            </TouchableOpacity>
+                            <View style={
+                                Object.assign(
+                                    {}, 
+                                    transactionStyles.depositFilterIndicator,
+                                    !showRedeemedDeposits ? transactionStyles.blueDepositFilterIndicator : {}
+                                )}
+                            ></View>
+                        </View>
+                        <View style={transactionStyles.depositFilterItem}>
+                            <TouchableOpacity
+                                onPress={
+                                    () => setShowRedeemedDeposits(true)
+                                }
+                            >
+                                <Text
+                                    style={
+                                        Object.assign(
+                                            {},
+                                            transactionStyles.depositFilterItemText,
+                                            !showRedeemedDeposits ? {} : transactionStyles.activeFilter,
+                                        )
+                                    }
+                                >Matured</Text>
+                            </TouchableOpacity>
+                            <View style={
+                                Object.assign(
+                                    {}, 
+                                    transactionStyles.depositFilterIndicator,
+                                    showRedeemedDeposits ? transactionStyles.blueDepositFilterIndicator : {}
+                                )}
+                            ></View>
+                        </View>
+                    </View>
+                }
+
                 <View style={{ maxHeight: height * 0.7 }}>
                     <FlatList
-                        data={transactions}
+                        data={
+                            route?.params?.typeOfItem === 'deposit' ?
+                                    !showRedeemedDeposits ? transactions.filter(transaction => new Date() < new Date(transaction?.paybackDate))
+                                :
+                                transactions.filter(transaction => new Date() >= new Date(transaction?.paybackDate))
+                            :
+                            transactions
+                        }
                         renderItem={
                             ({item}) => 
                             <DepositItem 
