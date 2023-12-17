@@ -77,6 +77,14 @@ exports.update_user_detail = async (req, res) => {
 
             return res.status(200).send("Pin successfully updated");
         
+        // updating the visibility of account balance for the user
+        case 'balanceVisibility':
+            
+            // updating the value in the db
+            foundUser.hideAccountBalances = validUserDetails.value.hideAccountBalances;
+            await foundUser.save();
+
+            return res.status(200).send("Successfully updated balance visibility");
         default:
             return res.status(400).send("Invalid update type passed");
     }

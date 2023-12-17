@@ -73,6 +73,10 @@ const userSchema = new Schema({
     adminUser: {
         type: Boolean,
     },
+    hideAccountBalances: {
+        type: Boolean,
+        default: false,
+    },
 })
 
 function validateNewUserDetails(userDetails) {
@@ -132,6 +136,11 @@ function validateUserUpdateDetails(userDetails, typeOfUpdate) {
         case 'pin':
             schema = Joi.object({
                 transactionPin: Joi.required(),
+            })
+            break;
+        case 'balanceVisibility':
+            schema = Joi.object({
+                hideAccountBalances: Joi.boolean().required(),
             })
             break;
         default:
