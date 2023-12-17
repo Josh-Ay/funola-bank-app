@@ -61,3 +61,9 @@ exports.funolaValidCardPaymentNetworks = [
     'Visa', 
     'Mastercard'
 ]
+
+// valid bank account types accepted on the funola banking application
+exports.funolaValidBankAccountTypes = [
+    'Personal', 
+    'Savings'
+]
