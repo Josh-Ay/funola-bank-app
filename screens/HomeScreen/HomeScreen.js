@@ -389,6 +389,12 @@ const HomeScreen = ({ navigation }) => {
                 handleUpdateWalletActionStateDetail('swap', 'outputCurrency', userHasWalletInOtherCurrency?.currency);
                 handleUpdateWalletActionStateDetail('swap', 'currency', currentWallet?.currency);
                 break;
+            case userItemActions.walletSend:
+                navigation.navigate('SendFunds', {
+                    itemType: 'wallet',
+                    item: currentWallet,
+                })
+                break;
             default:
                 console.log(itemAction);
                 break;

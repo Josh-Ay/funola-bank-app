@@ -66,10 +66,26 @@ export const dropdownStyles = StyleSheet.create({
         paddingLeft: 40,
         width: "100%",
         height: '100%',
+        paddingRight: 50,
     },
     imageItem: {
         width: 20,
         height: 10,
         marginLeft: 15,
+    },
+    searchText: {
+        fontFamily: 'Poppins',
+        fontSize: 12,
+        color: colors.grey,
+    },
+    clearSearchIcon: {
+        position: 'absolute',
+        top: 0,
+        bottom: 0,
+        right: 20,
+        height: '100%',
+        zIndex: 2,
+        justifyContent: 'center', 
+        alignItems: 'center',
     },
 })

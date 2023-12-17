@@ -4,6 +4,8 @@ import { dropdownStyles } from "./styles";
 import { useEffect, useState } from "react";
 import TextInputComponent from "../TextInputComponent/TextInputComponent";
 import { FlashList } from "@shopify/flash-list";
+import { Ionicons } from '@expo/vector-icons';
+import { colors } from "../../utils/colors";
 
 const CustomDropdownItem = ({ 
     style, 
@@ -19,6 +21,8 @@ const CustomDropdownItem = ({
     contentHasLoaded,
     placeholderText,
     dropdownIconStyle,
+    customSearch,
+    handleClearSearch,
 }) => {
 
     const [ showDropdown, setShowDropdown ] = useState(false);
@@ -46,6 +50,8 @@ const CustomDropdownItem = ({
 
     const handlePress = () => {
         if (!hasDropdownItems) return
+
+        if (customSearch && content.length > 0) setSearchValue(content)
 
         setShowDropdown(true)
     }
@@ -96,14 +102,31 @@ const CustomDropdownItem = ({
 
     return <>
         <TouchableOpacity 
-            style={Object.assign({}, style, dropdownStyles.customDropdown)} 
+            style={
+                customSearch ?
+                    Object.assign({}, dropdownStyles.customDropdown, style)
+                :
+                Object.assign({}, style, dropdownStyles.customDropdown)
+            } 
             onPress={handlePress}
         >
             {
                 imageContent ? <Image source={{ uri: imageContent }} style={dropdownStyles.imageItem} /> : 
+                customSearch ?
+                <>
+                    <Ionicons name='search' size={16} />
+                    <Text style={dropdownStyles.searchText}> {content.length < 1 ? placeholderText : content} </Text>
+                </>
+                :
                 <Text> {content} </Text>
             }
-            <AntDesign name="caretdown" size={12} color="black" style={dropdownIconStyle ? dropdownIconStyle: {}} />
+
+            {
+                customSearch ? 
+                    <></>
+                :
+                <AntDesign name="caretdown" size={12} color="black" style={dropdownIconStyle ? dropdownIconStyle: {}} />
+            }
         
             <Modal
                 animationType={"slide"}
@@ -141,6 +164,24 @@ const CustomDropdownItem = ({
                             disableFocusStyle={true}
                             style={dropdownStyles.searchInput}
                         />
+                        
+                        {
+                            searchValue.length > 0 && <TouchableOpacity
+                                style={dropdownStyles.clearSearchIcon}
+                                onPress={
+                                    () => {
+                                        setSearchValue('')
+                                        handleClearSearch && typeof handleClearSearch === 'function' && handleClearSearch()
+                                    }
+                                }
+                            >
+                                <Ionicons 
+                                    name='close-circle' 
+                                    size={16}
+                                    color={colors.grey} 
+                                />
+                            </TouchableOpacity>
+                        }
                     </View>
                     <View
                         style={dropdownStyles.dropdownListWrapper}
