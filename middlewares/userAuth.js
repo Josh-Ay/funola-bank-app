@@ -17,7 +17,7 @@ exports.userAuth = async (req, res, next) => {
         const existingUser = await User.findById(decodedUser._id).lean().select('-password -refreshToken -transactionPin -verificationToken');
         if (!existingUser) return res.status(401).send('Access denied, token invalid or missing.');
 
-        req.user = existingUser;
+        req.user = decodedUser;
         // console.log(decodedUser);
         next();
     } catch (error) {
@@ -29,7 +29,7 @@ exports.userAuth = async (req, res, next) => {
             const existingUser = await User.findById(decodedUser._id).lean().select('-password -refreshToken -transactionPin -verificationToken');
             if (!existingUser) return res.status(401).send('Access denied, token invalid or missing.');
 
-            req.user = existingUser;
+            req.user = decodedUser;
             // console.log(decodedUser);
             next();
 
@@ -57,7 +57,7 @@ exports.adminAuth = async (req, res, next) => {
         const existingUser = await User.findById(decodedUser._id).lean().select('-password -refreshToken -transactionPin -verificationToken');
         if (!existingUser) return res.status(401).send('Access denied, token invalid or missing.');
 
-        req.user = existingUser;
+        req.user = decodedUser;
         // console.log(decodedUser);
         next();
     } catch (error) {
