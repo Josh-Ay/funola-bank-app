@@ -151,6 +151,8 @@ const HomeScreen = ({ navigation }) => {
         setUserProfileLoading(true);
 
         userService.getUserProfile().then(res => {
+            setWalletBalanceObscured(res.data?.hideAccountBalances)
+
             setCurrentUser(res.data);
             setUserProfileLoaded(true);
             setUserProfileLoading(false);
@@ -336,6 +338,8 @@ const HomeScreen = ({ navigation }) => {
             depositService.getDepositsDetail(),
             atmService.getNearbyAtms(),
         ]).then(res => {
+            setWalletBalanceObscured(res[0]?.data?.hideAccountBalances)
+
             setCurrentUser(res[0]?.data);
             setNotifications(res[1]?.data);
             setOtherUsers(res[2]?.data);
@@ -484,6 +488,25 @@ const HomeScreen = ({ navigation }) => {
         }
     }
 
+    const handleUpdateBalanceVisibility = async () => {
+        const copyOfCurrentUser = { ...currentUser };
+        const updatedValue = !copyOfCurrentUser.hideAccountBalances;
+        setWalletBalanceObscured(updatedValue)
+
+        try {
+
+            const res = (await userService.updateUserProfile({ hideAccountBalances: walletBalanceObscured }, 'balanceVisibility')).data;
+            setCurrentUser({ ...currentUser, hideAccountBalances: updatedValue });
+            showToastMessage(res, 'success');
+
+        } catch (error) {
+            setWalletBalanceObscured(!updatedValue);
+
+            const errorMsg = error.response ? error.response.data : error.message;
+            showToastMessage(errorMsg.toLocaleLowerCase().includes('html') ? 'Something went wrong trying to update the visibility of your account balance. Please try again' : errorMsg, 'danger');    
+        }
+    }
+
     return <>
         <AppLayout
             navigation={navigation}
@@ -585,7 +608,7 @@ const HomeScreen = ({ navigation }) => {
                         {
                             currentWallet &&
                             <TouchableOpacity
-                                onPress={() => setWalletBalanceObscured(!walletBalanceObscured)}
+                                onPress={() => handleUpdateBalanceVisibility()}
                             >
                                 {
                                     walletBalanceObscured ? 

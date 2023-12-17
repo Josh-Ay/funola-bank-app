@@ -32,7 +32,7 @@ export class UserServices {
          * @returns A promise
          * 
          */
-        return await axiosInstance.put(`${this.urlPrefix}/update-profile/${updateType}`)
+        return await axiosInstance.put(`${this.urlPrefix}/update-profile/${updateType}`, data)
     }
 
     getNotifications = async () => {
