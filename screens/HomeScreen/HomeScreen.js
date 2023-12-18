@@ -495,7 +495,7 @@ const HomeScreen = ({ navigation }) => {
 
         try {
 
-            const res = (await userService.updateUserProfile({ hideAccountBalances: walletBalanceObscured }, 'balanceVisibility')).data;
+            const res = (await userService.updateUserProfile({ hideAccountBalances: updatedValue }, 'balanceVisibility')).data;
             setCurrentUser({ ...currentUser, hideAccountBalances: updatedValue });
             showToastMessage(res, 'success');
 
