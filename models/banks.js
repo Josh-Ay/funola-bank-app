@@ -25,27 +25,34 @@ const bankSchema = new Schema({
         minLength: 9,
         maxLength: 10,
     },
-})
+}, { timestamps: true })
 
-function validateNewBankDetails(newBankDetail) {
+function validateBankDetails(bankDetail, newEntry=true) {
     /**
      * Validates the keys and values for a new bank entry.
      * 
-     * @param newBankDetail
+     * @param bankDetail
      * 
      * 
      * @returns An object containing the validated value and error if any.
      * 
      */
 
-    const schema = Joi.object({
+    const schema = newEntry ? Joi.object({
         owner: Joi.required(),
+        name: Joi.string().required().min(3),
+        type: Joi.string().required().min(3).valid('Personal', 'Savings'),
+        accountNumber: Joi.string().required().length(10),
+    }) 
+    :
+
+    Joi.object({
         name: Joi.string().required().min(3),
         type: Joi.string().required().min(3).valid('Personal', 'Savings'),
         accountNumber: Joi.string().required().length(10),
     })
 
-    return schema.validate(newBankDetail);
+    return schema.validate(bankDetail);
 }
 
 // creating a new bank model using the schema defined above
@@ -54,5 +61,5 @@ const Bank = model('bank', bankSchema);
 
 module.exports = {
     Bank,
-    validateNewBankDetails,
+    validateBankDetails,
 }
