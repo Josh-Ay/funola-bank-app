@@ -30,6 +30,8 @@ import { userItemActions } from "../../utils/utils";
 import UserProfileImage from "../../components/UserProfileImage/UserProfileImage";
 import { useAtmContext } from "../../contexts/AtmsContext";
 import { AtmServices } from "../../services/atmServices";
+import { useBanksContext } from "../../contexts/BanksContext";
+import { BankServices } from "../../services/bankServices";
 
 const HomeScreen = ({ navigation }) => {
 
@@ -95,6 +97,13 @@ const HomeScreen = ({ navigation }) => {
         setAtmsLoaded,
     } = useAtmContext();
 
+    const {
+        setBanks,
+        setBanksLoading,
+        banksLoaded,
+        setBanksLoaded,
+    } = useBanksContext();
+
     const toast = useToast();
     const [ refreshing, setRefreshing ] = useState(false);
     const [ currentWallet, setCurrentWallet ] = useState(null);
@@ -113,6 +122,7 @@ const HomeScreen = ({ navigation }) => {
         depositService,
         convertService,
         atmService,
+        bankService,
     ] = [
         new UserServices(),
         new WalletServices(),
@@ -120,6 +130,7 @@ const HomeScreen = ({ navigation }) => {
         new DepositServices(),
         new ConvertServices(),
         new AtmServices(),
+        new BankServices(),
     ];
 
     const showToastMessage = (message, type) => {
@@ -158,6 +169,7 @@ const HomeScreen = ({ navigation }) => {
             setUserProfileLoading(false);
             setAllOtherUserDataLoading(true);
             setAtmsLoading(true);
+            setBanksLoading(true);
 
             Promise.all([
                 userService.getNotifications(),
@@ -166,6 +178,7 @@ const HomeScreen = ({ navigation }) => {
                 cardService.getCardsDetail(),
                 depositService.getDepositsDetail(),
                 atmService.getNearbyAtms(),
+                bankService.getBanksFOrUser(),
             ]).then(res => {
 
                 setNotifications(res[0]?.data);
@@ -174,6 +187,7 @@ const HomeScreen = ({ navigation }) => {
                 setCards(res[3]?.data);
                 setDeposits(res[4]?.data);
                 setAtms(res[5]?.data);
+                setBanks(res[6]?.data);
 
                 res[2] && Array.isArray(res[2].data) && res[2].data.length > 0 && setCurrentWallet(res[2].data[0]);
 
@@ -192,6 +206,9 @@ const HomeScreen = ({ navigation }) => {
                 setAtmsLoaded(true);
                 setAtmsLoading(false);
 
+                setBanksLoaded(true);
+                setBanksLoading(false);
+
             }).catch(err => {
 
                 // console.log(err);
@@ -202,6 +219,8 @@ const HomeScreen = ({ navigation }) => {
                 setCardsLoading(false);
                 setWalletsLoading(false);
                 setDepositsLoading(false);
+                setAtmsLoading(false);
+                setBanksLoading(false);
             })
 
         }).catch(err => {
@@ -281,7 +300,22 @@ const HomeScreen = ({ navigation }) => {
             })
         }
         
-    }, [walletsLoaded, cardsLoaded, depositsLoaded, atmsLoaded])
+        if (!banksLoaded) {
+            bankService.getBanksFOrUser()
+            .then((res) => {
+                setBanks(res?.data);
+
+                setBanksLoading(false);
+                setBanksLoaded(true);
+            })
+            .catch((err) => {
+                const errorMsg = err.response ? err.response.data : err.message;
+                showToastMessage(errorMsg.toLocaleLowerCase().includes('html') ? 'Something went wrong trying to get your saved banks. Please refresh' : errorMsg, 'danger');
+                setBanksLoading(false);
+            })
+        }
+
+    }, [walletsLoaded, cardsLoaded, depositsLoaded, atmsLoaded, banksLoaded])
 
     useEffect(() => {
         if (
@@ -337,6 +371,7 @@ const HomeScreen = ({ navigation }) => {
             cardService.getCardsDetail(),
             depositService.getDepositsDetail(),
             atmService.getNearbyAtms(),
+            bankService.getBanksFOrUser(),
         ]).then(res => {
             setWalletBalanceObscured(res[0]?.data?.hideAccountBalances)
 
@@ -347,6 +382,7 @@ const HomeScreen = ({ navigation }) => {
             setCards(res[4]?.data);
             setDeposits(res[5]?.data);
             setAtms(res[6]?.data);
+            setBanks(res[7]?.data);
 
             res[3] && Array.isArray(res[3].data) && res[3].data.length > 0 && setCurrentWallet(res[3].data[0]);
 
@@ -365,6 +401,9 @@ const HomeScreen = ({ navigation }) => {
 
             setAtmsLoaded(true);
             setAtmsLoading(false);
+
+            setBanksLoaded(true);
+            setBanksLoading(false);
         }).catch(err => {
             const errorMsg = err.response ? err.response.data : err.message;
             showToastMessage(errorMsg.toLocaleLowerCase().includes('html') ? 'Something went wrong trying to get your details. Please refresh' : errorMsg, 'danger');

@@ -6,91 +6,14 @@ import { Ionicons } from '@expo/vector-icons';
 import { sendFundStyles } from "./sendFundStyles";
 import * as Contacts from 'expo-contacts';
 import { SendFundTabs } from "./utils";
-import { AntDesign } from '@expo/vector-icons';
 import CustomDropdownItem from "../../../components/DropdownItemComponent/CustomDropdownItem";
 import { useUserContext } from "../../../contexts/UserContext";
 import { FlashList } from "@shopify/flash-list";
-
-
-const ContactItem = ({ item, showOnlyContactsOnFunola }) => {
-    const {
-        otherUsers,
-    } = useUserContext();
-
-    const handleSelectContact = (numberPassed) => {
-        const foundUserOnFunola = otherUsers?.find(user => user?.phoneNumber === numberPassed?.slice(-10));
-
-        if (foundUserOnFunola) {
-            console.log(foundUserOnFunola);
-            // navigator.navigate(
-            //     '', 
-            //     {}
-            // )
-            return
-        }
-
-        console.log('invite user to funola');
-    }
-
-    if (Array.isArray(item?.phoneNumbers)) return <>
-        {
-            React.Children.toArray(item?.phoneNumbers.map(number => {
-                const numberIsOnFunola = otherUsers?.find(user => user?.phoneNumber === number?.digits?.slice(-10));
-
-                if (showOnlyContactsOnFunola && !numberIsOnFunola) return <></>
-
-                return <>
-                    <View style={sendFundStyles.singleContact}>
-                        <View style={sendFundStyles.singleContactTopContent}>
-                            {
-                                item.imageAvailable ? 
-                                <Image 
-                                    source={item.image}
-                                    style={sendFundStyles.contactImage}
-                                />
-                                :
-                                <AntDesign name="user" size={35} color="black" />
-                            }
-                            
-                            <View>
-                                <Text style={sendFundStyles.contactName}>{item?.name?.length > 25 ? item?.name?.slice(0, 25) + '...' : item?.name}</Text>
-                                <Text style={sendFundStyles.contactNumber}>{number?.digits}</Text>
-                            </View>
-                        </View>
-                        <TouchableOpacity 
-                            style={sendFundStyles.contactActionBtn}
-                            onPress={() => handleSelectContact(number?.digits)}
-                        >
-                            <Text style={sendFundStyles.contactActionBtnText}>
-                                {
-                                    numberIsOnFunola ? 
-                                        'Select'
-                                    :
-                                    'Invite'
-                                }
-                            </Text>
-                        </TouchableOpacity>
-                    </View>
-                </>
-            }))
-        }
-    </>
-    
-    return <></>
-}
-
-const RecentItem = ({ item }) => {
-    return <>
-        <TouchableOpacity style={sendFundStyles.recentUserItem}>
-            <AntDesign name="user" size={50} color="black" />
-
-            <View>
-                <Text style={sendFundStyles.recentUsername}>Hello</Text>
-                <Text style={sendFundStyles.recentUserNumber}>+234940248920934</Text>
-            </View>
-        </TouchableOpacity>
-    </>
-}
+import { useBanksContext } from "../../../contexts/BanksContext";
+import { BankServices } from "../../../services/bankServices";
+import RecentItem from "./components/RecentsItem/RecentItem";
+import ContactItem from "./components/ContactItem/ContactItem";
+import BankItem from "./components/BankItem/BankItem";
 
 
 const SendFundsScreen = ({ navigation, route }) => {
@@ -102,6 +25,14 @@ const SendFundsScreen = ({ navigation, route }) => {
     const {
         otherUsers,
     } = useUserContext();
+
+    const {
+        banks,
+        setBanks,
+        setBanksLoading,
+        banksLoaded,
+        setBanksLoaded,
+    } = useBanksContext();
 
     const requestContactAccess = async () => {
         const { status } = await Contacts.requestPermissionsAsync();
@@ -124,6 +55,23 @@ const SendFundsScreen = ({ navigation, route }) => {
             console.log(err);
             setStatusGranted('no')
         })
+
+        if (!banksLoaded) {
+            const bankService = new BankServices();
+
+            bankService.getBanksFOrUser()
+            .then((res) => {
+                setBanks(res?.data);
+
+                setBanksLoading(false);
+                setBanksLoaded(true);
+            })
+            .catch((err) => {
+                const errorMsg = err.response ? err.response.data : err.message;
+                showToastMessage(errorMsg.toLocaleLowerCase().includes('html') ? 'Something went wrong trying to get your saved banks. Please refresh' : errorMsg, 'danger');
+                setBanksLoading(false);
+            })
+        }
 
     }, []);
 
@@ -366,6 +314,25 @@ const SendFundsScreen = ({ navigation, route }) => {
                                     <Text style={sendFundStyles.addPayeeBtnText}>Add</Text>
                                 </TouchableOpacity>
                             </View>
+                            {
+                                banks?.length < 0 ? <>
+                                    <View>
+                                        <Text style={sendFundStyles.noBankText}>You have not added any banks yet</Text>
+                                    </View>
+                                </> :
+                                <>
+                                    <FlatList 
+                                        data={banks}
+                                        renderItem={({ item }) => 
+                                            <BankItem 
+                                                item={item} 
+                                                handlePress={(bank) => navigation.navigate('SelectAmountToSend')}
+                                            />
+                                        }
+                                        keyExtractor={item => item._id}
+                                    />
+                                </>
+                            }
                         </View>
                     </> :
 

@@ -20,7 +20,7 @@ const WelcomeScreen = ({ navigation, route }) => {
             setCountries(sortedCountriesByName)
             setCountriesLoaded(true);
         }).catch (error => {
-            console.warn('Failed to fetch countries')
+            // console.warn('Failed to fetch countries')
             setCountriesLoaded(true);
         });
 

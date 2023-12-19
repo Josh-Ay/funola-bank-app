@@ -185,4 +185,39 @@ export const sendFundStyles = StyleSheet.create({
         fontFamily: 'Poppins',
         color: colors.blue,
     },
+    noBankText: {
+        fontFamily: 'Poppins',
+        textAlign: 'center',
+        marginTop: 22,
+    },
+    bankItemWrap: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        gap: 20,
+        marginTop: 20,
+        marginBottom: 5,
+    },
+    bankIcon: {
+        backgroundColor: colors.white,
+        padding: 14,
+        borderRadius: 8,
+    },
+    bankName: {
+        fontFamily: 'Poppins-Medium',
+        fontSize: 16,
+    },
+    bankDetailWrap: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        gap: 10,
+        marginTop: 3,
+    },
+    bankDetail: {
+        fontFamily: 'Poppins',
+        color: colors.grey,
+        fontSize: 12,
+    },
+    bankRightIcon: {
+        marginLeft: 'auto'
+    },
 })

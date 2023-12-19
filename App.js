@@ -26,6 +26,8 @@ import AtmContextProvider from './contexts/AtmsContext';
 import SingleTransactionScreen from './screens/TransactionsScreens/SingleTransactionScreen/SingleTransactionScreen';
 import AllTransactionsScreen from './screens/TransactionsScreens/AllTransactionsScreen/AllTransactionsScreen';
 import SendFundsScreen from './screens/SendFundsScreens/SendFundsScreen/SendFundsScreen';
+import BanksContextProvider from './contexts/BanksContext';
+import FundsConfigurationScreen from './screens/SendFundsScreens/FundsConfigurationScreen/FundsConfigurationScreen';
 
 const Stack = createNativeStackNavigator();
 
@@ -64,56 +66,59 @@ export default function App() {
             <CardContextProvider>
               <DepositContextProvider>
                 <AtmContextProvider>
-                  <Stack.Navigator initialRouteName='Home' screenOptions={{ headerShown: false }}>
-                    <Stack.Screen
-                      name='Home'
-                      component={HomeScreen}
-                    />
-                    <Stack.Screen
-                      name='Cards'
-                      component={CardsScreen}
-                    />
-                    <Stack.Screen
-                      name='CardSettings'
-                      component={CardSettingsScreen}
-                    />
-                    <Stack.Screen
-                      name='Map'
-                      component={MapsScreen}
-                    />
-                    <Stack.Screen
-                      name='Profile'
-                    >
-                      { 
-                        props => <ProfileScreen 
-                          {...props} 
-                          setLoggedIn={setUserLoggedIn} 
-                        /> 
-                      }
-                    </Stack.Screen>
-                    <Stack.Screen
-                      name='Notifications'
-                      component={NotificationScreen}
-                    />
-                    <Stack.Screen 
-                      name='Transactions'
-                      component={AllTransactionsScreen}
-                    />
-                    <Stack.Screen 
-                      name='SingleTransaction'
-                      component={SingleTransactionScreen}
-                    />
-                    <Stack.Screen 
-                      name='SendFunds'
-                      component={SendFundsScreen}
-                    />
-                    {/* <Stack.Screen 
-                      name='SelectAmountToSend'
-                    />
-                    <Stack.Screen 
-                      name='SendMoneySuccess'
-                    /> */}
-                  </Stack.Navigator>
+                  <BanksContextProvider>
+                    <Stack.Navigator initialRouteName='Home' screenOptions={{ headerShown: false }}>
+                      <Stack.Screen
+                        name='Home'
+                        component={HomeScreen}
+                      />
+                      <Stack.Screen
+                        name='Cards'
+                        component={CardsScreen}
+                      />
+                      <Stack.Screen
+                        name='CardSettings'
+                        component={CardSettingsScreen}
+                      />
+                      <Stack.Screen
+                        name='Map'
+                        component={MapsScreen}
+                      />
+                      <Stack.Screen
+                        name='Profile'
+                      >
+                        { 
+                          props => <ProfileScreen 
+                            {...props} 
+                            setLoggedIn={setUserLoggedIn} 
+                          /> 
+                        }
+                      </Stack.Screen>
+                      <Stack.Screen
+                        name='Notifications'
+                        component={NotificationScreen}
+                      />
+                      <Stack.Screen 
+                        name='Transactions'
+                        component={AllTransactionsScreen}
+                      />
+                      <Stack.Screen 
+                        name='SingleTransaction'
+                        component={SingleTransactionScreen}
+                      />
+                      <Stack.Screen 
+                        name='SendFunds'
+                        component={SendFundsScreen}
+                      />
+                      <Stack.Screen 
+                        name='SelectAmountToSend'
+                        component={FundsConfigurationScreen}
+                      />
+                      {/* <Stack.Screen 
+                        name='SendMoneySuccess'
+                      /> */}
+                    </Stack.Navigator>
+                  </BanksContextProvider>
                 </AtmContextProvider>
               </DepositContextProvider>
             </CardContextProvider>
