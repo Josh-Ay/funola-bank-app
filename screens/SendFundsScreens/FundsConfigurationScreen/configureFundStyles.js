@@ -59,6 +59,10 @@ export const configureFundStyles = StyleSheet.create({
         fontSize: 32,
         color: colors.blue,
     },
+    amountTextDetailWrap: {
+        flexDirection: 'row',
+        alignItems: 'center',
+    },
     selectDebitAccount: {
         backgroundColor: colors.white,
         padding: 25,
@@ -96,5 +100,24 @@ export const configureFundStyles = StyleSheet.create({
     sendText: {
         fontFamily: 'Poppins-Medium',
         color: colors.white,
-    }
+    },
+    quickAmounts: {
+        maxHeight: 60,
+        alignItems: 'center',
+        marginTop: 20,
+    },
+    quickAmountBtn: {
+        backgroundColor: colors.paleGrey,
+        justifyContent: 'center',
+        alignItems: 'center',
+        marginRight: 20,
+        paddingLeft: 25,
+        paddingRight: 25,
+        height: 44,
+        borderRadius: 10,
+    },
+    quickAmountText: {
+        fontFamily: 'Poppins',
+        color: colors.deepBlue,
+    },
 })
