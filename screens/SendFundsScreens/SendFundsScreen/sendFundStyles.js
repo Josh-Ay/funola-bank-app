@@ -51,7 +51,7 @@ export const sendFundStyles = StyleSheet.create({
     contactWrapper: {
         backgroundColor: colors.white,
         padding: 25,
-        marginBottom: 250,
+        // marginBottom: 250,
     },
     searchWrapper: {
         borderRadius: 8,
@@ -80,7 +80,7 @@ export const sendFundStyles = StyleSheet.create({
         fontSize: 13,
     },
     contactListing: {
-        paddingBottom: 250,
+        // paddingBottom: 250,
     },
     contactImage: {
         width: 35,
@@ -94,6 +94,8 @@ export const sendFundStyles = StyleSheet.create({
         justifyContent: 'space-between',
         marginBottom: 20,
         marginTop: 10,
+        paddingLeft: 4,
+        paddingRight: 4,
     },
     singleContactTopContent: {
         flexDirection: 'row',

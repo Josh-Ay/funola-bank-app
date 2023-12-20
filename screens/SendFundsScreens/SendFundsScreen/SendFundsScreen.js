@@ -22,6 +22,8 @@ const SendFundsScreen = ({ navigation, route }) => {
     const [ statusGranted, setStatusGranted ] = useState(null);
     const [ contacts, setContacts ] = useState([]);
     const [ showContactsOnFunola, setShowContactsOnFunola ] = useState(true);
+    const initialContactUpperLimit = 30;
+    const [ contactsUpperLimit, setContactsUpperLimit ] = useState(initialContactUpperLimit);
     const {
         otherUsers,
     } = useUserContext();
@@ -85,6 +87,21 @@ const SendFundsScreen = ({ navigation, route }) => {
         setShowContactsOnFunola(false);
     }
 
+    const handleSelectContact = (numberPassed) => {
+        const foundUserOnFunola = otherUsers?.find(user => user?.phoneNumber === numberPassed?.slice(-10));
+
+        if (foundUserOnFunola) {
+            console.log('contact to send funds to: ', foundUserOnFunola);
+            navigation.navigate(
+                'SelectAmountToSend', 
+                {}
+            )
+            return
+        }
+
+        console.log('invite user to funola');
+    }
+
     return <>
         <SafeAreaView style={{ flex: 1, backgroundColor: colors.paleBlue }}>
             <View style={sendFundStyles.topContentWrapper}>
@@ -117,7 +134,7 @@ const SendFundsScreen = ({ navigation, route }) => {
                     </SafeAreaView>
                 </View>
             </View>
-            <View style={sendFundStyles.contentWrapper}>
+            <ScrollView style={sendFundStyles.contentWrapper}>
                 {
                     activeTab === 'mobile' ? <>
                         <View style={sendFundStyles.recentsWrapper}>
@@ -147,7 +164,7 @@ const SendFundsScreen = ({ navigation, route }) => {
                                 contentContainerStyle={sendFundStyles.recentListingWrap}
                             />
                         </View>
-                        <ScrollView style={sendFundStyles.contactWrapper}>
+                        <View style={sendFundStyles.contactWrapper}>
                             <Text style={sendFundStyles.contactHeadingTitle}>
                                 All contacts
                             </Text>
@@ -164,7 +181,10 @@ const SendFundsScreen = ({ navigation, route }) => {
                                         >
                                             <TouchableOpacity
                                                 onPress={
-                                                    () => setShowContactsOnFunola(true)
+                                                    () => {
+                                                        setShowContactsOnFunola(true)
+                                                        setContactsUpperLimit(initialContactUpperLimit)
+                                                    }
                                                 }
                                             >
                                                 <Text
@@ -192,7 +212,10 @@ const SendFundsScreen = ({ navigation, route }) => {
                                         >
                                             <TouchableOpacity
                                                 onPress={
-                                                    () => setShowContactsOnFunola(false)
+                                                    () => {
+                                                        setShowContactsOnFunola(false)
+                                                        setContactsUpperLimit(initialContactUpperLimit)
+                                                    }
                                                 }
                                             >
                                                 <Text
@@ -247,25 +270,52 @@ const SendFundsScreen = ({ navigation, route }) => {
                                         contentContainerStyle={sendFundStyles.contactListing}
                                         initialNumToRender={10}
                                     /> */}
-
-                                    <View style={{ height: 400 }}>
+                                    <View style={{ 
+                                        height: contactsUpperLimit < 100 ? 
+                                            contactsUpperLimit + 100 
+                                            : 
+                                            contactsUpperLimit < 200 ?
+                                                contactsUpperLimit + 200 
+                                            :
+                                            contactsUpperLimit 
+                                        }}
+                                    >
                                         <FlashList
                                             data={
+                                                showContactsOnFunola ?
+                                                    contacts.filter(contact => {
+                                                        if (searchValue.length < 1) return true
+            
+                                                        return contact?.name?.toLocaleLowerCase()?.includes(searchValue?.toLocaleLowerCase()) || contact?.phoneNumbers?.find(number => number.digits.includes(searchValue))
+                                                    })
+                                                    .filter(
+                                                        item => item?.phoneNumbers?.find(number => otherUsers?.find(user => user?.phoneNumber === number?.digits?.slice(-10)))
+                                                    )
+                                                    .slice(0, contactsUpperLimit)
+                                                :
                                                 contacts.filter(contact => {
                                                     if (searchValue.length < 1) return true
         
                                                     return contact?.name?.toLocaleLowerCase()?.includes(searchValue?.toLocaleLowerCase()) || contact?.phoneNumbers?.find(number => number.digits.includes(searchValue))
                                                 })
+                                                .slice(0, contactsUpperLimit)
                                             }
                                             renderItem={
                                                 ({ item }) => 
                                                 <ContactItem
                                                     item={item}
                                                     showOnlyContactsOnFunola={showContactsOnFunola}
+                                                    handleSelectContact={handleSelectContact}
                                                 />
                                             }
                                             estimatedItemSize={400}
                                             contentContainerStyle={sendFundStyles.contactListing}
+                                            onEndReached={
+                                                contactsUpperLimit < contacts.length ?
+                                                    () => setContactsUpperLimit(contactsUpperLimit + 20)
+                                                        :
+                                                    () => {}
+                                                }
                                         />
                                     </View>
                                     
@@ -301,7 +351,7 @@ const SendFundsScreen = ({ navigation, route }) => {
                                 <></>
                             }
                             
-                        </ScrollView>
+                        </View>
                     </> :
 
                     activeTab === 'bank' ? <>
@@ -339,7 +389,7 @@ const SendFundsScreen = ({ navigation, route }) => {
                     <></>
                 }
                 
-            </View>
+            </ScrollView>
         </SafeAreaView>
     </>
 }

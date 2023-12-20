@@ -4,25 +4,10 @@ import React from "react";
 import { useUserContext } from "../../../../../contexts/UserContext";
 import { AntDesign } from '@expo/vector-icons';
 
-export default ContactItem = ({ item, showOnlyContactsOnFunola }) => {
+export default ContactItem = ({ item, showOnlyContactsOnFunola, handleSelectContact }) => {
     const {
         otherUsers,
     } = useUserContext();
-
-    const handleSelectContact = (numberPassed) => {
-        const foundUserOnFunola = otherUsers?.find(user => user?.phoneNumber === numberPassed?.slice(-10));
-
-        if (foundUserOnFunola) {
-            console.log(foundUserOnFunola);
-            // navigator.navigate(
-            //     '', 
-            //     {}
-            // )
-            return
-        }
-
-        console.log('invite user to funola');
-    }
 
     if (Array.isArray(item?.phoneNumbers)) return <>
         {
@@ -51,7 +36,12 @@ export default ContactItem = ({ item, showOnlyContactsOnFunola }) => {
                         </View>
                         <TouchableOpacity
                             style={sendFundStyles.contactActionBtn}
-                            onPress={() => handleSelectContact(number?.digits)}
+                            onPress={
+                                handleSelectContact && typeof handleSelectContact === 'function' ?
+                                    () => handleSelectContact(number?.digits)
+                                :
+                                () => {}
+                                }
                         >
                             <Text style={sendFundStyles.contactActionBtnText}>
                                 {
