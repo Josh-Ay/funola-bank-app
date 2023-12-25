@@ -137,7 +137,7 @@ exports.get_other_users = async (req, res) => {
     return res.status(200).send(users);
 }
 
-exports.fundLimitReset = async (req, res) => {
+exports.fund_limit_reset = async (req, res) => {
     try {
         // Resets the funding/topup limit for all users
         await User.updateMany(
