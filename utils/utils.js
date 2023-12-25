@@ -68,6 +68,7 @@ exports.funolaValidBankAccountTypes = [
     'Savings'
 ]
 
+// daily topup limits for valid currencies in funola
 exports.funolaUserTopupLimits = {
     nairaLimit: 10000,
     dollarLimit: 1000,

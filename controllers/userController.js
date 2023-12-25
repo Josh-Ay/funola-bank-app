@@ -3,6 +3,7 @@ const { Notification } = require("../models/notifications");
 const { User, validateUserUpdateDetails } = require("../models/user");
 const { compileHtml, sendEmail } = require("../utils/emailUtils");
 const bcrypt = require('bcrypt');
+const { funolaUserTopupLimits } = require("../utils/utils");
 
 exports.get_user_profile = async (req, res) => {
     // sending back the user's details
@@ -134,4 +135,24 @@ exports.get_other_users = async (req, res) => {
     const users = await User.find({ }).limit(100).select('_id firstName lastName phoneNumber phoneNumberExtension').lean();
     
     return res.status(200).send(users);
+}
+
+exports.fundLimitReset = async (req, res) => {
+    try {
+        // Resets the funding/topup limit for all users
+        await User.updateMany(
+            {}, 
+            {
+                $set: { 
+                    dailyNairaTopupLimit: funolaUserTopupLimits.nairaLimit, 
+                    dailyDollarTopupLimit: funolaUserTopupLimits.dollarLimit
+                }
+            }
+        )
+        return res.status(200).send('Successfully reset the topup limits for all users');
+        
+    } catch (error) {
+        console.log('Failed to reset topup limits for users: ', error);
+        return res.status(500).send('Failed to reset topup limits for users: ');
+    }
 }
