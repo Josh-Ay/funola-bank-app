@@ -71,6 +71,20 @@ exports.fund_wallet = async (req, res) => {
         'wallet'
     );
 
+    let existingUser;
+
+    try {
+        // getting the current user
+        existingUser = await User.findById(req.user._id);
+
+        // deducting the requested amount from the user's daily limit to restrict ludricrous funding
+        if (currency === 'NGN') existingUser.dailyNairaTopupLimit -= amount;
+        if (currency === 'USD') existingUser.dailyDollarTopupLimit -= amount;
+
+    } catch (error) {
+        return res.status(500).send('Wallet funding failed');
+    }
+
     // updating the user's balance
     existingWalletOfUser.balance += amount;
     
@@ -81,7 +95,8 @@ exports.fund_wallet = async (req, res) => {
 
         sendEmail(req.user.email, 'Successful Wallet Funding', newFundingMailContent),
 
-        await existingWalletOfUser.save()
+        existingWalletOfUser.save(),
+        existingUser.save(),
     ])
 
     return res.status(200).send('Wallet funding successful!');

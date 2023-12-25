@@ -67,3 +67,8 @@ exports.funolaValidBankAccountTypes = [
     'Personal', 
     'Savings'
 ]
+
+exports.funolaUserTopupLimits = {
+    nairaLimit: 10000,
+    dollarLimit: 1000,
+}

@@ -1,5 +1,6 @@
 const Joi = require("joi");
 const { Schema, model } = require("mongoose");
+const { funolaUserTopupLimits } = require("../utils/utils");
 
 // defining a schema for the user
 const userSchema = new Schema({
@@ -76,6 +77,14 @@ const userSchema = new Schema({
     hideAccountBalances: {
         type: Boolean,
         default: false,
+    },
+    dailyNairaTopupLimit: {
+        type: Number,
+        default: funolaUserTopupLimits.nairaLimit,
+    },
+    dailyDollarTopupLimit: {
+        type: Number,
+        default: funolaUserTopupLimits.dollarLimit,
     },
 }, { timestamps: true })
 

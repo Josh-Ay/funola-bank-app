@@ -4,6 +4,7 @@ const { generateNewTransactionObj, validateNewTransactionDetails, Transaction } 
 const { Notification } = require("../models/notifications");
 const { compileHtml, sendEmail } = require("../utils/emailUtils");
 const { Wallet } = require('../models/wallet');
+const { User } = require('../models/user');
 
 exports.create_new_card = async (req, res) => {
     // validating request parameters and sending back appropriate error messages if any
@@ -79,10 +80,10 @@ exports.fund_card = async (req, res) => {
     if (!existingWalletOfUser) return res.status(403).send(`Funding failed. You do not have a ${currency} wallet.`);
 
     // validating the user has a wallet with sufficient balance in the requested currency
-    if (existingWalletOfUser.balance < amount) return res.status(403).send("You do not have sufficient funds to initiate this funding.");
+    if (existingWalletOfUser.balance < amount) return res.status(403).send("You do not have sufficient funds in your wallet to initiate this funding.");
 
     // validating card exists for user
-    const cardDetailsForUser = await Card.findOne({ owner: req.user._id, _id: id });
+    const cardDetailsForUser = await Card.findOne({ owner: req.user._id, _id: id, currency: currency });
     if (!cardDetailsForUser) return res.status(404).send('Virtual card not found for user.');
 
     // updating the wallet balance of the user
@@ -165,6 +166,20 @@ exports.fund_card = async (req, res) => {
         }),
     ]
 
+    let existingUser;
+
+    try {
+        // getting the current user
+        existingUser = await User.findById(req.user._id);
+
+        // deducting the requested amount from the user's daily limit to restrict ludricrous funding
+        if (currency === 'NGN') existingUser.dailyNairaTopupLimit -= amount;
+        if (currency === 'USD') existingUser.dailyDollarTopupLimit -= amount;
+
+    } catch (error) {
+        return res.status(500).send('Card funding failed');
+    }
+
     try {
         await Promise.all([
             existingWalletOfUser.save(),
@@ -175,6 +190,8 @@ exports.fund_card = async (req, res) => {
 
             newTransactionForWallet.save(),
             newNotificationForWallet.save(),
+
+            existingUser.save(),
 
             sendEmail(req.user.email, 'Card Funding', newFundingMailContent),
             sendEmail(req.user.email, 'Wallet Debit', newWithdrawalMailContent),
