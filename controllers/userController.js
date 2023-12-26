@@ -132,7 +132,7 @@ exports.get_user_notifications = async (req, res) => {
 
 exports.get_other_users = async (req, res) => {
     // fetching the first 100 users
-    const users = await User.find({ }).limit(100).select('_id firstName lastName phoneNumber phoneNumberExtension').lean();
+    const users = await User.find({ }).limit(100).select('_id title firstName lastName gender country phoneNumber phoneNumberExtension').lean();
     
     return res.status(200).send(users);
 }
