@@ -6,6 +6,7 @@ const { validateMongooseId, checkWalletRequestBodyErrors, funolaValidCurrencies 
 const { Notification } = require("../models/notifications");
 const { get_currency_rate } = require("../utils/convertUtil");
 const bcrypt = require('bcrypt');
+const { validateRecentMobileTransfer, RecentMobileTransfer } = require('../models/recentMobileTransfers');
 
 exports.create_wallet = async (req, res) => {
     // checking the user has verified account
@@ -125,12 +126,17 @@ exports.transfer_fund = async (req, res) => {
     const { errorMsg, amount, currency } = checkWalletRequestBodyErrors(req.body);
     if (errorMsg) return res.status(400).send(errorMsg);
 
+    // getting the receiving user, current user and current user recent transfers
+    const [ receivingUser, currentUser, currentUserRecentTransfers ] = await Promise.all([
+        await User.findById(receiverId),
+        await User.findById(req.user._id),
+        await RecentMobileTransfer.find({ owner: req.user._id }).sort({ createdAt: -1 }),
+    ]);
+
     // checking the receiver user exists
-    const receivingUser = await User.findById(receiverId);
     if (!receivingUser) return res.status(403).send("Transfer failed. User not found");
 
     // checking the user has set a  pin
-    const currentUser = await User.findById(req.user._id);
     if (!currentUser.transactionPin) return res.status(403).send("Please set a transaction pin first");
 
     // checking the pin passed is correct
@@ -158,11 +164,34 @@ exports.transfer_fund = async (req, res) => {
     if (validNewSenderTransaction.error) return res.status(400).send(validNewSenderTransaction.error.details[0].message);
     if (validNewReceiverTransaction.error) return res.status(400).send(validNewReceiverTransaction.error.details[0].message);
 
-    // creating new transaction records for sender and receiver
-    await Promise.all([
-        Transaction.create(validNewSenderTransaction.value),
-        Transaction.create(validNewReceiverTransaction.value)
-    ]);
+    // constructing and validating recent transfer object record
+    const validNewRecentTransfer = validateRecentMobileTransfer({
+        owner: req.user._id,
+        userId: receiverId,
+        userPhoneNumber: receivingUser.phoneNumber,
+        userPhoneNumberExtension: receivingUser.phoneNumberExtension,
+    })
+    if (validNewRecentTransfer.error) return res.status(400).send(validNewRecentTransfer.error.details[0].message);
+
+    // deleting the previous transfer record with the same receiver
+    const receiverIsInRecents = currentUserRecentTransfers.find(item => item.userId === receiverId)
+    if (receiverIsInRecents) {
+        await RecentMobileTransfer.deleteOne({ _id: receiverIsInRecents._id })
+    }
+
+    // ensuring that the user only has 5 or less recent transfer records for optimization purposes
+    if (currentUserRecentTransfers.length === 5 && !receiverIsInRecents) {
+        await RecentMobileTransfer.deleteOne({ _id: currentUserRecentTransfers[currentUserRecentTransfers.length - 1]?._id })
+    }
+
+    // creating new transfer for sender, new transaction records for sender and receiver
+    await Promise.all(
+        [
+            RecentMobileTransfer.create(validNewRecentTransfer.value),
+            Transaction.create(validNewSenderTransaction.value),
+            Transaction.create(validNewReceiverTransaction.value),
+        ]
+    );
     
     // updating the sender's balance
     existingWalletOfSender.balance -= amount;
