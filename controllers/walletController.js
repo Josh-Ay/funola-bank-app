@@ -442,7 +442,17 @@ exports.request_fund = async (req, res) => {
 exports.get_recent_transfer_recipients = async (req, res) => {
     try {
         const recents = await RecentMobileTransfer.find({ owner: req.user._id }).sort({ createdAt: -1 }).lean();
-        return res.status(200).send(recents);
+        const updatedRecentsWithName = await Promise.all(
+            recents.map(async (recent) => {
+                const foundUser = await User.findById(recent.userId).lean().select('firstName lastName');
+                if (!foundUser) return null
+                return {
+                    ...recent,
+                    nameOfUser: `${foundUser.firstName} ${foundUser.lastName}`
+                }
+            }).filter(item => item)
+        )
+        return res.status(200).send(updatedRecentsWithName);
     } catch (error) {
         return res.status(500).send('An error occured while trying to get your recents')
     }
