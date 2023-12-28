@@ -12,5 +12,6 @@ router.post("/transfer/:type", userAuth, walletController.transfer_fund);
 router.post("/withdrawal", userAuth, walletController.withdraw_from_wallet);
 router.post("/swap", userAuth, walletController.swap_currency);
 router.post("/request", userAuth, walletController.request_fund);
+router.get("/recents", userAuth, walletController.get_recent_transfer_recipients);
 
 module.exports = router;

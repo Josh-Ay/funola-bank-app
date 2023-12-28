@@ -438,6 +438,15 @@ exports.request_fund = async (req, res) => {
     return res.status(200).send(`Successfully requested for ${currency}${amount} from ${creditingUser.firstName} ${creditingUser.lastName}`)
 }
 
+exports.get_recent_transfer_recipients = async (req, res) => {
+    try {
+        const recents = await RecentMobileTransfer.find({ owner: req.user._id }).sort({ createdAt: -1 }).lean();
+        return res.status(200).send(recents);
+    } catch (error) {
+        return res.status(500).send('An error occured while trying to get your recents')
+    }
+}
+
 exports.clear_wallet_transaction = async (req, res) => {
     // TODO: use CRON to run in background
 
