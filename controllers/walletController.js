@@ -170,6 +170,7 @@ exports.transfer_fund = async (req, res) => {
         userId: receiverId,
         userPhoneNumber: receivingUser.phoneNumber,
         userPhoneNumberExtension: receivingUser.phoneNumberExtension,
+        userGender: receivingUser.gender,
     })
     if (validNewRecentTransfer.error) return res.status(400).send(validNewRecentTransfer.error.details[0].message);
 

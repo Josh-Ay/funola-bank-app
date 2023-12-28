@@ -21,6 +21,11 @@ const recentMobileTransferSchema = new Schema({
         type: String,
         required: true,
     },
+    userGender: {
+        type: String,
+        required: true,
+        enum: ['M', 'F'],
+    },
 }, { timestamps: true })
 
 
@@ -38,6 +43,7 @@ function validateRecentMobileTransfer(recentEntry) {
         userId: Joi.string().required(),
         userPhoneNumber: Joi.string().required().min(10).max(13),
         userPhoneNumberExtension: Joi.string().required().min(1).max(4),
+        userGender: Joi.string().required().valid('M', 'F'),
     })
 
     return schema.validate(recentEntry)
