@@ -11,6 +11,8 @@ exports.get_user_profile = async (req, res) => {
 }
 
 exports.update_user_detail = async (req, res) => {
+    if (!req.user.accountVerified) return res.status(401).send('Kindly verify your account first');
+
     // validating the request parameters
     const { updateType } = req.params;
     if (!updateType) return res.status(400).send("'updateType' required");
@@ -74,6 +76,19 @@ exports.update_user_detail = async (req, res) => {
             // hashing and salting the pin
             const hashAndSaltedPin = await bcrypt.hash(String(validUserDetails.value.transactionPin), Number(process.env.SALT_ROUNDS));
             foundUser.transactionPin = hashAndSaltedPin;
+            await foundUser.save();
+
+            return res.status(200).send("Pin successfully updated");
+        
+        // updating the user's login pin
+        case 'login-pin':
+            // validating loginPin passed is numeric
+            if (isNaN(Number(validUserDetails.value.loginPin))) return res.status(400).send("'loginPin' must be a number");
+            if (String(validUserDetails.value.loginPin).length !== 6) return res.status(400).send("Please enter a 6-digit number")
+            
+            // hashing and salting the pin
+            const hashAndSaltedLoginPin = await bcrypt.hash(String(validUserDetails.value.loginPin), Number(process.env.SALT_ROUNDS));
+            foundUser.loginPin = hashAndSaltedLoginPin;
             await foundUser.save();
 
             return res.status(200).send("Pin successfully updated");
@@ -154,5 +169,29 @@ exports.fund_limit_reset = async (req, res) => {
     } catch (error) {
         console.log('Failed to reset topup limits for users: ', error);
         return res.status(500).send('Failed to reset topup limits for users: ');
+    }
+}
+
+exports.check_if_user_has_transaction_pin = async (req, res) => {
+    try {
+        // fetching the current user to validate if the user has a transaction pin
+        const currentUser = await User.findById(req.user._id);
+        if (currentUser.transactionPin) return res.status(200).send('User has set a transaction pin');
+        
+        return res.status(404).send('User has not set a transaction pin');
+    } catch (error) {
+        return res.status(500).send('Failed to check if user has configured a transaction pin');
+    }
+}
+
+exports.check_if_user_has_login_pin = async (req, res) => {
+    try {
+        // fetching the current user to validate if the user has a login pin
+        const currentUser = await User.findById(req.user._id);
+        if (currentUser.loginPin) return res.status(200).send('User has set a login pin');
+        
+        return res.status(404).send('User has not set a login pin');
+    } catch (error) {
+        return res.status(500).send('Failed to check if user has configured a login pin');
     }
 }
