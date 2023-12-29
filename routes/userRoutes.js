@@ -9,6 +9,7 @@ router.patch("/update-profile/:updateType", userAuth, userController.update_user
 router.get("/notifications", userAuth, userController.get_user_notifications);
 router.get("/users", userAuth, userController.get_other_users);
 router.get("/transaction-pin-status", userAuth, userController.check_if_user_has_transaction_pin);
+router.get("/login-pin-status", userAuth, userController.check_if_user_has_login_pin);
 router.get(process.env.FUND_LIMIT_RESET_ROUTE, userController.fund_limit_reset);
 
 module.exports = router;
