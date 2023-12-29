@@ -1,5 +1,7 @@
-import { StyleSheet } from "react-native";
+import { Dimensions, StyleSheet } from "react-native";
 import { colors } from "../../../utils/colors";
+
+const { height } = Dimensions.get('window');
 
 export const sendFundStyles = StyleSheet.create({
     topContentWrapper: {
@@ -39,9 +41,20 @@ export const sendFundStyles = StyleSheet.create({
         fontFamily: 'Poppins-Medium',
         fontSize: 18,
     },
+    contentText: {
+        fontFamily: 'Poppins',
+        fontSize: 12,
+        textAlign: 'center',
+        marginTop: 20,
+        marginBottom: 20,
+    },
     recentsWrapper: {
         padding: 25,
         gap: 12,
+    },
+    contactTabFilter: {
+        marginTop: 10,
+        marginBottom: 20,
     },
     contactHeadingTitle: {
         fontFamily: 'Poppins-Medium',
@@ -102,6 +115,11 @@ export const sendFundStyles = StyleSheet.create({
         alignItems: 'center',
         gap: 14,
     },
+    contactImageWrapper: {
+        width: 40,
+        height: 40,
+        borderRadius: 10
+    },
     contactName: {
         fontFamily: 'Poppins-Medium',
         fontSize: 14,
@@ -123,32 +141,6 @@ export const sendFundStyles = StyleSheet.create({
         fontFamily: 'Poppins',
         color: colors.white,
         fontSize: 11,
-    },
-    depositFilterWrap: {
-        flexDirection: 'row',
-        justifyContent: 'space-between',
-        alignItems: 'center',
-        marginTop: 10,
-        marginBottom: 20,
-    },
-    depositFilterItem: {
-        gap: 7,
-        flex: 0.5,
-    },
-    depositFilterItemText: {
-        fontFamily: 'Poppins',
-        textAlign: 'center',
-        color: colors.grey,
-    },
-    activeFilter: {
-        color: colors.blue,
-    },
-    depositFilterIndicator: {
-        height: 3,
-        backgroundColor: colors.lightGrey,
-    },
-    blueDepositFilterIndicator: {
-        backgroundColor: colors.blue,
     },
     recentListingWrap: {
         gap: 20,
@@ -173,6 +165,11 @@ export const sendFundStyles = StyleSheet.create({
         color: colors.grey,
         fontSize: 12,
         marginTop: 5,
+    },
+    recentUserImageWrapper: {
+        borderRadius: 50 / 2,
+        width: 50,
+        height: 50,
     },
     payeeWrapper: {
         padding: 25,
@@ -221,5 +218,57 @@ export const sendFundStyles = StyleSheet.create({
     },
     bankRightIcon: {
         marginLeft: 'auto'
+    },
+    qrWrapper: {
+        padding: 25,
+        gap: 12,
+    },
+    scanWrapper: {
+        position: 'relative',
+        marginTop: 25,
+    },
+    leftTopSquareScan: {
+        position: 'absolute',
+        left: 20,
+        top: 0,
+        height: 30,
+        width: 30,
+        borderTopWidth: 3,
+        borderLeftWidth: 3,
+    },
+    leftBottomSquareScan: {
+        position: 'absolute',
+        left: 20,
+        bottom: 0,
+        height: 30,
+        width: 30,
+        borderLeftWidth: 3,
+        borderBottomWidth: 3,
+    },
+    rightTopSquareScan: {
+        position: 'absolute',
+        right: 20,
+        top: 0,
+        height: 30,
+        width: 30,
+        borderTopWidth: 3,
+        borderRightWidth: 3,
+    },
+    rightBottomSquareScan: {
+        position: 'absolute',
+        right: 20,
+        bottom: 0,
+        height: 30,
+        width: 30,
+        borderRightWidth: 3,
+        borderBottomWidth: 3,
+    },
+    qrContainer: {
+        backgroundColor: colors.grey,
+        width: '70%',
+        height: height * 0.32,
+        alignSelf: 'center',
+        marginTop: 25,
+        marginBottom: 25,
     },
 })

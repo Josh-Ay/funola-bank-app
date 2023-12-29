@@ -8,6 +8,7 @@ export const configureFundStyles = StyleSheet.create({
         paddingRight: 25,
         paddingTop: 20,
         paddingBottom: 40,
+        marginTop: 10,
     },
     topContent: {
         gap: 5,
@@ -38,12 +39,13 @@ export const configureFundStyles = StyleSheet.create({
     },
     amountTextWrap: {
         alignSelf: 'center',
-        width: '80%',
+        // width: '80%',
         justifyContent: 'space-between',
         flexDirection: 'row',
         alignItems: 'center',
         marginTop: 20,
-        marginBottom: 20,
+        marginBottom: 10,
+        gap: 20,
     },
     amountBtn: {
         padding: 10,
@@ -66,6 +68,16 @@ export const configureFundStyles = StyleSheet.create({
     selectDebitAccount: {
         backgroundColor: colors.white,
         padding: 25,
+    },
+    addRemarks: {
+        backgroundColor: colors.white,
+        padding: 25,
+        paddingBottom: 120,
+        gap: 8,
+    },
+    remarksText: {
+        fontFamily: 'Poppins',
+        fontSize: 12,
     },
     actionsWrap: {
         position: 'absolute',
@@ -119,5 +131,9 @@ export const configureFundStyles = StyleSheet.create({
     quickAmountText: {
         fontFamily: 'Poppins',
         color: colors.deepBlue,
+    },
+    selectAccountFilter: {
+        marginTop: 20,
+        marginBottom: 20,
     },
 })

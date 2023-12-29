@@ -61,4 +61,20 @@ export const cardStyles = StyleSheet.create({
         fontSize: 14,
         fontFamily: 'Poppins',
     },
+    activeCard: {
+        shadowColor: colors.black,
+        shadowOffset: {
+            width: 1,
+            height: 2,
+        },
+        shadowOpacity: 0.1,
+        shadowRadius: 3,
+        elevation: 2,
+        backgroundColor: colors.paleBlue,
+        paddingLeft: 10,
+        paddingRight: 10,
+        paddingTop: 15,
+        paddingBottom: 15,
+        borderRadius: 10,
+    }
 })

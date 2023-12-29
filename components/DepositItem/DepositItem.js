@@ -1,6 +1,6 @@
 import { Text, TouchableOpacity, View } from "react-native";
 import { MaterialCommunityIcons } from '@expo/vector-icons';
-import { formatDate, formatDateToMonthAndDay } from "../../utils/helpers";
+import { formatDate, formatDateToMonthAndDay, getCurrencySymbol } from "../../utils/helpers";
 import { depositStyles } from "./depositStyles";
 import { colors } from "../../utils/colors";
 import { Ionicons } from '@expo/vector-icons';
@@ -49,15 +49,7 @@ export default function DepositItem ({
                     }
                 >
                     {
-                        `${transaction?.transactionType === 'credit' ? '+' : transaction?.transactionType === 'debit' ? '-' : ''} ${
-                            transaction?.currency === 'NGN' ? 
-                                '₦' 
-                            : 
-                            transaction?.currency === 'USD' ? 
-                                '$' 
-                            : 
-                                ''
-                            } ${Number(transaction?.amount)?.toFixed(2)}`
+                        `${transaction?.transactionType === 'credit' ? '+' : transaction?.transactionType === 'debit' ? '-' : ''} ${getCurrencySymbol(transaction?.currency)} ${Number(transaction?.amount)?.toFixed(2)}`
                     }
                 </Text>
                 <Text style={depositStyles.cardDateText}>
@@ -103,15 +95,7 @@ export default function DepositItem ({
             <View style={depositStyles.cardRightContent}>
                 <Text style={depositStyles.cardBalance}>
                     {
-                        `${
-                            deposit?.currency === 'NGN' ? 
-                                '₦' 
-                            : 
-                            deposit?.currency === 'USD' ? 
-                                '$' 
-                            : 
-                                ''
-                            } ${Number(deposit?.paybackAmount)?.toFixed(2)}`
+                        `${getCurrencySymbol(deposit?.currency)} ${Number(deposit?.paybackAmount)?.toFixed(2)}`
                     }
                 </Text>
                 <Text style={depositStyles.cardDateText}>

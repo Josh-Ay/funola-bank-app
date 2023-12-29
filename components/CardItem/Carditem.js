@@ -1,5 +1,5 @@
 import { Image, Text, TouchableOpacity, View } from 'react-native';
-import { formatDateToMonthAndYear } from '../../utils/helpers';
+import { formatDateToMonthAndYear, getCurrencySymbol } from '../../utils/helpers';
 import { cardStyles } from './cardStyles';
 import Toggle from 'react-native-toggle-input'
 import { colors } from '../../utils/colors';
@@ -12,6 +12,7 @@ export default function CardItem ({
     cardSettingType,
     cardSettingTypeKey,
     handleCardSettingChange,
+    isSelectedCard,
 }) {
     if (!card) return <></>
 
@@ -63,7 +64,16 @@ export default function CardItem ({
     
     return <>
         <TouchableOpacity 
-            style={cardStyles.singleUserItem}
+            style={
+                isSelectedCard ?
+                    Object.assign(
+                        {},
+                        cardStyles.singleUserItem,
+                        cardStyles.activeCard
+                    )
+                :
+                cardStyles.singleUserItem
+            }
             onPress={
                 handleCardClick && typeof handleCardClick === 'function' ?
                     () => handleCardClick(card)
@@ -98,15 +108,7 @@ export default function CardItem ({
             <View style={cardStyles.cardRightContent}>
                 <Text style={cardStyles.cardBalance}>
                     {
-                        `${
-                            card?.currency === 'NGN' ? 
-                                '₦' 
-                            : 
-                            card?.currency === 'USD' ? 
-                                '$' 
-                            : 
-                                ''
-                            } ${Number(card?.balance)?.toFixed(2)}`
+                        `${getCurrencySymbol(card?.currency)} ${Number(card?.balance)?.toFixed(2)}`
                     }
                 </Text>
                 <Text style={cardStyles.cardDateText}>

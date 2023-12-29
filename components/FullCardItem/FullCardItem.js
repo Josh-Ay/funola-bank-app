@@ -2,7 +2,7 @@ import { TouchableOpacity, View } from "react-native"
 import { colors } from "../../utils/colors";
 import { Text } from "react-native";
 import { fullCardStyles } from "./fullCardStyles";
-import { formatDateToMonthAndYear } from '../../utils/helpers'
+import { formatDateToMonthAndYear, getCurrencySymbol } from '../../utils/helpers'
 
 const FullCardItem = ({ card, defaultBg, pressable, handlePress }) => {
     if (!card) return <></>
@@ -26,15 +26,7 @@ const FullCardItem = ({ card, defaultBg, pressable, handlePress }) => {
             <View style={fullCardStyles.cardAccountDetails}>
                 <Text style={fullCardStyles.cardBalanceText}>
                     {
-                        `${
-                            card?.currency === 'NGN' ? 
-                                '₦' 
-                            : 
-                            card?.currency === 'USD' ? 
-                                '$' 
-                            : 
-                                ''
-                        } ${Number(card?.balance)?.toFixed(2)}`
+                        `${getCurrencySymbol(card?.currency)} ${Number(card?.balance)?.toFixed(2)}`
                     }
                 </Text>
                 <Text style={fullCardStyles.cardPaymentNetworkText}>
@@ -72,15 +64,7 @@ const FullCardItem = ({ card, defaultBg, pressable, handlePress }) => {
             <View style={fullCardStyles.cardAccountDetails}>
                 <Text style={fullCardStyles.cardBalanceText}>
                     {
-                        `${
-                            card?.currency === 'NGN' ? 
-                                '₦' 
-                            : 
-                            card?.currency === 'USD' ? 
-                                '$' 
-                            : 
-                                ''
-                        } ${Number(card?.balance)?.toFixed(2)}`
+                        `${getCurrencySymbol(card?.currency)} ${Number(card?.balance)?.toFixed(2)}`
                     }
                 </Text>
                 <Text style={fullCardStyles.cardPaymentNetworkText}>

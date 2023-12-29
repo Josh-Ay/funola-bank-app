@@ -72,3 +72,13 @@ export const validFunolaPaymentMethods = [
         method: 'wallet',
     },
 ]
+
+// List of valid bank account bank types in the application
+export const validFunolaBankAccountTypes = [
+    {
+        type: 'Personal',
+    },
+    {
+        type: 'Savings',
+    }
+]

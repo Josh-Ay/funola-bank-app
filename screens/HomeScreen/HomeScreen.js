@@ -32,6 +32,7 @@ import { useAtmContext } from "../../contexts/AtmsContext";
 import { AtmServices } from "../../services/atmServices";
 import { useBanksContext } from "../../contexts/BanksContext";
 import { BankServices } from "../../services/bankServices";
+import { getCurrencySymbol } from "../../utils/helpers";
 
 const HomeScreen = ({ navigation }) => {
 
@@ -614,13 +615,7 @@ const HomeScreen = ({ navigation }) => {
                                     <Text style={homePageStyles.balanceText}>
                                         {
                                             `${
-                                                currentWallet?.currency === 'NGN' ? 
-                                                    '₦' 
-                                                : 
-                                                currentWallet?.currency === 'USD' ? 
-                                                    '$' 
-                                                : 
-                                                    ''
+                                                getCurrencySymbol(currentWallet?.currency)
                                                 } ${
                                                     walletBalanceObscured ? 
                                                         '****'

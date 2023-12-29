@@ -9,6 +9,7 @@ import { useEffect, useState } from "react";
 import { FlatList } from "react-native";
 import DepositItem from "../../../components/DepositItem/DepositItem";
 import { Dimensions } from "react-native";
+import NavigationTabFilterItem from "../../../components/NavigationTabFilterItem/NavigationTabFilterItem";
 
 const { height } = Dimensions.get('window');
 
@@ -47,58 +48,18 @@ const AllTransactionsScreen = ({ navigation, route }) => {
 
                 {
                     route?.params?.typeOfItem === 'deposit' &&
-                    <View style={transactionStyles.depositFilterWrap}>
-                        <View style={transactionStyles.depositFilterItem}>
-                            <TouchableOpacity
-                                onPress={
-                                    () => setShowRedeemedDeposits(false)
-                                }
-                            >
-                                <Text 
-                                    style={
-                                        Object.assign(
-                                            {},
-                                            transactionStyles.depositFilterItemText,
-                                            showRedeemedDeposits ? {} : transactionStyles.activeFilter,
-                                        )
-                                    }
-                                >
-                                    Ongoing
-                                </Text>
-                            </TouchableOpacity>
-                            <View style={
-                                Object.assign(
-                                    {}, 
-                                    transactionStyles.depositFilterIndicator,
-                                    !showRedeemedDeposits ? transactionStyles.blueDepositFilterIndicator : {}
-                                )}
-                            ></View>
-                        </View>
-                        <View style={transactionStyles.depositFilterItem}>
-                            <TouchableOpacity
-                                onPress={
-                                    () => setShowRedeemedDeposits(true)
-                                }
-                            >
-                                <Text
-                                    style={
-                                        Object.assign(
-                                            {},
-                                            transactionStyles.depositFilterItemText,
-                                            !showRedeemedDeposits ? {} : transactionStyles.activeFilter,
-                                        )
-                                    }
-                                >Matured</Text>
-                            </TouchableOpacity>
-                            <View style={
-                                Object.assign(
-                                    {}, 
-                                    transactionStyles.depositFilterIndicator,
-                                    showRedeemedDeposits ? transactionStyles.blueDepositFilterIndicator : {}
-                                )}
-                            ></View>
-                        </View>
-                    </View>
+                    <NavigationTabFilterItem 
+                        firstFilterItem={'Ongoing'}
+                        firstFilterItemActive={!showRedeemedDeposits}
+                        handleFirstFilterItemClick={
+                            () => setShowRedeemedDeposits(false)
+                        }
+                        secondFilterItem={'Matured'}
+                        secondFilterItemActive={showRedeemedDeposits}
+                        handleSecondFilterItemClick={
+                            () => setShowRedeemedDeposits(true)
+                        }
+                    />
                 }
 
                 <View style={{ maxHeight: height * 0.7 }}>

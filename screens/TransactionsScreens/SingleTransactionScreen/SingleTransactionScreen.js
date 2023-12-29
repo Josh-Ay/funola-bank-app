@@ -6,7 +6,7 @@ import { View } from "react-native";
 import { Text } from "react-native";
 import { Ionicons } from '@expo/vector-icons';
 import { transactionStyles } from "../transactionStyles";
-import { formatDateToMonthAndDay, getDateHoursAndMinutes } from "../../../utils/helpers";
+import { formatDateToMonthAndDay, getCurrencySymbol, getDateHoursAndMinutes } from "../../../utils/helpers";
 import { Image } from "react-native";
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { ScrollView } from "react-native";
@@ -76,13 +76,7 @@ const SingleTransactionScreen = ({ route, navigation }) => {
                         }>
                             {
                                 `${currentTransaction?.transactionType === 'credit' ? '+' : currentTransaction?.transactionType === 'debit' ? '-' : ''} ${
-                                    currentTransaction?.currency === 'NGN' ? 
-                                        '₦' 
-                                    : 
-                                    currentTransaction?.currency === 'USD' ? 
-                                        '$' 
-                                    : 
-                                        ''
+                                    getCurrencySymbol(currentTransaction?.currency)
                                 }${route?.params?.typeOfItem === 'deposit' ? Number(currentTransaction?.paybackAmount).toFixed(2) : currentTransaction?.amount}`
                             }
                         </Text>

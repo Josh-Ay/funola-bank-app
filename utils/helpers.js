@@ -81,3 +81,36 @@ export const getDateHoursAndMinutes = (date) => {
 
     return `${validDate.getHours() < 10 ? '0' + validDate.getHours() : validDate.getHours()}:${validDate.getMinutes() < 10 ? '0' + validDate.getMinutes() : validDate.getMinutes()}`
 }
+
+export const changeToTitleCase = (inputStr) => {
+    /**
+     * Formats a string to title case
+     * 
+     * @param inputStr string you will like to format
+     * 
+     * @returns Formatted string e.g An inputStr with value of 'ayoola' will have an output of 'Ayoola'
+     * 
+     */
+
+    if (typeof (inputStr) !== "string") return inputStr;
+
+    return inputStr[0]?.toLocaleUpperCase() + inputStr?.slice(1).toLocaleLowerCase();
+}
+
+export const getCurrencySymbol = (currency) => {
+    /**
+     * Get the symbol of a currency
+     * 
+     * @param currency The currency for which you will like to get its symbol
+     * 
+     * @returns The symbol of the currency e.g ₦
+     * 
+     */
+
+    if (typeof currency !== 'string') return '';
+
+    if (currency === 'NGN') return '₦';
+    if (currency === 'USD') return '$'; 
+    
+    return ''
+}

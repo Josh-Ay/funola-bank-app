@@ -32,7 +32,7 @@ export class UserServices {
          * @returns A promise
          * 
          */
-        return await axiosInstance.put(`${this.urlPrefix}/update-profile/${updateType}`, data)
+        return await axiosInstance.patch(`${this.urlPrefix}/update-profile/${updateType}`, data)
     }
 
     getNotifications = async () => {
@@ -53,5 +53,25 @@ export class UserServices {
          * @returns A promise
          */
         return await axiosInstance.get(`${this.urlPrefix}/users`)
+    }
+
+    checkLoginPinStatus = async () => {
+        /**
+         * Checks if the current user has configured a login pin
+         * 
+         * @returns A promise
+         */
+
+        return await axiosInstance.get(`${this.urlPrefix}/login-pin-status`)
+    }
+
+    checkTransactionPinStatus = async () => {
+        /**
+        * Checks if the current user has configured a transaction pin
+        * 
+        * @returns A promise
+        */
+
+        return await axiosInstance.get(`${this.urlPrefix}/transaction-pin-status`)
     }
 }

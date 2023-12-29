@@ -1,5 +1,6 @@
 import { Image, Text, TouchableOpacity, View } from 'react-native';
 import { appLayoutStyles } from '../../styles';
+import { getCurrencySymbol } from '../../../../utils/helpers';
 
 export default function SingleWalletItem ({
     wallet,
@@ -11,7 +12,12 @@ export default function SingleWalletItem ({
 
     return <>
         <TouchableOpacity
-            onPress={() => handleWalletItemClick(walletIndex)} 
+            onPress={
+                handleWalletItemClick && typeof handleWalletItemClick === 'function' ?
+                    () => handleWalletItemClick(walletIndex)
+                :
+                () => {}
+            } 
             style={
                 currentActiveWallet?._id === wallet?._id ?
                     Object.assign({}, appLayoutStyles.walletItem, appLayoutStyles.activeWalletItem)
@@ -40,15 +46,7 @@ export default function SingleWalletItem ({
             <View>
                 <Text style={appLayoutStyles.balanceText}>
                     {
-                        `${
-                            wallet?.currency === 'NGN' ? 
-                                '₦' 
-                            : 
-                            wallet?.currency === 'USD' ? 
-                                '$' 
-                            : 
-                                ''
-                        } ${Number(Number(wallet?.balance)?.toFixed(2))?.toLocaleString()}`
+                        `${getCurrencySymbol(wallet?.currency)} ${Number(Number(wallet?.balance)?.toFixed(2))?.toLocaleString()}`
                     }
                 </Text>
             </View>

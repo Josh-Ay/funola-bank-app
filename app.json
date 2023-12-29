@@ -32,6 +32,12 @@
         {
           "contactsPermission": "Allow $(Funola) to access your contacts."
         }
+      ],
+      [
+        "expo-barcode-scanner",
+        {
+          "cameraPermission": "Allow $(Funola) to access camera."
+        }
       ]
     ]
   }

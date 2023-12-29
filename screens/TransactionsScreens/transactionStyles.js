@@ -113,28 +113,4 @@ export const transactionStyles = StyleSheet.create({
         fontSize: 12,
         color: colors.blue,
     },
-    depositFilterWrap: {
-        flexDirection: 'row',
-        justifyContent: 'space-between',
-        alignItems: 'center',
-    },
-    depositFilterItem: {
-        gap: 7,
-        flex: 0.5,
-    },
-    depositFilterItemText: {
-        fontFamily: 'Poppins',
-        textAlign: 'center',
-        color: colors.grey,
-    },
-    activeFilter: {
-        color: colors.blue,
-    },
-    depositFilterIndicator: {
-        height: 3,
-        backgroundColor: colors.lightGrey,
-    },
-    blueDepositFilterIndicator: {
-        backgroundColor: colors.blue,
-    },
 })

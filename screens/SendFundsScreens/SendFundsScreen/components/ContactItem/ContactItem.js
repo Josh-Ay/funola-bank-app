@@ -4,7 +4,14 @@ import React from "react";
 import { useUserContext } from "../../../../../contexts/UserContext";
 import { AntDesign } from '@expo/vector-icons';
 
-export default ContactItem = ({ item, showOnlyContactsOnFunola, handleSelectContact }) => {
+export default ContactItem = ({ 
+    item, 
+    showOnlyContactsOnFunola, 
+    handleSelectContact, 
+    hideContactActionBtn,
+    genderSelectionAvailable,
+    style
+}) => {
     const {
         otherUsers,
     } = useUserContext();
@@ -17,9 +24,25 @@ export default ContactItem = ({ item, showOnlyContactsOnFunola, handleSelectCont
                 if (showOnlyContactsOnFunola && !numberIsOnFunola) return <></>
 
                 return <>
-                    <View style={sendFundStyles.singleContact}>
+                    <View style={
+                        style && typeof style === 'object' ?
+                            Object.assign(
+                                {},
+                                sendFundStyles.singleContact,
+                                style
+                            )
+                            :
+                            sendFundStyles.singleContact
+                        }
+                    >
                         <View style={sendFundStyles.singleContactTopContent}>
                             {
+                                genderSelectionAvailable && item?.gender ?
+                                <UserProfileImage 
+                                    user={{ gender: item?.gender }}
+                                    pressable={false}
+                                    imageStyle={sendFundStyles.contactImageWrapper}
+                                /> :
                                 item.imageAvailable ? 
                                 <Image
                                     source={item.image}
@@ -34,24 +57,28 @@ export default ContactItem = ({ item, showOnlyContactsOnFunola, handleSelectCont
                                 <Text style={sendFundStyles.contactNumber}>{number?.digits}</Text>
                             </View>
                         </View>
-                        <TouchableOpacity
-                            style={sendFundStyles.contactActionBtn}
-                            onPress={
-                                handleSelectContact && typeof handleSelectContact === 'function' ?
-                                    () => handleSelectContact(number?.digits)
-                                :
-                                () => {}
-                                }
-                        >
-                            <Text style={sendFundStyles.contactActionBtnText}>
-                                {
-                                    numberIsOnFunola ? 
-                                        'Select'
+                        {
+                            hideContactActionBtn ? <></> 
+                            :
+                            <TouchableOpacity
+                                style={sendFundStyles.contactActionBtn}
+                                onPress={
+                                    handleSelectContact && typeof handleSelectContact === 'function' ?
+                                        () => handleSelectContact(number?.digits)
                                     :
-                                    'Invite'
-                                }
-                            </Text>
-                        </TouchableOpacity>
+                                    () => {}
+                                    }
+                            >
+                                <Text style={sendFundStyles.contactActionBtnText}>
+                                    {
+                                        numberIsOnFunola ? 
+                                            'Select'
+                                        :
+                                        'Invite'
+                                    }
+                                </Text>
+                            </TouchableOpacity>
+                        }
                     </View>
                 </>
             }))

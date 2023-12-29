@@ -47,17 +47,17 @@ export class WalletServices {
         return await axiosInstance.put(`${this.urlPrefix}/fund`, data)
     }
 
-    transferFromWallet = async (data, walletType) => {
+    transferFromWallet = async (data, type) => {
         /**
          * Transfer funds from an existing wallet
          * 
          * @param data Request body containing the amount to be transferred from the wallet
-         * @param walletType The type of wallet being transferred from (e.g NGN, USD)
+         * @param type The type of item at the receiving end (e.g wallet, bank)
          * 
          * @returns A promise
          */
 
-        return await axiosInstance.post(`${this.urlPrefix}/transfer/${walletType}`)
+        return await axiosInstance.post(`${this.urlPrefix}/transfer/${type}`, data)
     }
 
     withdrawFromWallet = async (data) => {
@@ -94,5 +94,15 @@ export class WalletServices {
          */
         
         return await axiosInstance.post(`${this.urlPrefix}/request`, data)
+    }
+
+    getRecents = async () => {
+        /**
+         * Get the recent transfer recipients for the current user
+         * 
+         * @returns A promise 
+         */
+
+        return await axiosInstance.get(`${this.urlPrefix}/recents`)
     }
 }
