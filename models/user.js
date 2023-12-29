@@ -71,6 +71,9 @@ const userSchema = new Schema({
     transactionPin: {
         type: String,
     },
+    loginPin: {
+        type: String,
+    },
     adminUser: {
         type: Boolean,
     },
@@ -150,6 +153,11 @@ function validateUserUpdateDetails(userDetails, typeOfUpdate) {
         case 'balanceVisibility':
             schema = Joi.object({
                 hideAccountBalances: Joi.boolean().required(),
+            })
+            break;
+        case 'login-pin':
+            schema = Joi.object({
+                loginPin: Joi.required(),
             })
             break;
         default:

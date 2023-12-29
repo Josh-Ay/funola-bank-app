@@ -7,6 +7,21 @@ const { generateToken, validateToken } = require("../utils/tokenUtils");
 const { compileHtml, sendEmail, validateEmail } = require("../utils/emailUtils");
 const { Notification } = require("../models/notifications");
 
+const createCopyOfUserObjToGenerateTokenFrom = (user) => {
+
+    if (typeof user !== 'object') return {}
+
+    // creating a copy of the existing user object
+    const copyOfExistingUser = {...user};
+    delete copyOfExistingUser.password;
+    delete copyOfExistingUser.refreshToken;
+    delete copyOfExistingUser.verificationToken;
+    delete copyOfExistingUser.transactionPin;
+    delete copyOfExistingUser.loginPin;
+
+    return copyOfExistingUser
+}
+
 exports.send_verification_code = async (req, res) => {
     // checking for a request body
     if (!req.body) return res.status(400).send('Request body cannot be empty');
@@ -137,29 +152,35 @@ exports.verify_new_account = async (req, res) => {
 }
 
 exports.login_user = async (req, res) => {
-    const { email, password } = req.body;
+    const { email, password, pin } = req.body;
+    const { type } = req.query;
     
     // validating the request body
     if (!email) return res.status(400).send("'email' required");
-    if (!password) return res.status(400).send("'password' required");
+    if (!password && type !== 'pin') return res.status(400).send("'password' required");
+    if (!pin && type === 'pin') return res.status(400).send("'pin' required");
 
     // checking if there is an existing user
     const existingUser = await User.findOne({ email: email }).lean();
-    if (!existingUser) return res.status(401).send('Invalid email or password');
+    if (!existingUser && type !== 'pin') return res.status(401).send('Invalid email or password');
+    if ((!existingUser || !existingUser.loginPin) && type === 'pin') return res.status(401).send('Invalid email or pin');
 
-    // checking the password passed matches the password saved in db
-    const passwordMatch = await bcrypt.compare(password, existingUser.password);
-    if (!passwordMatch) return res.status(401).send('Invalid email or password');
+    // checking the password passed matches the pin/password saved in db
+    const foundMatch = type === 'pin' ? 
+        await bcrypt.compare(String(pin), existingUser.loginPin) 
+        : 
+    await bcrypt.compare(password, existingUser.password);
+
+    if (!foundMatch) {
+        if (type === 'pin') return res.status(401).send('Invalid email or pin');
+        return res.status(401).send('Invalid email or password');
+    }
 
     // if the user has not yet verified account
     if (!existingUser.accountVerified) return res.status(202).send('Please check your email to verify your account');
 
     // creating a copy of the existing user object
-    const copyOfExistingUser = {...existingUser};
-    delete copyOfExistingUser.password;
-    delete copyOfExistingUser.refreshToken;
-    delete copyOfExistingUser.verificationToken;
-    delete copyOfExistingUser.transactionPin;
+    const copyOfExistingUser = createCopyOfUserObjToGenerateTokenFrom(existingUser);
 
     // creating new access and refresh tokens for the user
     const { token: accessToken, expirationTime: accessTokenExpires } = await generateToken(copyOfExistingUser, 'access', copyOfExistingUser?.adminUser === true ? true : false);
