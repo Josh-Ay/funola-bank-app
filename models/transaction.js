@@ -60,7 +60,7 @@ function validateNewTransactionDetails(transactionDetails) {
     const schema = Joi.object({
         owner: Joi.required(),
         transactionType: Joi.string().required().valid('debit', 'credit', 'transfer', 'swap', 'deposit'),
-        transactionRemarks: Joi.string().required().min(3),
+        transactionRemarks: Joi.string().required().min(1),
         amount: Joi.required(),
         status: Joi.string().required().valid('pending', 'success', 'failed'),
         currency: Joi.string().required().valid('NGN', 'USD'),

@@ -112,7 +112,7 @@ exports.transfer_fund = async (req, res) => {
     }
 
     // validating the request body and sending back an appropriate error message if any
-    const { receiverId, pin } = req.body;
+    const { receiverId, pin, remarks } = req.body;
     if (!receiverId) return res.status(400).send("'receiverId' required");
     if (!pin) return res.status(400).send("'pin' required");
 
@@ -158,8 +158,8 @@ exports.transfer_fund = async (req, res) => {
 
     // constructing and validating transaction object records for sender and receiver
     const [validNewSenderTransaction, validNewReceiverTransaction] = [
-        validateNewTransactionDetails(generateNewTransactionObj(req.user._id, 'transfer', 'Wallet transfer', amount, 'success', currency, receiverId)),
-        validateNewTransactionDetails(generateNewTransactionObj(receiverId, 'credit', 'Wallet transfer', amount, 'success', currency)),
+        validateNewTransactionDetails(generateNewTransactionObj(req.user._id, 'transfer', remarks ? remarks : 'Wallet transfer', amount, 'success', currency, receiverId)),
+        validateNewTransactionDetails(generateNewTransactionObj(receiverId, 'credit', remarks ? remarks : 'Wallet transfer', amount, 'success', currency)),
     ]
     if (validNewSenderTransaction.error) return res.status(400).send(validNewSenderTransaction.error.details[0].message);
     if (validNewReceiverTransaction.error) return res.status(400).send(validNewReceiverTransaction.error.details[0].message);
