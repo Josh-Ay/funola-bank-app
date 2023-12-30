@@ -40,6 +40,7 @@ const transactionSchema = new Schema({
     },
     cardId: {
         type: Schema.Types.Mixed,
+        ref: 'card',
     },
     walletId: {
         type: Schema.Types.Mixed,

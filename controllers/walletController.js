@@ -93,7 +93,7 @@ exports.fund_wallet = async (req, res) => {
     await Promise.all([
 
         // creating a new transaction record
-        Transaction.create(validNewTransaction.value),
+        Transaction.create({ ...validNewTransaction.value, walletId: existingWalletOfUser._id }),
 
         sendEmail(req.user.email, 'Successful Wallet Funding', newFundingMailContent),
 
@@ -156,7 +156,7 @@ exports.transfer_fund = async (req, res) => {
         if (!receivingBank) return res.status(403).send("Transfer failed. Bank detail not found for user");
         
         // constructing and validating a transaction object record for the wallet-to-bank transfer
-        const validNewBankTransaction = validateNewTransactionDetails(generateNewTransactionObj(req.user._id, 'debit', remarks ? remarks : 'Bank payout', amount, 'success', currency))
+        const validNewBankTransaction = validateNewTransactionDetails(generateNewTransactionObj(req.user._id, 'debit', remarks ? remarks : 'Bank Payout', amount, 'success', currency))
         if (validNewBankTransaction.error) return res.status(400).send(validNewBankTransaction.error.details[0].message);
         
         // updating the sender's balance
@@ -164,7 +164,7 @@ exports.transfer_fund = async (req, res) => {
 
         // creating a new transaction record, notification and saving the user's wallet updates to the db
         await Promise.all([
-            Transaction.create(validNewBankTransaction.value),
+            Transaction.create({...validNewBankTransaction.value, walletId: existingWalletOfSender._id}),
             existingWalletOfSender.save(),
 
             Notification.create({
@@ -242,8 +242,8 @@ exports.transfer_fund = async (req, res) => {
     await Promise.all(
         [
             RecentMobileTransfer.create(validNewRecentTransfer.value),
-            Transaction.create(validNewSenderTransaction.value),
-            Transaction.create(validNewReceiverTransaction.value),
+            Transaction.create({...validNewSenderTransaction.value, walletId: existingWalletOfSender._id}),
+            Transaction.create({...validNewReceiverTransaction.value, walletId: existingWalletOfReceiver._id}),
         ]
     );
     
@@ -345,7 +345,7 @@ exports.withdraw_from_wallet = async (req, res) => {
     
     await Promise.all([
         // creating a new transaction
-        Transaction.create(validNewTransaction.value),
+        Transaction.create({...validNewTransaction.value, walletId: existingWallet._id}),
 
         // updating the db
         existingWallet.save(),
@@ -415,8 +415,9 @@ exports.swap_currency = async (req, res) => {
         userWalletInOutputCurrency.balance += result.value
 
         await Promise.all([
-            // creating a new transaction
-            Transaction.create(validNewTransaction.value),
+            // creating new transactions for both wallets
+            Transaction.create({...validNewTransaction.value, walletId: userWalletInInputCurrency._id}),
+            Transaction.create({...validNewTransaction.value, walletId: userWalletInOutputCurrency._id}),
     
             // persisting the update of the wallets to the db
             userWalletInInputCurrency.save(),
@@ -508,6 +509,45 @@ exports.get_recent_transfer_recipients = async (req, res) => {
         return res.status(200).send(updatedRecentsWithName);
     } catch (error) {
         return res.status(500).send('An error occured while trying to get your recents')
+    }
+}
+
+exports.get_wallet_transactions = async (req, res) => {
+    const { id } = req.params;
+
+    let existingWalletOfUser
+    try {
+        // validating wallet exists for user
+        existingWalletOfUser =  await Wallet.findOne({ owner: req.user._id, _id: id });
+        if (!existingWalletOfUser) return res.status(404).send('Transactions fetching failed because wallet cannot be found for user.');
+
+    } catch (error) {
+        return res.status(500).send('An error occurred while trying to fetch your wallet transactions')
+    }
+
+    try {
+        // fetching top 50 transactions
+        const transactions = await Transaction.find({ owner: req.user._id, walletId: existingWalletOfUser._id }).sort({ createdAt: -1 }).limit(50).lean();
+
+        // modifying the fetched transactions to include recipient's name
+        const updatedTransactions = await Promise.all(transactions.map(async (transaction) => {
+            if (transaction.recipientInfo.length < 1) return transaction
+            
+            const foundRecipientUserDetail = await User.findById(transaction.recipientInfo).lean().select('firstName lastName');
+            if (!foundRecipientUserDetail) return {
+                ...transaction, 
+                recipientInfo: ''
+            };
+
+            return {
+                ...transaction,
+                recipientInfo: `${foundRecipientUserDetail.firstName} ${foundRecipientUserDetail.lastName}`
+            }
+        }))
+
+        return res.status(200).send(updatedTransactions);
+    } catch (error) {
+        return res.status(500).send('An error occurred while trying to fetch your wallet transactions')
     }
 }
 
