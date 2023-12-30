@@ -1,4 +1,4 @@
-import { SafeAreaView, Text, TouchableOpacity, View } from "react-native"
+import { RefreshControl, SafeAreaView, Text, TouchableOpacity, View } from "react-native"
 import { colors } from "../../utils/colors";
 import { Ionicons } from '@expo/vector-icons';
 import { useUserContext } from "../../contexts/UserContext";
@@ -7,6 +7,7 @@ import { UserServices } from "../../services/userServices";
 import { notificationStyles } from "./notificationStyles";
 import { FlatList } from "react-native";
 import { formatDateToMonthAndDay } from "../../utils/helpers";
+import { useToast } from "react-native-toast-notifications";
 
 const NotificationItem = ({ item }) => {
     if (!item.content) return <></>
@@ -29,9 +30,19 @@ const NotificationScreen = ({ navigation }) => {
         notifications,
         setNotifications,
     } = useUserContext();
+    const [ pageRefreshing, setPageRefreshing ] = useState(false);
 
     const userService = new UserServices();
     const [ unreadNotifications, setUnreadNotifications ] = useState([]);
+
+    const toast = useToast();
+
+    const showToastMessage = (message, type) => {
+        toast.show(message, {
+            type: type ? type : 'info',
+            placement: 'top'
+        })
+    }
 
     useEffect(() => {
 
@@ -48,6 +59,26 @@ const NotificationScreen = ({ navigation }) => {
     useEffect(() => {
         setUnreadNotifications(notifications.filter(notification => !notification.read))
     }, [notifications])
+
+    const handlePageRefresh = async () => {
+        if (pageRefreshing) return
+
+        setPageRefreshing(true);
+
+        try {
+            const notifications = (await userService.getNotifications()).data;
+            setNotifications(notifications);
+
+            setPageRefreshing(false);
+            showToastMessage('Successfully refreshed notifications!', 'success');
+
+        } catch (error) {
+            const errorMsg = error.response ? error.response.data : error.message;
+            showToastMessage(errorMsg.toLocaleLowerCase().includes('html') ? 'Something went wrong trying to refresh your notifications. Please try again later' : errorMsg, 'danger');
+            
+            setPageRefreshing(false);
+        }
+    }
 
     return <>
         <SafeAreaView style={{ flex: 1, marginTop: 30 }}>
@@ -70,6 +101,12 @@ const NotificationScreen = ({ navigation }) => {
                 keyExtractor={item => item._id}
                 contentContainerStyle={notificationStyles.notifications}
                 initialNumToRender={10}
+                refreshControl={
+                    <RefreshControl
+                        refreshing={pageRefreshing} 
+                        onRefresh={handlePageRefresh} 
+                    />
+                }
             />
         </SafeAreaView>
     </>
