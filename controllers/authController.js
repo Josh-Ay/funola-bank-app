@@ -41,13 +41,13 @@ exports.send_verification_code = async (req, res) => {
 
     await Promise.all([
         // sending an sms containing the code to the user
-        await sendSms(number, `Please use this CODE to verify your account: ${verificationCode}.\n\nIt expires in 5 minutes`),
+        sendSms(number, `Please use this CODE to verify your account: ${verificationCode}.\n\nIt expires in 5 minutes`),
 
         // also sending an email containing the code
-        await sendEmail(email, 'Verify your number on Funola', verificationHtml),
+        sendEmail(email, 'Verify your number on Funola', verificationHtml),
 
         // creating a new verification code
-        await VerificationCodes.create({
+        VerificationCodes.create({
             code: verificationCode,
             codeExpiresAt: new Date(new Date().getTime() + 300000),
             number: number,
