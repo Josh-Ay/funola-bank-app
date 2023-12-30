@@ -15,6 +15,7 @@ import { appLayoutStyles } from "../../../layouts/AppLayout/styles";
 import PinInputForm from "../../../components/PinInputForm/PinInputForm";
 import { useToast } from "react-native-toast-notifications";
 import LoadingScreen from "../../LoadingScreen/LoadingScreen";
+import BankItem from "../SendFundsScreen/components/BankItem/BankItem";
 
 const FundsConfirmationScreen = ({ navigation, route }) => {
 
@@ -100,20 +101,31 @@ const FundsConfirmationScreen = ({ navigation, route }) => {
     }
 
     const handleSendFund = async () => {
+        const copyOfWallets = wallets?.slice();
+
         switch (fundTransferDetail?.transferType) {
-            case 'wallet':
-                const copyOfWallets = wallets?.slice();
-            
+            case 'wallet':     
+            case 'bank':
                 try {
                     setLoading(true);
 
+                    const initialDataToPost = {
+                        pin: pin,
+                        remarks: fundTransferDetail?.remarks,
+                        amount: fundTransferDetail?.amount,
+                        currency: fundTransferDetail?.itemToBeDebited?.currency,
+                    }
+
                     const res = (await walletService.transferFromWallet(
+                        fundTransferDetail?.transferType === 'wallet' ?
                         {
+                            ...initialDataToPost,
                             receiverId: isRecentItem ? fundTransferDetail?.receiver?.userId : fundTransferDetail?.receiver?._id,
-                            pin: pin,
-                            remarks: fundTransferDetail?.remarks,
-                            amount: fundTransferDetail?.amount,
-                            currency: fundTransferDetail?.itemToBeDebited?.currency,
+                        }
+                        :
+                        {
+                            ...initialDataToPost,
+                            bankId: fundTransferDetail?.receiver?._id
                         },
                         fundTransferDetail?.transferType,
                     )).data;
@@ -133,12 +145,9 @@ const FundsConfirmationScreen = ({ navigation, route }) => {
                     setLoading(false);
                     
                     const errorMsg = error.response ? error.response.data : error.message;
-                    showToastMessage(errorMsg.toLocaleLowerCase().includes('html') ? 'Something went wrong trying to transfer funds. Please refresh' : errorMsg, 'danger');
+                    showToastMessage(errorMsg.toLocaleLowerCase().includes('html') ? 'Something went wrong trying to transfer funds. Please try again later' : errorMsg, 'danger');
                 }
 
-                break;
-            case 'bank':
-                console.log('in dev');
                 break;
             default:
                 console.log('invalid type passed');
@@ -205,7 +214,15 @@ const FundsConfirmationScreen = ({ navigation, route }) => {
                             {getCurrencySymbol(fundTransferDetail?.itemToBeDebited?.currency)} {Number(fundTransferDetail?.amount).toLocaleString()}
                         </Text>
                         <Text style={fundsConfirmationStyles.successInfoText}>
-                            {'*The user will receive funds within 10 minutes'}
+                            {
+                                fundTransferDetail?.transferType === 'wallet' ?
+                                    '*The user will receive funds within 10 minutes'
+                                :
+                                fundTransferDetail?.transferType === 'bank' ?
+                                    '*note that the transfer will take between 1 - 3 days'
+                                :
+                                '*Fund transfer successful'
+                            }
                         </Text>
                     </>
                 }
@@ -214,7 +231,15 @@ const FundsConfirmationScreen = ({ navigation, route }) => {
             <View style={fundsConfirmationStyles.actionsWrap}>
                 <View style={fundsConfirmationStyles.confirmRecipientDetailItem}>
                     <Text style={fundsConfirmationStyles.contentTitleText}>
-                        Recipient
+                        {
+                            fundTransferDetail?.transferType === 'wallet' ?
+                                'Recipient'
+                            :
+                            fundTransferDetail?.transferType === 'bank' ?
+                                'Bank Detail'
+                            :
+                            ''
+                        }
                     </Text>
                     {
                         (fundTransferDetail?.transferType === 'wallet') ?
@@ -247,6 +272,13 @@ const FundsConfirmationScreen = ({ navigation, route }) => {
                                 }
                                 hideContactActionBtn={true}
                                 genderSelectionAvailable={true}
+                                style={fundsConfirmationStyles.recipient}
+                            />
+                        :
+                        fundTransferDetail?.transferType === 'bank' ?
+                            <BankItem
+                                item={fundTransferDetail?.receiver}
+                                isNotPressable={true}
                                 style={fundsConfirmationStyles.recipient}
                             />
                         :

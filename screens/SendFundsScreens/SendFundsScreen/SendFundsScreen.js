@@ -29,6 +29,11 @@ import { fullSnapPoints } from "../../../layouts/AppLayout/utils";
 
 const SendFundsScreen = ({ navigation, route }) => {
     const initialContactUpperLimit = 30;
+    const initialNewBankDetail = {
+        name: '',
+        type: '',
+        accountNumber: '',
+    };
 
     const [ activeTab, setActiveTab ] = useState(SendFundTabs[0]?.action);
     const [ searchValue, setSearchValue ] = useState('');
@@ -43,11 +48,7 @@ const SendFundsScreen = ({ navigation, route }) => {
     const [ scanned, setScanned ] = useState(false);
     const [ sheetModalIsOpen, setSheetModalIsOpen ] = useState(false);
     const [ bankIsBeingAdded, setBankIsBeingAdded ] = useState(false);
-    const [ newBankDetail, setNewBankDetail ] = useState({
-        name: '',
-        type: '',
-        accountNumber: '',
-    })
+    const [ newBankDetail, setNewBankDetail ] = useState(initialNewBankDetail);
 
     const sheetPanelRef = useRef();
     const {
@@ -64,6 +65,14 @@ const SendFundsScreen = ({ navigation, route }) => {
         recentsLoading,
         setRecentsLoading,
     } = useWalletContext();
+
+    const [
+        bankService,
+        walletService,
+    ] = [
+        new BankServices(),
+        new WalletServices(),
+    ]
 
     const toast = useToast();
 
@@ -112,8 +121,6 @@ const SendFundsScreen = ({ navigation, route }) => {
         })
 
         if (!banksLoaded) {
-            const bankService = new BankServices();
-
             bankService.getBanksFOrUser()
             .then((res) => {
                 setBanks(res?.data);
@@ -129,8 +136,6 @@ const SendFundsScreen = ({ navigation, route }) => {
         }
 
         setRecentsLoading(true);
-
-        const walletService = new WalletServices();
 
         walletService.getRecents().then(res => {
 
@@ -206,12 +211,36 @@ const SendFundsScreen = ({ navigation, route }) => {
 
     const handleAddNewBank = async () => {
         if (
-            newBankDetail.name.length < 3 || 
+            newBankDetail.name.length < 1 || 
             newBankDetail.type.length < 1 || 
-            newBankDetail.accountNumber.length < 10
+            newBankDetail.accountNumber.length < 1
         ) return
 
-        console.log('sending');
+        if (newBankDetail.name.length < 3) return showToastMessage('Please make sure the name of your bank has at least 3 characters', 'info');
+        if (newBankDetail.accountNumber.length !== 10) return showToastMessage('Please enter a 10 digit account number', 'info');
+
+        setBankIsBeingAdded(true);
+
+        try {
+            const newBankRes = (await bankService.addNewBank(newBankDetail)).data;
+
+            const copyOfBanks = banks?.slice();
+            copyOfBanks.unshift(newBankRes);
+
+            setBanks(copyOfBanks);
+            setNewBankDetail(initialNewBankDetail);
+
+            setBankIsBeingAdded(false);
+            setSheetModalIsOpen(false);
+
+            showToastMessage('Successfully added new payee!', 'success');
+
+        } catch (error) {
+            setBankIsBeingAdded(false);
+            
+            const errorMsg = error.response ? error.response.data : error.message;
+            showToastMessage(errorMsg.toLocaleLowerCase().includes('html') ? 'Something went wrong trying to add your payee. Please try again later' : errorMsg, 'danger');
+        }
     }
 
     const handleBarCodeScanned = ({ type, data }) => {

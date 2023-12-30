@@ -780,7 +780,7 @@ const HomeScreen = ({ navigation }) => {
                             Deposits failed to load. Please refresh
                         </Text> 
                         :
-                        deposits.length < 1 ? <View style={homePageStyles.noContentWrapper}>
+                        deposits?.filter(deposit => new Date() < new Date(deposit?.paybackDate)).length < 1 ? <View style={homePageStyles.noContentWrapper}>
                             <Image 
                                 source={require('../../assets/no-content.png')} 
                                 style={homePageStyles.noContentImage}
@@ -788,7 +788,7 @@ const HomeScreen = ({ navigation }) => {
                             <Text style={homePageStyles.contentItemLoading}>You do not have any deposits</Text> 
                         </View>
                         :
-                        React.Children.toArray(deposits.slice(0, 3).map(deposit => {
+                        React.Children.toArray(deposits?.filter(deposit => new Date() < new Date(deposit?.paybackDate)).slice(0, 3).map(deposit => {
                             return <DepositItem 
                                 deposit={deposit}
                                 modalIsOpen={appLayoutModalIsOpen || sheetModalIsOpen}

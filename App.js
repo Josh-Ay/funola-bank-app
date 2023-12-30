@@ -29,7 +29,6 @@ import SendFundsScreen from './screens/SendFundsScreens/SendFundsScreen/SendFund
 import BanksContextProvider from './contexts/BanksContext';
 import FundsConfigurationScreen from './screens/SendFundsScreens/FundsConfigurationScreen/FundsConfigurationScreen';
 import FundsConfirmationScreen from './screens/SendFundsScreens/FundsConfirmationScreen/FundsConfirmationScreen';
-import FundsSuccessScreen from './screens/SendFundsScreens/SuccessScreen/FundsSuccessScreen';
 
 const Stack = createNativeStackNavigator();
 
@@ -121,10 +120,6 @@ export default function App() {
                         name='FundsConfirmation'
                         component={FundsConfirmationScreen}
                         options={{ gestureEnabled: false }}
-                      />
-                      <Stack.Screen 
-                        name='SendMoneySuccess'
-                        component={FundsSuccessScreen}
                       />
                     </Stack.Navigator>
                   </BanksContextProvider>
