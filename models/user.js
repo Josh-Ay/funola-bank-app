@@ -148,6 +148,7 @@ function validateUserUpdateDetails(userDetails, typeOfUpdate) {
         case 'pin':
             schema = Joi.object({
                 transactionPin: Joi.required(),
+                previousPin: Joi.string().optional(),
             })
             break;
         case 'balanceVisibility':
@@ -158,6 +159,7 @@ function validateUserUpdateDetails(userDetails, typeOfUpdate) {
         case 'login-pin':
             schema = Joi.object({
                 loginPin: Joi.required(),
+                previousPin: Joi.string().optional(),
             })
             break;
         default:

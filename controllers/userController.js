@@ -73,6 +73,14 @@ exports.update_user_detail = async (req, res) => {
             if (isNaN(Number(validUserDetails.value.transactionPin))) return res.status(400).send("'transactionPin' must be a number");
             if (String(validUserDetails.value.transactionPin).length !== 6) return res.status(400).send("Please enter a 6-digit number")
             
+            // checking to make sure the previous pin sent matches the existing transaction pin
+            if (foundUser.transactionPin) {
+                if (!validUserDetails.value.previousPin) return res.status(400).send("'previousPin' required");
+
+                const isPreviousPinValid = await bcrypt.compare(String(validUserDetails.value.previousPin), foundUser.transactionPin);
+                if (!isPreviousPinValid) return res.status(403).send('Previous pin is incorrect');
+            }
+
             // hashing and salting the pin
             const hashAndSaltedPin = await bcrypt.hash(String(validUserDetails.value.transactionPin), Number(process.env.SALT_ROUNDS));
             foundUser.transactionPin = hashAndSaltedPin;
@@ -85,6 +93,14 @@ exports.update_user_detail = async (req, res) => {
             // validating loginPin passed is numeric
             if (isNaN(Number(validUserDetails.value.loginPin))) return res.status(400).send("'loginPin' must be a number");
             if (String(validUserDetails.value.loginPin).length !== 6) return res.status(400).send("Please enter a 6-digit number")
+            
+            // checking to make sure the previous pin sent matches the existing login pin
+            if (foundUser.loginPin) {
+                if (!validUserDetails.value.previousPin) return res.status(400).send("'previousPin' required");
+
+                const isPreviousPinValid = await bcrypt.compare(String(validUserDetails.value.previousPin), foundUser.loginPin);
+                if (!isPreviousPinValid) return res.status(403).send('Previous pin is incorrect');
+            }
             
             // hashing and salting the pin
             const hashAndSaltedLoginPin = await bcrypt.hash(String(validUserDetails.value.loginPin), Number(process.env.SALT_ROUNDS));
