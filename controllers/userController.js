@@ -147,7 +147,7 @@ exports.get_user_notifications = async (req, res) => {
 
 exports.get_other_users = async (req, res) => {
     // fetching the first 100 users apart from the current user
-    const users = await User.find({ _id: { $ne: req.user._id } }).limit(100).select('_id title firstName lastName gender country phoneNumber phoneNumberExtension').lean();
+    const users = await User.find({ _id: { $ne: req.user._id }, accountVerified: true }).limit(100).select('_id title firstName lastName gender country phoneNumber phoneNumberExtension').lean();
     
     return res.status(200).send(users);
 }

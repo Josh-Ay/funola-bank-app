@@ -121,7 +121,7 @@ exports.fund_card = async (req, res) => {
     if (newValidCardTransaction.error) return res.status(400).send(newValidCardTransaction.error.details[0].message);
     if (newValidWalletTransaction.error) return res.status(400).send(newValidWalletTransaction.error.details[0].message);
 
-    // contructing emails of the transactions
+    // constructing emails of the transactions
     const [
         newFundingMailContent,
         newWithdrawalMailContent,

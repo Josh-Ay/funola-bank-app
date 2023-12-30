@@ -2,11 +2,12 @@ const { generateNewTransactionObj, validateNewTransactionDetails, Transaction } 
 const { User } = require('../models/user');
 const { Wallet } = require('../models/wallet');
 const { compileHtml, sendEmail } = require('../utils/emailUtils');
-const { validateMongooseId, checkWalletRequestBodyErrors, funolaValidCurrencies } = require('../utils/utils');
+const { validateMongooseId, checkWalletRequestBodyErrors, funolaValidCurrencies, validWalletTransferTypes } = require('../utils/utils');
 const { Notification } = require("../models/notifications");
 const { get_currency_rate } = require("../utils/convertUtil");
 const bcrypt = require('bcrypt');
 const { validateRecentMobileTransfer, RecentMobileTransfer } = require('../models/recentMobileTransfers');
+const { Bank } = require('../models/banks');
 
 exports.create_wallet = async (req, res) => {
     // checking the user has verified account
@@ -105,53 +106,105 @@ exports.fund_wallet = async (req, res) => {
 
 exports.transfer_fund = async (req, res) => {
     const { type } = req.params;
-    if (!["bank", "wallet"].includes(type)) return res.status(400).send("'type' can only be one of [bank, wallet]");
-
-    if (type === "bank") {
-        return res.status(200).send("Working on bank");
-    }
-
-    // validating the request body and sending back an appropriate error message if any
-    const { receiverId, pin, remarks } = req.body;
-    if (!receiverId) return res.status(400).send("'receiverId' required");
-    if (!pin) return res.status(400).send("'pin' required");
-
-    if (isNaN(Number(pin))) return res.status(400).send("'pin' must be a number");
-    if (String(pin).length !== 6) return res.status(400).send("Please enter a 6-digit number for the 'pin'");
-
-    if (!validateMongooseId(receiverId)) return res.status(400).send("Invalid receiver user id passed");
-    if (receiverId === req.user._id) return res.status(403).send("You cannot transfer funds from yourself to yourself");
+    if (!validWalletTransferTypes.includes(type)) return res.status(400).send(`'type' can only be one of ${validWalletTransferTypes.join(', ')}`);
 
     // validating the request body and sending back an appropriate error message if any
     const { errorMsg, amount, currency } = checkWalletRequestBodyErrors(req.body);
     if (errorMsg) return res.status(400).send(errorMsg);
 
-    // getting the receiving user, current user and current user recent transfers
-    const [ receivingUser, currentUser, currentUserRecentTransfers ] = await Promise.all([
-        await User.findById(receiverId),
-        await User.findById(req.user._id),
-        await RecentMobileTransfer.find({ owner: req.user._id }).sort({ createdAt: -1 }),
-    ]);
+    // validating the request body and sending back an appropriate error message if any
+    const { bankId, receiverId, pin, remarks } = req.body;
 
-    // checking the receiver user exists
-    if (!receivingUser) return res.status(403).send("Transfer failed. User not found");
+    if (!pin) return res.status(400).send("'pin' required");
+    if (isNaN(Number(pin))) return res.status(400).send("'pin' must be a number");
+    if (String(pin).length !== 6) return res.status(400).send("Please enter a 6-digit number for the 'pin'");
 
-    // checking the user has set a  pin
+    // getting the current user and current user's wallet
+    const [ currentUser, existingWalletOfSender ] = await Promise.all([
+        User.findById(req.user._id),
+        Wallet.findOne({ owner: req.user._id, currency: currency }),
+    ])
+
+    // checking the user has set a pin
     if (!currentUser.transactionPin) return res.status(403).send("Please set a transaction pin first");
 
     // checking the pin passed is correct
     const isValidPin = await bcrypt.compare(String(pin), currentUser.transactionPin);
     if (!isValidPin) return res.status(401).send('Incorrect transaction pin');
-
-    // checking if the user and receiver have a wallet in the requested currency
-    const [ existingWalletOfSender, existingWalletOfReceiver ] = await Promise.all([
-        Wallet.findOne({ owner: req.user._id, currency: currency }),
-        Wallet.findOne({ owner: receiverId, currency: currency })
-    ]);
     
     // checking if the sending user has a wallet and sufficient balance in the requested currency
     if (!existingWalletOfSender) return res.status(403).send(`Transfer failed. You do not have a ${currency} wallet.`);
     if (existingWalletOfSender.balance < amount) return res.status(403).send("You do not have sufficient funds to initiate this transfer.");
+
+
+    // BANK TRANSFER
+    if (type === "bank") {
+        // validating required keys in the request body
+        if (!bankId) return res.status(400).send("'bankId' required");
+        if (!validateMongooseId(bankId)) return res.status(400).send("Invalid receiver bank id passed");
+
+        let receivingBank;
+
+        try {
+            // fetching the bank details
+            receivingBank = await Bank.findOne({ _id: bankId, owner: req.user._id });
+        } catch (error) {
+            return res.status(500).send('Something went wrong while trying to process your transfer request. Please try again later');
+        }
+
+        // checking the bank exists
+        if (!receivingBank) return res.status(403).send("Transfer failed. Bank detail not found for user");
+        
+        // constructing and validating a transaction object record for the wallet-to-bank transfer
+        const validNewBankTransaction = validateNewTransactionDetails(generateNewTransactionObj(req.user._id, 'debit', remarks ? remarks : 'Bank payout', amount, 'success', currency))
+        if (validNewBankTransaction.error) return res.status(400).send(validNewBankTransaction.error.details[0].message);
+        
+        // updating the sender's balance
+        existingWalletOfSender.balance -= amount;
+
+        // creating a new transaction record, notification and saving the user's wallet updates to the db
+        await Promise.all([
+            Transaction.create(validNewBankTransaction.value),
+            existingWalletOfSender.save(),
+
+            Notification.create({
+                owner: req.user._id,
+                content: `You made a withdrawal of ${currency} ${amount} to your ${receivingBank?.name} account.`,
+            }),
+        ])
+
+        // constructing emails for both sender and receiver
+        const newBankWithdrawalMailContent = compileHtml(
+            `${req.user.firstName} ${req.user.lastName}`, 
+            `You successfully made a withdrawal of ${currency} ${amount} to your ${receivingBank.name} account`,
+            { 
+                currency: currency, 
+                amount: amount,
+            },
+            'debit',
+            'transfer'
+        );
+
+        // sending a mail to the user inform of successful wallet transfer
+        await sendEmail(req.user.email, 'Successful Bank Transfer', newBankWithdrawalMailContent)
+
+        return res.status(200).send('Successfully transferred funds!');
+    }
+
+    // validating required keys in the request body
+    if (!receiverId) return res.status(400).send("'receiverId' required");
+    if (!validateMongooseId(receiverId)) return res.status(400).send("Invalid receiver user id passed");
+    if (receiverId === req.user._id) return res.status(403).send("You cannot transfer funds from yourself to yourself");
+
+    // getting the receiving user, receiving user wallet and current user recent transfers
+    const [ receivingUser, existingWalletOfReceiver, currentUserRecentTransfers ] = await Promise.all([
+        User.findById(receiverId),
+        Wallet.findOne({ owner: receiverId, currency: currency }),
+        RecentMobileTransfer.find({ owner: req.user._id }).sort({ createdAt: -1 }),
+    ]);
+
+    // checking the receiver user exists
+    if (!receivingUser) return res.status(403).send("Transfer failed. User not found");
 
     // checking if the receiving user has a wallet in the requested currency
     if (!existingWalletOfReceiver) return res.status(403).send(`Transfer failed. Receiver does not have a ${currency} wallet.`);
@@ -214,7 +267,7 @@ exports.transfer_fund = async (req, res) => {
         })
     ])
 
-    // contructing emails for both sender and receiver
+    // constructing emails for both sender and receiver
     const [newFundingMailContent, newWithdrawalMailContent] = [
         compileHtml(
             `${receivingUser.firstName} ${receivingUser.lastName}`, 

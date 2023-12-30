@@ -73,3 +73,9 @@ exports.funolaUserTopupLimits = {
     nairaLimit: 10000,
     dollarLimit: 1000,
 }
+
+// valid wallet transfer options in funola banking application
+exports.validWalletTransferTypes = [
+    "bank", 
+    "wallet"
+]
