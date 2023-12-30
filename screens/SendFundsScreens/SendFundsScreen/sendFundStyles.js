@@ -268,7 +268,22 @@ export const sendFundStyles = StyleSheet.create({
         width: '70%',
         height: height * 0.32,
         alignSelf: 'center',
-        marginTop: 25,
+        marginTop: 15,
         marginBottom: 25,
     },
+    blankQrContainer: {
+        height: height * 0.25,
+        width: '54%',
+        paddingBottom: 10,
+        marginTop: 0,
+        gap: 10,
+    },
+    blankQR: {
+        width: '100%',
+        height: '100%',
+    },
+    scanAgainBtn: {
+        marginTop: 5,
+        marginBottom: 0,
+    }
 })

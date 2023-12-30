@@ -439,6 +439,12 @@ const HomeScreen = ({ navigation }) => {
                     item: currentWallet,
                 })
                 break;
+            case userItemActions.walletRequest:
+                navigation.navigate('RequestFunds', {
+                    itemType: 'wallet',
+                    item: currentWallet,
+                })
+                break;
             default:
                 console.log(itemAction);
                 break;

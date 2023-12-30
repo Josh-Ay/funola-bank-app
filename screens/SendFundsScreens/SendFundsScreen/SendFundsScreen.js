@@ -23,7 +23,7 @@ import BottomSheet, { BottomSheetView } from "@gorhom/bottom-sheet";
 import ModalOverlay from "../../../layouts/AppLayout/components/ModalOverlay/ModalOverlay";
 import { appLayoutStyles } from "../../../layouts/AppLayout/styles";
 import TextInputComponent from "../../../components/TextInputComponent/TextInputComponent";
-import { validFunolaBankAccountTypes } from "../../../utils/utils";
+import { validFunolaBankAccountTypes, validFunolaCurrencies } from "../../../utils/utils";
 import CustomButton from "../../../components/CustomButton/CustomButton";
 import { fullSnapPoints } from "../../../layouts/AppLayout/utils";
 
@@ -46,6 +46,7 @@ const SendFundsScreen = ({ navigation, route }) => {
     } = useUserContext();
     const [ hasPermission, setHasPermission ] = useState(null);
     const [ scanned, setScanned ] = useState(false);
+    const [ invalidScan, setInvalidScan ] = useState(null);
     const [ sheetModalIsOpen, setSheetModalIsOpen ] = useState(false);
     const [ bankIsBeingAdded, setBankIsBeingAdded ] = useState(false);
     const [ newBankDetail, setNewBankDetail ] = useState(initialNewBankDetail);
@@ -60,6 +61,7 @@ const SendFundsScreen = ({ navigation, route }) => {
     } = useBanksContext();
 
     const {
+        wallets,
         recents,
         setRecents,
         recentsLoading,
@@ -244,8 +246,40 @@ const SendFundsScreen = ({ navigation, route }) => {
     }
 
     const handleBarCodeScanned = ({ type, data }) => {
-        console.log(type);
-        console.log(data);
+        if (scanned) return
+
+        setScanned(true);
+
+        try {
+            const scannedData = JSON.parse(data);
+            if (
+                !scannedData?.amount ||
+                isNaN(scannedData?.amount) ||
+                !scannedData?.currency ||
+                !validFunolaCurrencies.find(item => item.currency === scannedData?.currency) ||
+                !scannedData?.receiverDetail ||
+                typeof scannedData?.receiverDetail !== 'object'
+            ) {
+                setInvalidScan(true);
+                return
+            }
+
+            const foundWalletMatchingScanRequestCurrency = wallets.find(wallet => wallet.currency === scannedData?.currency);
+            if (!foundWalletMatchingScanRequestCurrency) return showToastMessage(`You cannot complete this transaction because you do not have a ${scannedData?.currency} wallet.`)
+
+            navigation.navigate(
+                'FundsConfirmation',
+                {
+                    amount: scannedData?.amount,
+                    transferType: 'wallet',
+                    receiver: scannedData?.receiverDetail,
+                    itemToBeDebited: foundWalletMatchingScanRequestCurrency,
+                    remarks: 'QR Transfer',
+                }
+            )
+        } catch (error) {
+            setInvalidScan(true);
+        }
     }
 
     return <>
@@ -464,7 +498,7 @@ const SendFundsScreen = ({ navigation, route }) => {
                                 </TouchableOpacity>
                             </View>
                             {
-                                banks?.length < 0 ? <>
+                                banks?.length < 1 ? <>
                                     <View>
                                         <Text style={sendFundStyles.noBankText}>You have not added any banks yet</Text>
                                     </View>
@@ -502,21 +536,68 @@ const SendFundsScreen = ({ navigation, route }) => {
                                 </> :
                                 
                                 <View style={sendFundStyles.scanWrapper}>
-                                    <View style={sendFundStyles.leftTopSquareScan}></View>
-                                    <View style={sendFundStyles.leftBottomSquareScan}></View>
-                                    <View style={sendFundStyles.rightTopSquareScan}></View>
-                                    <View style={sendFundStyles.rightBottomSquareScan}></View>
+                                    {
+                                        scanned ? <></> :
+                                        <>
+                                            <View style={sendFundStyles.leftTopSquareScan}></View>
+                                            <View style={sendFundStyles.leftBottomSquareScan}></View>
+                                            <View style={sendFundStyles.rightTopSquareScan}></View>
+                                            <View style={sendFundStyles.rightBottomSquareScan}></View>   
+                                        </>
+                                    }
 
-                                    <View style={sendFundStyles.qrContainer}>
-                                        <BarCodeScanner
-                                            onBarCodeScanned={
-                                                scanned ? 
-                                                    undefined 
-                                                : 
-                                                handleBarCodeScanned
-                                            }
-                                            style={StyleSheet.absoluteFillObject}
-                                        />
+                                    <View style={
+                                        scanned ?
+                                            Object.assign(
+                                                {},
+                                                sendFundStyles.qrContainer,
+                                                sendFundStyles.blankQrContainer
+                                            )
+                                        :
+                                        sendFundStyles.qrContainer
+                                    }>
+                                        {
+                                            scanned ? <>
+                                                <View style={sendFundStyles.blankQR}></View>
+                                                
+                                                <Text style={sendFundStyles.contentText}>
+                                                    {
+                                                        invalidScan ? 'QR Code is not valid'
+                                                        :
+                                                        'Scanned code successfully!'
+                                                    }
+                                                </Text>
+                                                
+                                                <CustomButton 
+                                                    buttonText={
+                                                        'Scan New'
+                                                    }
+                                                    btnStyle={
+                                                        Object.assign({}, appLayoutStyles.modalBtnStyle, sendFundStyles.scanAgainBtn)
+                                                    }
+                                                    textContentStyle={
+                                                        appLayoutStyles.modalBtnTextStyle
+                                                    }
+                                                    handleBtnPress={() => {
+                                                        setScanned(false);
+                                                        setInvalidScan(false);
+                                                    }}
+                                                />
+                                            </> 
+                                            :
+                                            <>
+                                                <BarCodeScanner
+                                                    onBarCodeScanned={
+                                                        scanned ? 
+                                                            undefined 
+                                                        : 
+                                                        handleBarCodeScanned
+                                                    }
+                                                    style={StyleSheet.absoluteFillObject}
+                                                />
+                                            </>
+                                        }
+                                        
                                     </View>
                                 </View>
                             }

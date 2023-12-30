@@ -29,6 +29,7 @@ import SendFundsScreen from './screens/SendFundsScreens/SendFundsScreen/SendFund
 import BanksContextProvider from './contexts/BanksContext';
 import FundsConfigurationScreen from './screens/SendFundsScreens/FundsConfigurationScreen/FundsConfigurationScreen';
 import FundsConfirmationScreen from './screens/SendFundsScreens/FundsConfirmationScreen/FundsConfirmationScreen';
+import RequestFundsScreen from './screens/RequestFundsScreens/RequestFundsScreen';
 
 const Stack = createNativeStackNavigator();
 
@@ -111,6 +112,10 @@ export default function App() {
                       <Stack.Screen 
                         name='SendFunds'
                         component={SendFundsScreen}
+                      />
+                      <Stack.Screen
+                        name='RequestFunds'
+                        component={RequestFundsScreen} 
                       />
                       <Stack.Screen 
                         name='SelectAmountToSend'
