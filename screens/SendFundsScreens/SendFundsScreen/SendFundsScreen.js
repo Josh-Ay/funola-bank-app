@@ -26,6 +26,7 @@ import TextInputComponent from "../../../components/TextInputComponent/TextInput
 import { validFunolaBankAccountTypes, validFunolaCurrencies } from "../../../utils/utils";
 import CustomButton from "../../../components/CustomButton/CustomButton";
 import { fullSnapPoints } from "../../../layouts/AppLayout/utils";
+import LoadingIndicator from "../../../components/LoadingIndicator/LoadingIndicator";
 
 const SendFundsScreen = ({ navigation, route }) => {
     const initialContactUpperLimit = 30;
@@ -323,7 +324,9 @@ const SendFundsScreen = ({ navigation, route }) => {
                             </Text>
                             {
                                 recentsLoading ? <>
-                                    <Text style={sendFundStyles.contentText}>Fetching your recents...</Text>
+                                    <LoadingIndicator
+                                        loadingContent={'Fetching your recents'}
+                                    />
                                 </> :
 
                                 recents.length < 1 ? <>

@@ -129,7 +129,7 @@ const CardSettingsScreen = ({ navigation, route }) => {
             }
             setCardTransactions(copyOfCardTransactions);
         }).catch(err => {
-            console.log('Err fetching card transactions: ', err);
+            // console.log('Err fetching card transactions: ', err);
         })
 
     }, [currentCardToDisplay])
@@ -164,6 +164,15 @@ const CardSettingsScreen = ({ navigation, route }) => {
             case userItemActions.cardFund:
                 setCurrentUserAction(action);
                 setSheetModalIsOpen(true);
+                break;
+            case userItemActions.cardHistory:
+                navigation.navigate('Transactions', 
+                    {
+                        title: currentCardToDisplay?.cardName,
+                        typeOfItem: 'card',
+                        transactions: cardTransactions && cardTransactions[currentCardToDisplay?._id] && cardTransactions[currentCardToDisplay?._id]?.transactions ? cardTransactions[currentCardToDisplay?._id]?.transactions : [],
+                    }
+                )
                 break;
             default:
                 console.log(action);

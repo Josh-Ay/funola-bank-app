@@ -33,6 +33,7 @@ import { AtmServices } from "../../services/atmServices";
 import { useBanksContext } from "../../contexts/BanksContext";
 import { BankServices } from "../../services/bankServices";
 import { getCurrencySymbol } from "../../utils/helpers";
+import LoadingIndicator from "../../components/LoadingIndicator/LoadingIndicator";
 
 const HomeScreen = ({ navigation }) => {
 
@@ -445,6 +446,13 @@ const HomeScreen = ({ navigation }) => {
                     item: currentWallet,
                 })
                 break;
+            case userItemActions.walletHistory:
+                navigation.navigate('Transactions', {
+                    showWalletTransaction: true,
+                    typeOfItem: 'wallet',
+                    wallet: currentWallet,
+                })
+                break;
             default:
                 console.log(itemAction);
                 break;
@@ -567,9 +575,10 @@ const HomeScreen = ({ navigation }) => {
                     <View style={homePageStyles.leftTopContent}>
                         <View>
                             {
-                                walletsLoading ? <Text style={Object.assign({}, homePageStyles.contentItemLoading, homePageStyles.whiteText)}>
-                                    Fetching wallet info
-                                </Text> 
+                                walletsLoading ? <LoadingIndicator
+                                    loadingContent={'Fetching wallet info'}
+                                    color={colors.white}
+                                />
                                 :
                                 !walletsLoaded ? <Text style={Object.assign({}, homePageStyles.contentItemLoading, homePageStyles.whiteText)}>
                                     Wallets failed to load. Please refresh
@@ -729,9 +738,9 @@ const HomeScreen = ({ navigation }) => {
                     }
                 >
                     {
-                        cardsLoading ? <Text style={homePageStyles.contentItemLoading}>
-                            Fetching cards
-                        </Text> 
+                        cardsLoading ? <LoadingIndicator
+                            loadingContent={'Fetching cards'}
+                        />
                         :
                         !cardsLoaded ? <Text style={Object.assign({}, homePageStyles.contentItemLoading, homePageStyles.whiteText)}>
                             Cards failed to load. Please refresh
@@ -778,9 +787,9 @@ const HomeScreen = ({ navigation }) => {
                     }
                 >
                     {
-                        depositsLoading ? <Text style={homePageStyles.contentItemLoading}>
-                            Fetching deposits
-                        </Text> 
+                        depositsLoading ? <LoadingIndicator
+                            loadingContent={'Fetching deposits'}
+                        />
                         :
                         !depositsLoaded ? <Text style={Object.assign({}, homePageStyles.contentItemLoading, homePageStyles.whiteText)}>
                             Deposits failed to load. Please refresh

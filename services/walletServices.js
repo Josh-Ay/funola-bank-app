@@ -105,4 +105,17 @@ export class WalletServices {
 
         return await axiosInstance.get(`${this.urlPrefix}/recents`)
     }
+
+    
+    getWalletTransactions = async (walletId) => {
+        /**
+         * Get the transactions for a wallet
+         * 
+         * @param walletId ID of wallet you want to get transactions of
+         * 
+         * @returns A promise 
+         */
+
+        return await axiosInstance.get(`${this.urlPrefix}/transactions/${walletId}`)
+    }
 }

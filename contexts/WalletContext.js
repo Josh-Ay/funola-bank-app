@@ -30,6 +30,7 @@ export default WalletContextProvider = ({ children }) => {
     const [ walletSwapFundDetails, setWalletSwapFundDetails ] = useState(initialWalletFundSwapState);
     const [ recents, setRecents ] = useState([]);
     const [ recentsLoading, setRecentsLoading ] = useState(false);
+    const [ walletTransactions, setWalletTransactions ] = useState({});
 
     const handleUpdateNewWalletDetails = (keyToUpdate, valueToUpdateTo) => {
         setNewWalletDetails((prevDetails) => {
@@ -93,6 +94,8 @@ export default WalletContextProvider = ({ children }) => {
                 setRecents,
                 recentsLoading,
                 setRecentsLoading,
+                walletTransactions,
+                setWalletTransactions,
             }}
         >
             { children }
