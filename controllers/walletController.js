@@ -263,7 +263,7 @@ exports.transfer_fund = async (req, res) => {
         }),
         Notification.create({
             owner: receiverId,
-            content: `You received a transfer of ${currency} ${amount} from ${req.user._id}`,
+            content: `You received a transfer of ${currency} ${amount} from #${req.user._id}!#`,
         })
     ])
 
