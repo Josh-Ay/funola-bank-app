@@ -44,6 +44,9 @@ exports.update_user_detail = async (req, res) => {
             // validating the user wants to make changes to their account
             if (foundUser.email !== req.user.email) return res.status(401).send("You can only update your email");
 
+            // returning early if no changes are made
+            if (foundUser.email === validUserDetails.value.email) return res.status(200).send("Email successfully updated!");
+
             // checking that no other user has the new mail
             const existingUserWithEmail = await User.findOne({ email: validUserDetails.value.email });
             if (existingUserWithEmail) return res.status(409).send("New email already registered");
