@@ -117,6 +117,27 @@ exports.update_user_detail = async (req, res) => {
             await foundUser.save();
 
             return res.status(200).send("Successfully updated balance visibility");
+        
+        // updating the user's phone number
+        case 'phone':
+            // validating the phone number is an actual number
+            if (isNaN(Number(validUserDetails.value.phoneNumber))) return res.status(400).send("'phoneNumber' must be a number");
+
+            try {
+                // making sure the new phone number is not currently in use by another user
+                const foundUserWithNumber = await User.findOne({ phoneNumber: { $regex: String(validUserDetails.value.phoneNumber).slice(-10) } }).lean();
+                if ((foundUserWithNumber) && (foundUserWithNumber.email !== req.user.email)) return res.status(409).send("Number already registered");
+
+            } catch (error) {
+                return res.status(500).send('An error occured while trying to update your phone number')            
+            }
+
+            // updating the phone number in the db
+            foundUser.phoneNumber = validUserDetails.value.phoneNumber;
+            await foundUser.save();
+
+            return res.status(200).send("Successfully updated phone number!");
+
         default:
             return res.status(400).send("Invalid update type passed");
     }

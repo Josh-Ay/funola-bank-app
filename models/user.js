@@ -107,7 +107,7 @@ function validateNewUserDetails(userDetails) {
         password: Joi.string().min(6).required(),
         dateOfBirth: Joi.date().required(),
         country: Joi.string().required(),
-        phoneNumber: Joi.string().required().min(10).max(13),
+        phoneNumber: Joi.string().required().min(10).max(11),
         phoneNumberExtension: Joi.string().required().min(1).max(4),
         title: Joi.string().required().valid('Mr', 'Miss', 'Mrs'),
         gender: Joi.string().required().valid('M', 'F'),
@@ -160,6 +160,11 @@ function validateUserUpdateDetails(userDetails, typeOfUpdate) {
             schema = Joi.object({
                 loginPin: Joi.required(),
                 previousPin: Joi.string().optional(),
+            })
+            break;
+        case 'phone':
+            schema = Joi.object({
+                phoneNumber: Joi.string().required().min(10).max(11),
             })
             break;
         default:
