@@ -122,11 +122,11 @@ exports.update_user_detail = async (req, res) => {
         case 'phone':
             // validating the phone number is an actual number
             if (isNaN(Number(validUserDetails.value.phoneNumber))) return res.status(400).send("'phoneNumber' must be a number");
-
+            if (foundUser.phoneNumber.slice(-10) === String(validUserDetails.value.phoneNumber).slice(-10)) return res.status(200).send("Successfully updated phone number!");
             try {
                 // making sure the new phone number is not currently in use by another user
                 const foundUserWithNumber = await User.findOne({ phoneNumber: { $regex: String(validUserDetails.value.phoneNumber).slice(-10) } }).lean();
-                if ((foundUserWithNumber) && (foundUserWithNumber.email !== req.user.email)) return res.status(409).send("Number already registered");
+                if (foundUserWithNumber) return res.status(409).send("Number already registered");
 
             } catch (error) {
                 return res.status(500).send('An error occured while trying to update your phone number')            
