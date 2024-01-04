@@ -1,6 +1,7 @@
 const jwt = require('jsonwebtoken');
 const { InvalidTokens } = require('../models/invalidTokens');
 const { User } = require('../models/user');
+const { userKeysToExcludeInMiddleWare } = require('../utils/utils');
 
 
 exports.userAuth = async (req, res, next) => {
@@ -14,7 +15,7 @@ exports.userAuth = async (req, res, next) => {
         const decodedUser = jwt.verify(authToken, process.env.ACCESS_TOKEN_SECRET);
 
         // checking if the decoded user exists
-        const existingUser = await User.findById(decodedUser._id).lean().select('-password -refreshToken -transactionPin -verificationToken');
+        const existingUser = await User.findById(decodedUser._id).lean().select(userKeysToExcludeInMiddleWare);
         if (!existingUser) return res.status(401).send('Access denied, token invalid or missing.');
 
         const copyOfUser = { ...existingUser };
@@ -29,7 +30,7 @@ exports.userAuth = async (req, res, next) => {
             const decodedUser = jwt.verify(authToken, process.env.ADMIN_ACCESS_TOKEN_SECRET);
 
             // checking if the decoded user exists
-            const existingUser = await User.findById(decodedUser._id).lean().select('-password -refreshToken -transactionPin -verificationToken');
+            const existingUser = await User.findById(decodedUser._id).lean().select(userKeysToExcludeInMiddleWare);
             if (!existingUser) return res.status(401).send('Access denied, token invalid or missing.');
 
             const copyOfUser = { ...existingUser };
@@ -60,7 +61,7 @@ exports.adminAuth = async (req, res, next) => {
         const decodedUser = jwt.verify(authToken, process.env.ADMIN_ACCESS_TOKEN_SECRET);
 
         // checking if the decoded user exists
-        const existingUser = await User.findById(decodedUser._id).lean().select('-password -refreshToken -transactionPin -verificationToken');
+        const existingUser = await User.findById(decodedUser._id).lean().select(userKeysToExcludeInMiddleWare);
         if (!existingUser) return res.status(401).send('Access denied, token invalid or missing.');
 
         const copyOfUser = { ...existingUser };

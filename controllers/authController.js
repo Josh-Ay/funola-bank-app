@@ -343,11 +343,7 @@ exports.refresh_user_token = async (req, res) => {
     if (!existingUser.accountVerified) return res.status(401).send('Kindly verify your account first');
 
     // creating a copy of the existing user object
-    const copyOfExistingUser = {...existingUser};
-    delete copyOfExistingUser.password;
-    delete copyOfExistingUser.refreshToken;
-    delete copyOfExistingUser.verificationToken;
-    delete copyOfExistingUser.transactionPin;
+    const copyOfExistingUser = createCopyOfUserObjToGenerateTokenFrom(existingUser);
     
     // creating new access and refresh tokens for the user
     const { token: accessToken, expirationTime: accessTokenExpires } = await generateToken(copyOfExistingUser, 'access');

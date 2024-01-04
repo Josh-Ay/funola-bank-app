@@ -79,3 +79,6 @@ exports.validWalletTransferTypes = [
     "bank", 
     "wallet"
 ]
+
+// Keys to be excluded in the middleware when querying for the current user
+exports.userKeysToExcludeInMiddleWare = '-password -refreshToken -transactionPin -verificationToken -loginPin';
