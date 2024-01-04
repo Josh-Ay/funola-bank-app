@@ -250,6 +250,7 @@ exports.reset_user_password = async (req, res) => {
         // validating the request body
         if (!email) return res.status(400).json({ message: "'email' required" });
         if (!password) return res.status(400).json({ message: "'password' required" });
+        if (password.length < 6) return res.status(400).json({ message: "'password' must have at least 6 characters" });
     
         // checking if there is an existing user
         const existingUser = await User.findOne({ email: email, resetPasswordToken: token });

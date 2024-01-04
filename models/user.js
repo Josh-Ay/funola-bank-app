@@ -167,6 +167,12 @@ function validateUserUpdateDetails(userDetails, typeOfUpdate) {
                 phoneNumber: Joi.string().required().min(10).max(11),
             })
             break;
+        case 'password':
+            schema = Joi.object({
+                previousPassword: Joi.string().min(6).required(),
+                newPassword: Joi.string().min(6).required(),
+            })
+            break;
         default:
             schema = Joi.object({
                 

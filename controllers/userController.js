@@ -141,6 +141,21 @@ exports.update_user_detail = async (req, res) => {
 
             return res.status(200).send("Successfully updated phone number!");
 
+        // updating the user's password
+        case 'password':
+            // validating the previous password sent matches the user's current password
+            const previousPasswordMatches = await bcrypt.compare(String(validUserDetails.value.previousPassword), foundUser.password);
+            if (!previousPasswordMatches) return res.status(403).send('Previous password is incorrect');
+    
+            // hashing and salting the new password for the user
+            const newHashAndSaltedPassword = await bcrypt.hash(validUserDetails.value.newPassword, Number(process.env.SALT_ROUNDS));
+            
+            // updating the password in the db
+            foundUser.password = newHashAndSaltedPassword;
+            await foundUser.save();
+
+            return res.status(200).send("Successfully updated password!");
+
         default:
             return res.status(400).send("Invalid update type passed");
     }
