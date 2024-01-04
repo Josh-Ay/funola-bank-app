@@ -8,5 +8,6 @@ const router = Router();
 router.get("/", userAuth, bankController.get_banks);
 router.post("/new", userAuth, bankController.add_new_bank);
 router.patch("/update/:id", [userAuth, validateMongoIdParam], bankController.update_bank_detail);
+router.delete("/delete/:id", [userAuth, validateMongoIdParam], bankController.delete_bank);
 
 module.exports = router;

@@ -69,3 +69,18 @@ exports.update_bank_detail = async (req, res) => {
         return res.status(500).send('An error occurred while trying to update bank detail for user');
     }
 }
+
+exports.delete_bank = async (req, res) => {
+    const { id } = req.params;
+
+    try {
+        // deleting matching bank for the current user
+        const deletedBankRes = await Bank.deleteOne({ owner: req.user._id, _id: id });
+        if (deletedBankRes?.deletedCount === 0) return res.status(404).send('Bank account not found');
+
+        return res.status(200).send('Bank account successfully deleted');
+    } catch (error) {
+        // sending back an appropriate error message if any
+        return res.status(500).send('An error occurred while trying to delete bank detail for user');
+    }
+}
