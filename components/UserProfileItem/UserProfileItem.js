@@ -5,8 +5,16 @@ import { Ionicons } from '@expo/vector-icons';
 import { userProfileItemStyles } from "./userProfileItemStyles";
 import { colors } from "../../utils/colors";
 
-export function UserProfileItme({ item, dangerItem }) {
-    return <TouchableOpacity style={userProfileItemStyles.wrapper}>
+export function UserProfileItem({ item, dangerItem, handleItemClick }) {
+    return <TouchableOpacity 
+        style={userProfileItemStyles.wrapper}
+        onPress={
+            handleItemClick && typeof handleItemClick === 'function' ?
+                () => handleItemClick(item?.action)
+            :
+            () => {}   
+        }
+    >
         <View style={userProfileItemStyles.leftContent}>
             {item?.icon}
             <View>

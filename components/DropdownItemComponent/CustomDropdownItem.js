@@ -23,6 +23,7 @@ const CustomDropdownItem = ({
     dropdownIconStyle,
     customSearch,
     handleClearSearch,
+    hideIcon,
 }) => {
 
     const [ showDropdown, setShowDropdown ] = useState(false);
@@ -95,7 +96,7 @@ const CustomDropdownItem = ({
                     imageContent ? <Image source={{ uri: imageContent }} style={dropdownStyles.imageItem} /> : 
                     <Text> {content} </Text>
                 }
-                <AntDesign name="caretdown" size={12} color="black" />
+                {!hideIcon && <AntDesign name="caretdown" size={12} color="black" />}
             </View>
         </TouchableWithoutFeedback>
     </>
@@ -125,7 +126,7 @@ const CustomDropdownItem = ({
                 customSearch ? 
                     <></>
                 :
-                <AntDesign name="caretdown" size={12} color="black" style={dropdownIconStyle ? dropdownIconStyle: {}} />
+                <>{!hideIcon && <AntDesign name="caretdown" size={12} color="black" style={dropdownIconStyle ? dropdownIconStyle: {}} />}</>
             }
         
             <Modal

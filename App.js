@@ -30,6 +30,7 @@ import BanksContextProvider from './contexts/BanksContext';
 import FundsConfigurationScreen from './screens/SendFundsScreens/FundsConfigurationScreen/FundsConfigurationScreen';
 import FundsConfirmationScreen from './screens/SendFundsScreens/FundsConfirmationScreen/FundsConfirmationScreen';
 import RequestFundsScreen from './screens/RequestFundsScreens/RequestFundsScreen';
+import { ProfileUpdateScreen } from './screens/ProfileUpdateScreen/ProfileUpdateScreen';
 
 const Stack = createNativeStackNavigator();
 
@@ -92,6 +93,16 @@ export default function App() {
                       >
                         { 
                           props => <ProfileScreen 
+                            {...props} 
+                            setLoggedIn={setUserLoggedIn} 
+                          /> 
+                        }
+                      </Stack.Screen>
+                      <Stack.Screen
+                        name='ProfileUpdate'
+                      >
+                        { 
+                          props => <ProfileUpdateScreen 
                             {...props} 
                             setLoggedIn={setUserLoggedIn} 
                           /> 

@@ -44,6 +44,16 @@ export class BankServices {
          * @returns A promise
          */
 
-        return await axiosInstance.post(`${this.urlPrefix}/update/${bankId}`, data) 
+        return await axiosInstance.patch(`${this.urlPrefix}/update/${bankId}`, data) 
+    }
+
+    deletebankDetail = async (bankId) => {
+        /**
+         * Deletes an existing bank detail for a user
+         * 
+         * @returns A promise
+         */
+
+        return await axiosInstance.delete(`${this.urlPrefix}/delete/${bankId}`) 
     }
 }

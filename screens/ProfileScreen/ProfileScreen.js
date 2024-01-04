@@ -7,8 +7,8 @@ import { useToast } from "react-native-toast-notifications";
 import { profileStyles } from "./profileStyles";
 import { TouchableOpacity } from "react-native";
 import { AuthServices } from "../../services/authServices";
-import { profileSettingItems, securitySettingItems } from "./utils";
-import { UserProfileItme } from "../../components/UserProfileItem/UserProfileItem";
+import { bankSettingItems, helpSettingItems, profileSettingItems, securitySettingItems, userProfileActions } from "./utils";
+import { UserProfileItem } from "../../components/UserProfileItem/UserProfileItem";
 import UserProfileImage from "../../components/UserProfileImage/UserProfileImage";
 
 const ProfileScreen = ({ navigation, setLoggedIn }) => {
@@ -90,6 +90,31 @@ const ProfileScreen = ({ navigation, setLoggedIn }) => {
         }
     }
 
+    const handleSelectProfileItem = (item) => {
+        switch (item) {
+            case userProfileActions.nameChange:
+            case userProfileActions.phoneChange:
+            case userProfileActions.emailChange:
+            case userProfileActions.passwordChange:
+            case userProfileActions.loginPinChange:
+            case userProfileActions.transactionPinChange:
+            case userProfileActions.viewBanks:
+                navigation.navigate('ProfileUpdate', {
+                    updateType: item,
+                })
+                break;
+            case userProfileActions.selfHelp:
+                showToastMessage('Feature coming soon!')
+                break;
+            case userProfileActions.contactUs:
+                showToastMessage('Feature coming soon!')
+                break;
+            default:
+                console.log('item action not defined yet');
+                break;
+        }
+    }
+
     return <>
         <AppLayout
             navigation={navigation}
@@ -109,8 +134,9 @@ const ProfileScreen = ({ navigation, setLoggedIn }) => {
                 <View style={profileStyles.profileOptionListing}>
                     {
                         React.Children.toArray(profileSettingItems.map(item => {
-                            return <UserProfileItme 
+                            return <UserProfileItem 
                                 item={item}
+                                handleItemClick={(action) => handleSelectProfileItem(action)}
                             />
                         }))
                     }
@@ -120,9 +146,34 @@ const ProfileScreen = ({ navigation, setLoggedIn }) => {
                 <View style={profileStyles.profileOptionListing}>
                     {
                         React.Children.toArray(securitySettingItems.map(item => {
-                            return <UserProfileItme 
+                            return <UserProfileItem 
                                 item={item}
                                 dangerItem={item?.type === 'danger' ? true : false}
+                                handleItemClick={(action) => handleSelectProfileItem(action)}
+                            />
+                        }))
+                    }
+                </View>
+
+                <Text style={profileStyles.profileSettingHeading}>Bank settings</Text>
+                <View style={profileStyles.profileOptionListing}>
+                    {
+                        React.Children.toArray(bankSettingItems.map(item => {
+                            return <UserProfileItem 
+                                item={item}
+                                handleItemClick={(action) => handleSelectProfileItem(action)}
+                            />
+                        }))
+                    }
+                </View>
+
+                <Text style={profileStyles.profileSettingHeading}>Contact and Help</Text>
+                <View style={profileStyles.profileOptionListing}>
+                    {
+                        React.Children.toArray(helpSettingItems.map(item => {
+                            return <UserProfileItem 
+                                item={item}
+                                handleItemClick={(action) => handleSelectProfileItem(action)}
                             />
                         }))
                     }

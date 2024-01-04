@@ -28,13 +28,14 @@ import CustomButton from "../../../components/CustomButton/CustomButton";
 import { fullSnapPoints } from "../../../layouts/AppLayout/utils";
 import LoadingIndicator from "../../../components/LoadingIndicator/LoadingIndicator";
 
+export const initialNewBankDetail = {
+    name: '',
+    type: '',
+    accountNumber: '',
+};
+
 const SendFundsScreen = ({ navigation, route }) => {
     const initialContactUpperLimit = 30;
-    const initialNewBankDetail = {
-        name: '',
-        type: '',
-        accountNumber: '',
-    };
 
     const [ activeTab, setActiveTab ] = useState(SendFundTabs[0]?.action);
     const [ searchValue, setSearchValue ] = useState('');
