@@ -18,7 +18,7 @@ exports.update_user_detail = async (req, res) => {
     if (!updateType) return res.status(400).send("'updateType' required");
 
     // fetching the user details
-    const foundUser = await User.findById(req.user._id).select('-password -refreshToken');
+    const foundUser = await User.findById(req.user._id).select('-refreshToken');
 
     // validating the request body and sending back an appropriate error message if any
     const validUserDetails = validateUserUpdateDetails(req.body, updateType);
