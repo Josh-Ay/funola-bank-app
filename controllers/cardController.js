@@ -166,20 +166,6 @@ exports.fund_card = async (req, res) => {
         }),
     ]
 
-    let existingUser;
-
-    try {
-        // getting the current user
-        existingUser = await User.findById(req.user._id);
-
-        // deducting the requested amount from the user's daily limit to restrict ludricrous funding
-        if (currency === 'NGN') existingUser.dailyNairaTopupLimit -= amount;
-        if (currency === 'USD') existingUser.dailyDollarTopupLimit -= amount;
-
-    } catch (error) {
-        return res.status(500).send('Card funding failed');
-    }
-
     try {
         await Promise.all([
             existingWalletOfUser.save(),
@@ -190,8 +176,6 @@ exports.fund_card = async (req, res) => {
 
             newTransactionForWallet.save(),
             newNotificationForWallet.save(),
-
-            existingUser.save(),
 
             sendEmail(req.user.email, 'Card Funding', newFundingMailContent),
             sendEmail(req.user.email, 'Wallet Debit', newWithdrawalMailContent),
