@@ -8,6 +8,7 @@ const { get_currency_rate } = require("../utils/convertUtil");
 const bcrypt = require('bcrypt');
 const { validateRecentMobileTransfer, RecentMobileTransfer } = require('../models/recentMobileTransfers');
 const { Bank } = require('../models/banks');
+const { Card } = require('../models/cards');
 
 exports.create_wallet = async (req, res) => {
     // checking the user has verified account
@@ -113,7 +114,7 @@ exports.transfer_fund = async (req, res) => {
     if (errorMsg) return res.status(400).send(errorMsg);
 
     // validating the request body and sending back an appropriate error message if any
-    const { bankId, receiverId, pin, remarks } = req.body;
+    const { bankId, receiverId, pin, remarks, receiveInWallet } = req.body;
 
     if (!pin) return res.status(400).send("'pin' required");
     if (isNaN(Number(pin))) return res.status(400).send("'pin' must be a number");
@@ -195,11 +196,19 @@ exports.transfer_fund = async (req, res) => {
     if (!receiverId) return res.status(400).send("'receiverId' required");
     if (!validateMongooseId(receiverId)) return res.status(400).send("Invalid receiver user id passed");
     if (receiverId === req.user._id) return res.status(403).send("You cannot transfer funds from yourself to yourself");
+    if (receiveInWallet && typeof receiveInWallet !== 'boolean') return res.status(400).send("'receiveInWallet' must be a boolean");
+
+    // declaring a variable to track if the funds are to be transfered to the receiver's wallet or card
+    const fundsAreToBeTransferredToCard = receiveInWallet === false ?
+        true
+        :
+    false;
 
     // getting the receiving user, receiving user wallet and current user recent transfers
-    const [ receivingUser, existingWalletOfReceiver, currentUserRecentTransfers ] = await Promise.all([
+    const [ receivingUser, existingWalletOfReceiver, existingCardOfReceiver, currentUserRecentTransfers ] = await Promise.all([
         User.findById(receiverId),
         Wallet.findOne({ owner: receiverId, currency: currency }),
+        Card.findOne({ owner: receiverId, currency: currency }),
         RecentMobileTransfer.find({ owner: req.user._id }).sort({ createdAt: -1 }),
     ]);
 
@@ -207,7 +216,10 @@ exports.transfer_fund = async (req, res) => {
     if (!receivingUser) return res.status(403).send("Transfer failed. User not found");
 
     // checking if the receiving user has a wallet in the requested currency
-    if (!existingWalletOfReceiver) return res.status(403).send(`Transfer failed. Receiver does not have a ${currency} wallet.`);
+    if (!existingWalletOfReceiver && !fundsAreToBeTransferredToCard) return res.status(403).send(`Transfer failed. Receiver does not have a ${currency} wallet.`);
+
+    // checking if the receiving user has a card in the requested currency
+    if (!existingCardOfReceiver && fundsAreToBeTransferredToCard) return res.status(403).send(`Transfer failed. Receiver does not have a ${currency} card.`);
 
     // constructing and validating transaction object records for sender and receiver
     const [validNewSenderTransaction, validNewReceiverTransaction] = [
@@ -243,7 +255,12 @@ exports.transfer_fund = async (req, res) => {
         [
             RecentMobileTransfer.create(validNewRecentTransfer.value),
             Transaction.create({...validNewSenderTransaction.value, walletId: existingWalletOfSender._id}),
-            Transaction.create({...validNewReceiverTransaction.value, walletId: existingWalletOfReceiver._id}),
+            Transaction.create(
+                fundsAreToBeTransferredToCard ?
+                    {...validNewReceiverTransaction.value, cardId: existingCardOfReceiver._id}
+                    :
+                {...validNewReceiverTransaction.value, walletId: existingWalletOfReceiver._id}
+            ),
         ]
     );
     
@@ -251,12 +268,13 @@ exports.transfer_fund = async (req, res) => {
     existingWalletOfSender.balance -= amount;
 
     // updating the receiver's balance
-    existingWalletOfReceiver.balance += amount;
+    if (!fundsAreToBeTransferredToCard) existingWalletOfReceiver.balance += amount;
+    if (fundsAreToBeTransferredToCard) existingCardOfReceiver.balance += amount;
 
     // saving the updates to the db and creating notifications for both users
     await Promise.all([
         existingWalletOfSender.save(),
-        existingWalletOfReceiver.save(),
+        !fundsAreToBeTransferredToCard ? existingWalletOfReceiver.save() : existingCardOfReceiver.save(),
         Notification.create({
             owner: req.user._id,
             content: `You made a transfer of ${currency} ${amount} to #${receiverId}!#`,
