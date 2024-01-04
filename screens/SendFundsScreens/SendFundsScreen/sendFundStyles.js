@@ -285,5 +285,10 @@ export const sendFundStyles = StyleSheet.create({
     scanAgainBtn: {
         marginTop: 5,
         marginBottom: 0,
-    }
+    },
+    comingSoonText: {
+        fontFamily: 'Poppins',
+        textAlign: 'center',
+        marginTop: 50,
+    },
 })

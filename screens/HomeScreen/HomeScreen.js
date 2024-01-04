@@ -471,7 +471,7 @@ const HomeScreen = ({ navigation }) => {
             setLoading(true);
 
             try {
-                const res = (await walletService.fundWallet({ ...newWalletFundDetails, currency: currentWallet?.currency})).data;
+                const res = (await walletService.fundWallet({ amount: newWalletFundDetails.amount, currency: currentWallet?.currency})).data;
                 console.log(res);
 
                 const newWalletBalance = Number(currentWallet?.balance) + Number(newWalletFundDetails?.amount);

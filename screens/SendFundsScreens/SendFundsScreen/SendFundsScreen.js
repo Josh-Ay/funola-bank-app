@@ -52,6 +52,7 @@ const SendFundsScreen = ({ navigation, route }) => {
     const [ sheetModalIsOpen, setSheetModalIsOpen ] = useState(false);
     const [ bankIsBeingAdded, setBankIsBeingAdded ] = useState(false);
     const [ newBankDetail, setNewBankDetail ] = useState(initialNewBankDetail);
+    const [ passedItem, setPassedItem ] = useState(null);
 
     const sheetPanelRef = useRef();
     const {
@@ -115,6 +116,12 @@ const SendFundsScreen = ({ navigation, route }) => {
     }
   
     useEffect(() => {
+
+        const { itemType, item } = route?.params;
+        setPassedItem({
+            itemType,
+            item,
+        })
 
         requestContactAccess().then(res => {
             setContacts(res.sort((a, b) => a?.name?.localeCompare(b?.name)));
@@ -259,6 +266,7 @@ const SendFundsScreen = ({ navigation, route }) => {
                 isNaN(scannedData?.amount) ||
                 !scannedData?.currency ||
                 !validFunolaCurrencies.find(item => item.currency === scannedData?.currency) ||
+                !scannedData?.receivingItemType ||
                 !scannedData?.receiverDetail ||
                 typeof scannedData?.receiverDetail !== 'object'
             ) {
@@ -277,6 +285,7 @@ const SendFundsScreen = ({ navigation, route }) => {
                     receiver: scannedData?.receiverDetail,
                     itemToBeDebited: foundWalletMatchingScanRequestCurrency,
                     remarks: 'QR Transfer',
+                    receivingItemType: scannedData?.receivingItemType,
                 }
             )
         } catch (error) {
@@ -295,7 +304,12 @@ const SendFundsScreen = ({ navigation, route }) => {
                     <Text style={sendFundStyles.subtitleText}>Select options</Text>
                     <SafeAreaView style={sendFundStyles.cardActionsStyle}>
                         <FlatList
-                            data={SendFundTabs}
+                            data={
+                                passedItem?.itemType === 'card' && passedItem?.item?.contactlessPaymentEnabled === false ?
+                                    SendFundTabs.filter(tab => tab.action !== 'qr')
+                                :
+                                SendFundTabs
+                            }
                             renderItem={
                                 ({item}) => 
                                 <UserActionItem
@@ -307,10 +321,11 @@ const SendFundsScreen = ({ navigation, route }) => {
                             keyExtractor={item => item.id}
                             horizontal={true}
                             contentContainerStyle={{
-                                justifyContent: 'space-between',
+                                // justifyContent: 'space-between',
                                 width: '100%',
                                 paddingLeft: 8,
                                 paddingRight: 8,
+                                gap: 40,
                             }}
                         />
                     </SafeAreaView>
@@ -522,7 +537,7 @@ const SendFundsScreen = ({ navigation, route }) => {
                     </> :
 
                     activeTab === 'nearby' ? <>
-                    
+                        <Text style={sendFundStyles.comingSoonText}>Feature coming soon</Text>
                     </> :
                     
                     activeTab === 'qr' ? <>

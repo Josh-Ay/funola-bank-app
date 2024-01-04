@@ -76,5 +76,10 @@ export const requestFundStyles = StyleSheet.create({
         fontSize: 12,
         textAlign: 'center',
         marginTop: 2,
-    }
+    },
+    comingSoonText: {
+        fontFamily: 'Poppins',
+        textAlign: 'center',
+        marginTop: 50,
+    },
 })

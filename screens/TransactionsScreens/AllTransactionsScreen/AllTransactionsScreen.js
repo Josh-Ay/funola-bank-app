@@ -77,7 +77,7 @@ const AllTransactionsScreen = ({ navigation, route }) => {
             <View style={transactionStyles.wrapper}>
                 <View style={transactionStyles.allTransactionsHeader}>
                     <TouchableOpacity onPress={() => navigation.pop()}>
-                        <Ionicons name="chevron-back" size={24} color={colors.black} />
+                        <Ionicons name="chevron-back" size={24} color={colors.black} onPress={() => navigation.pop()} />
                     </TouchableOpacity>
                     <View style={transactionStyles.allTransactionsTitleHeader}>
                         <Text style={transactionStyles.allTransactionsHeaderTitle}>{route?.params?.typeOfItem === 'deposit' ? 'Deposits' : 'Transactions'}</Text>

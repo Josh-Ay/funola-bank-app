@@ -121,6 +121,7 @@ const FundsConfirmationScreen = ({ navigation, route }) => {
                         {
                             ...initialDataToPost,
                             receiverId: isRecentItem ? fundTransferDetail?.receiver?.userId : fundTransferDetail?.receiver?._id,
+                            receiveInWallet: route?.params?.receivingItemType === 'card' ? false : true,
                         }
                         :
                         {

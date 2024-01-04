@@ -28,6 +28,14 @@ export const appLayoutStyles = StyleSheet.create({
     modalInputHeaderText: {
         fontFamily: 'Poppins',
     },
+    modalWarningText: {
+        fontSize: 11,
+        color: colors.red,
+        textAlign: 'center'
+    },
+    modalInfoText: {
+        fontSize: 12,
+    },
     modalInputItemWrapper: {
         gap: 10,
         width: '100%',

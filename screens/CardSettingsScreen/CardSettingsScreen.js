@@ -21,6 +21,11 @@ import ModalOverlay from "../../layouts/AppLayout/components/ModalOverlay/ModalO
 import { appLayoutStyles } from "../../layouts/AppLayout/styles";
 import { fullSnapPoints } from "../../layouts/AppLayout/utils";
 import BottomSheet, { BottomSheetView } from "@gorhom/bottom-sheet";
+import TextInputComponent from "../../components/TextInputComponent/TextInputComponent";
+import { getCurrencySymbol } from "../../utils/helpers";
+import { useWalletContext } from "../../contexts/WalletContext";
+import CustomButton from "../../components/CustomButton/CustomButton";
+import { useUserContext } from "../../contexts/UserContext";
 
 const CardSettingsScreen = ({ navigation, route }) => {
     const {
@@ -35,6 +40,16 @@ const CardSettingsScreen = ({ navigation, route }) => {
         setCardTransactions,
     } = useCardContext();
 
+    const {
+        wallets,
+        setWallets,
+    } = useWalletContext();
+
+    const {
+        notifications,
+        setNotifications,
+    } = useUserContext();
+
     const [ refreshing, setRefreshing ] = useState(false);
     const toast = useToast();
     const [ currentSlide, setCurrentSlide ] = useState(0);
@@ -43,6 +58,8 @@ const CardSettingsScreen = ({ navigation, route }) => {
     const [ sheetModalIsOpen, setSheetModalIsOpen ] = useState(false);
     const [ currentUserAction, setCurrentUserAction ] = useState(null);
     const [ loading, setLoading ] = useState(false);
+    const [ itemToBeDebited, setItemToBeDebited ] = useState(null);
+    const [ amount, setAmount ] = useState('0')
     
     const cardListingRef = useRef();
 
@@ -134,6 +151,15 @@ const CardSettingsScreen = ({ navigation, route }) => {
 
     }, [currentCardToDisplay])
 
+    useEffect(() => {
+
+        if (!currentCardToDisplay) return
+
+        const foundWalletMatchingCardCurrency = wallets?.find(wallet => wallet.currency === currentCardToDisplay?.currency);
+        if (foundWalletMatchingCardCurrency) setItemToBeDebited(foundWalletMatchingCardCurrency);
+
+    }, [sheetModalIsOpen, currentCardToDisplay])
+
     const handleRefresh = async () => {
         setRefreshing(true);
         setShowAddCardModal(false);
@@ -174,11 +200,99 @@ const CardSettingsScreen = ({ navigation, route }) => {
                     }
                 )
                 break;
+            case userItemActions.cardSend:
+                navigation.navigate('SendFunds', {
+                    itemType: 'card',
+                    item: currentCardToDisplay,
+                })
+                break;
+            case userItemActions.cardRequest:
+                navigation.navigate('RequestFunds', {
+                    itemType: 'card',
+                    item: currentCardToDisplay,
+                })
+                break;
             default:
                 console.log(action);
                 break;
         }
     } 
+
+    const handleFundCard = async () => {
+        
+        if (
+            amount.length < 1 || 
+            isNaN(amount)
+        ) return
+
+        if (Number(amount) < 0.01) return showToastMessage('Please enter an amount greater than 0');
+
+        setLoading(true);
+
+        try {
+            const res = (await cardService.fundCard({ amount, currency: currentCardToDisplay?.currency }, currentCardToDisplay._id)).data;
+
+            const [
+                copyOfAllTransactions,
+                copyOfNotifications,
+                copyOfCards,
+                copyOfWallets,
+            ] = [
+                {...cardTransactions},
+                notifications?.slice(),
+                cards?.slice(),
+                wallets?.slice(),
+            ]
+
+            const currentCardTransactions = copyOfAllTransactions[currentCardToDisplay?._id];
+
+            if (!currentCardTransactions) {
+                copyOfAllTransactions[currentCardToDisplay?._id] = {
+                    transactions: [res?.newCardTransaction]
+                }
+            }
+            
+            if (currentCardTransactions) {
+                copyOfAllTransactions[currentCardToDisplay?._id] = {
+                    transactions: [
+                        res?.newCardTransaction,
+                        ...copyOfAllTransactions[currentCardToDisplay?._id]?.transactions,
+                    ]
+                }
+            }
+
+            setCardTransactions(copyOfAllTransactions);
+
+            setNotifications([
+                res?.notificationForCard,
+                res?.notificationForWallet,
+                ...copyOfNotifications
+            ])
+
+            const foundCardIndex = copyOfCards.findIndex(card => card._id === currentCardToDisplay?._id);
+            if (foundCardIndex !== -1) {
+                copyOfCards[foundCardIndex] = res?.updatedCardDetails;
+                setCards(copyOfCards);
+            }
+            
+            const foundWalletIndex = copyOfWallets.findIndex(wallet => wallet._id === itemToBeDebited?._id);
+            if (foundWalletIndex !== -1) {
+                copyOfWallets[foundWalletIndex] = res?.updatedDebitedWalletDetails;
+                setWallets(copyOfWallets);
+            }
+
+            setLoading(false);
+            setSheetModalIsOpen(false);
+            
+            showToastMessage(`Successfully added ${amount} ${currentCardToDisplay.currency} to card!`, 'success');
+
+        } catch (error) {
+            const errorMsg = error.response ? error.response.data : error.message;
+
+            setLoading(false);
+            showToastMessage(errorMsg?.toLocaleLowerCase()?.includes('html') ? 'Something went wrong trying to fund your card. Please try again' : errorMsg, 'danger')
+        }
+    }
 
     return <>
         <AppLayout
@@ -353,12 +467,54 @@ const CardSettingsScreen = ({ navigation, route }) => {
 
                                 <View style={appLayoutStyles.modalInputItemWrapper}>
                                     <Text style={appLayoutStyles.modalInputHeaderText}>Amount</Text>
+                                    <TextInputComponent
+                                        name={'amount'}
+                                        value={amount}
+                                        handleInputChange={(name, value) => setAmount(value)}
+                                        isEditable={!loading}
+                                        isNumericInput={true}
+                                    />
                                 </View>
 
                                 <View style={appLayoutStyles.modalInputItemWrapper}>
                                     <Text style={appLayoutStyles.modalInputHeaderText}>Wallet Being Debited</Text>
-                                    
+                                    {
+                                        !itemToBeDebited ? 
+                                            <Text style={{...appLayoutStyles.modalInputHeaderText, ...appLayoutStyles.modalWarningText }}>You do not have a {currentCardToDisplay?.currency} wallet to initiate this transaction.</Text>
+
+                                        :
+                                        <Text style={{...appLayoutStyles.modalInputHeaderText, ...appLayoutStyles.modalInfoText }}>Your {currentCardToDisplay?.currency} wallet: {getCurrencySymbol(currentCardToDisplay?.currency)}{Number(itemToBeDebited?.balance).toFixed(2)}</Text>
+                                    }
                                 </View>
+
+                                {
+                                    itemToBeDebited && 
+                                    <CustomButton
+                                        buttonText={
+                                            loading ? 'Please wait...'
+                                            :
+                                            'Fund'
+                                        }
+                                        btnStyle={
+                                            loading ?
+                                                Object.assign({}, appLayoutStyles.modalBtnStyle, appLayoutStyles.disabledModalBtn)
+                                            :
+                                            {
+                                                ...appLayoutStyles.modalBtnStyle 
+                                            }
+                                        }
+                                        textContentStyle={
+                                            appLayoutStyles.modalBtnTextStyle
+                                        }
+                                        handleBtnPress={() => handleFundCard()}
+                                        disabled={
+                                            loading ? 
+                                                true 
+                                            :
+                                            false
+                                        }
+                                    />
+                                }
                             </View>
                         </BottomSheetView>
                     </BottomSheet>

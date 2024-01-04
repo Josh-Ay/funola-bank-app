@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { RequestFundTabs } from "./utils";
 import { useToast } from "react-native-toast-notifications";
 import { requestFundStyles } from "./requestFundStyles";
@@ -29,6 +29,7 @@ const RequestFundsScreen = ({ navigation, route }) => {
         amount: '',
         currency: ''
     });
+    const [ passedItem, setPassedItem ] = useState(null);
 
     const { currentUser } = useUserContext();
 
@@ -40,6 +41,15 @@ const RequestFundsScreen = ({ navigation, route }) => {
             placement: 'top'
         })
     }
+
+    useEffect(() => {
+        const { itemType, item } = route?.params;
+
+        setPassedItem({
+            itemType,
+            item,
+        })
+    }, [])
 
     const handleUpdateNewRequestDetail = (keyToUpdate, newValue) => {
         setNewRequestDetail((prevDetail) => {
@@ -75,6 +85,7 @@ const RequestFundsScreen = ({ navigation, route }) => {
             ...newRequestDetail,
             amount: amountToSendAsNum,
             receiverDetail: currentUser,
+            receivingItemType: passedItem?.itemType,
         }
 
         setCodeGenerating(true);
@@ -122,6 +133,7 @@ const RequestFundsScreen = ({ navigation, route }) => {
             <ScrollView style={requestFundStyles.contentWrapper}>
                 {
                     activeTab === 'nearby' ? <>
+                        <Text style={requestFundStyles.comingSoonText}>Feature coming soon</Text>
                     </> :
                     
                     activeTab === 'qr' ? <>
