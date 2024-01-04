@@ -53,7 +53,7 @@ exports.checkWalletRequestBodyErrors = (requestBody) => {
     // validating the range of amount
     if (Number(amount) < 0.01) return { errorMsg: "'amount' must be greater than 0.01" };
 
-    return { amount, currency };
+    return { amount: Number(amount), currency };
 }
 
 // network types for cards accepted on the funola banking application
