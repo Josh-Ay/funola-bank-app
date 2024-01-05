@@ -52,12 +52,12 @@ export const securitySettingItems = [
         subtitle: 'Change your password',
         action: userProfileActions.passwordChange,
     },
-    {
-        icon: <Ionicons name="settings-outline" size={24} color="black" />,
-        title: 'Change login pin',
-        subtitle: 'Change your login pin',
-        action: userProfileActions.loginPinChange,
-    },
+    // {
+    //     icon: <Ionicons name="settings-outline" size={24} color="black" />,
+    //     title: 'Change login pin',
+    //     subtitle: 'Change your login pin',
+    //     action: userProfileActions.loginPinChange,
+    // },
     {
         icon: <MaterialCommunityIcons name="cog-transfer-outline" size={24} color="black" />,
         title: 'Change transaction pin',
