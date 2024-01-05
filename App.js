@@ -31,6 +31,7 @@ import FundsConfigurationScreen from './screens/SendFundsScreens/FundsConfigurat
 import FundsConfirmationScreen from './screens/SendFundsScreens/FundsConfirmationScreen/FundsConfirmationScreen';
 import RequestFundsScreen from './screens/RequestFundsScreens/RequestFundsScreen';
 import { ProfileUpdateScreen } from './screens/ProfileUpdateScreen/ProfileUpdateScreen';
+// import useCheckIfTimeToLockApp from './hooks/useCheckIfTimeToLockApp';
 
 const Stack = createNativeStackNavigator();
 
@@ -39,10 +40,21 @@ export default function App() {
   const [ appIsReady, setAppIsReady ] = useState(false);
   const [ userStatusChecked, setUserStatusChecked ] = useState(false);
   const [ userLoggedIn, setUserLoggedIn ] = useState(false);
+  // const [ appLocked, setAppLocked ] = useState(false);
 
   // load fonts and check if user is already logged in
   useLoadFonts(setAppIsReady);
-  useCheckLoginStatus(appIsReady, userLoggedIn, setUserLoggedIn, setUserStatusChecked);
+  useCheckLoginStatus(
+    appIsReady, 
+    userLoggedIn, 
+    setUserLoggedIn,
+    setUserStatusChecked
+  );
+
+  // useCheckIfTimeToLockApp(
+  //   userLoggedIn,
+  //   setAppLocked,
+  // )
 
   if (!appIsReady) return null
 

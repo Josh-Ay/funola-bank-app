@@ -34,7 +34,8 @@
     "react-native-screens": "~3.20.0",
     "react-native-svg": "13.4.0",
     "react-native-toast-notifications": "^3.3.1",
-    "react-native-toggle-input": "^1.0.12"
+    "react-native-toggle-input": "^1.0.12",
+    "@react-native-async-storage/async-storage": "1.17.11"
   },
   "devDependencies": {
     "@babel/core": "^7.20.0"

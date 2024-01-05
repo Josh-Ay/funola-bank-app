@@ -1,3 +1,8 @@
+import AsyncStorage from '@react-native-async-storage/async-storage';
+
+// key used to save user next timeout in async storage
+export const USER_DETAIL_KEY = 'funola-user-next-timeout';
+
 // Dictionary of user actions in the application
 export const userItemActions = {
     walletFund: 'fund-wallet',
@@ -82,3 +87,31 @@ export const validFunolaBankAccountTypes = [
         type: 'Savings',
     }
 ]
+
+// function to get saved user timout detail
+export const getSavedUserTimeoutDetail = async () => {
+    try {
+      const value = await AsyncStorage.getItem(USER_DETAIL_KEY);
+      if (value !== null) {
+        // value previously stored
+        try {
+            return JSON.parse(value)
+        } catch (error) {
+            return null
+        }
+      }
+      return null
+    } catch (e) {
+      // error reading value
+      return null
+    }
+};
+
+export const clearSavedUserTimeoutDetail = async () => {
+    try {
+      await AsyncStorage.removeItem(USER_DETAIL_KEY);
+    } catch (e) {
+      // error removing
+      console.log('error removing detail: ', e);
+    }
+}

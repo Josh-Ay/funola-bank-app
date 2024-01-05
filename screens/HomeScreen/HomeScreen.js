@@ -167,6 +167,8 @@ const HomeScreen = ({ navigation }) => {
             setWalletBalanceObscured(res.data?.hideAccountBalances)
 
             setCurrentUser(res.data);
+            
+
             setUserProfileLoaded(true);
             setUserProfileLoading(false);
             setAllOtherUserDataLoading(true);
