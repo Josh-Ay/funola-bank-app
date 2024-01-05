@@ -32,6 +32,10 @@ import FundsConfirmationScreen from './screens/SendFundsScreens/FundsConfirmatio
 import RequestFundsScreen from './screens/RequestFundsScreens/RequestFundsScreen';
 import { ProfileUpdateScreen } from './screens/ProfileUpdateScreen/ProfileUpdateScreen';
 // import useCheckIfTimeToLockApp from './hooks/useCheckIfTimeToLockApp';
+import { LogBox } from 'react-native';
+
+LogBox.ignoreLogs(['Warning: ...']); // Ignore log notification by message
+LogBox.ignoreAllLogs(); //Ignore all log notifications
 
 const Stack = createNativeStackNavigator();
 
