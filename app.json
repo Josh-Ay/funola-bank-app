@@ -15,13 +15,24 @@
       "**/*"
     ],
     "ios": {
-      "supportsTablet": true
+      "supportsTablet": true,
+      "infoPlist": {
+        "NSContactsUsageDescription": "Allow $(Funola) to access your contacts.",
+        "NSCameraUsageDescription": "Allow $(Funola) to access camera.",
+        "NSMicrophoneUsageDescription": "Allow $(PRODUCT_NAME) to access your microphone"
+      }
     },
     "android": {
       "adaptiveIcon": {
         "foregroundImage": "./assets/logo/logo.png",
         "backgroundColor": "#000"
-      }
+      },
+      "permissions": [
+        "android.permission.READ_CONTACTS",
+        "android.permission.WRITE_CONTACTS",
+        "android.permission.CAMERA"
+      ],
+      "package": "com.ayoolaa.FunolaBankApp"
     },
     "web": {
       "favicon": "./assets/logo/logo.png"
@@ -39,6 +50,11 @@
           "cameraPermission": "Allow $(Funola) to access camera."
         }
       ]
-    ]
+    ],
+    "extra": {
+      "eas": {
+        "projectId": "f2c2be4b-d053-431d-bf39-5be600fca4c8"
+      }
+    }
   }
 }
