@@ -99,9 +99,14 @@ exports.register_user = async (req, res) => {
     const hashAndSaltedPassword = await bcrypt.hash(validUserDetails.value.password, Number(process.env.SALT_ROUNDS));
     newUser.password = hashAndSaltedPassword;
 
-    // creating a copy of the valid details entered by the user
+    // creating a copy of the valid details entered by the user to use to generate a verification token
     const copyOfValidUserDetails = {...validUserDetails.value};
+
     delete copyOfValidUserDetails.password;
+    delete copyOfValidUserDetails.phoneNumber;
+    delete copyOfValidUserDetails.phoneNumberExtension;
+    delete copyOfValidUserDetails.dateOfBirth;
+    delete copyOfValidUserDetails.country;
 
     // creating a verification token for the new user
     const { token: verificationToken } = await generateToken(copyOfValidUserDetails, 'verification');
@@ -118,7 +123,7 @@ exports.register_user = async (req, res) => {
     // saving the new user
     await newUser.save();
 
-    return res.status(201).send('Sucessfully registed new account!');
+    return res.status(201).send('Successfully registed new account!');
 }
 
 exports.verify_new_account = async (req, res) => {

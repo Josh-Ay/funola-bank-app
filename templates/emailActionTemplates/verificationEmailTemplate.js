@@ -14,27 +14,35 @@ exports.verificationMailHtmlContent = `
         <p>
             Kindly finish up your account setup by clicking the button below: 
         </p>
-        <a 
+        <button
             style='
-                display: block;
-                text-align: center;
-                padding: 0.7rem 0;
-                text-decoration: none;
-                background: #2573d5;
-                color: #fff;
-                width: 8rem;
-                border-radius: 8px;
-                margin-left: auto;
-                margin-right: auto;
-                margin-top: 2.5rem;
-                margin-bottom: 1rem;
+                border: none;
+                outline: none;
+                background: none;
             '
-            href="{{ content }}"
-            target='_blank' 
-            rel='noreferrer noopener'
         >
-            Verify Account
-        </a>
+            <a 
+                style='
+                    display: block;
+                    text-align: center;
+                    padding: 0.7rem 0;
+                    text-decoration: none;
+                    background: #2573d5;
+                    color: #fff;
+                    width: 8rem;
+                    border-radius: 8px;
+                    margin-left: auto;
+                    margin-right: auto;
+                    margin-top: 2.5rem;
+                    margin-bottom: 1rem;
+                '
+                href="{{ content }}"
+                target='_blank' 
+                rel='noreferrer noopener'
+            >
+                Verify Account
+            </a>
+        </button>
     </div>
 </div>
 </div>
