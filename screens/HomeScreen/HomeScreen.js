@@ -154,10 +154,6 @@ const HomeScreen = ({ navigation }) => {
 
     useEffect(() => {
         setRefreshing(false);
-        
-        if (wallets.length > 0) {
-            setCurrentWallet(wallets[0]);
-        }
 
         if (currentUser || userProfileLoaded) return
 
@@ -192,8 +188,6 @@ const HomeScreen = ({ navigation }) => {
                 setDeposits(res[4]?.data);
                 setAtms(res[5]?.data);
                 setBanks(res[6]?.data);
-
-                res[2] && Array.isArray(res[2].data) && res[2].data.length > 0 && setCurrentWallet(res[2].data[0]);
 
                 setAllOtherUserDataLoaded(true);
                 setAllOtherUserDataLoading(false);
@@ -240,14 +234,20 @@ const HomeScreen = ({ navigation }) => {
     }, [])
 
     useEffect(() => {
+
+        if (Array.isArray(wallets) && wallets.length > 0) {
+            setCurrentWallet(wallets[0]);
+        }
+
+    }, [wallets])
+
+    useEffect(() => {
         if (!userProfileLoaded || allOtherUserDataLoading) return
 
         if (!walletsLoaded) {
             walletService.getWalletsBalance()
             .then((res) => {
                 setWallets(res?.data);
-
-                Array.isArray(res.data) && res.data.length > 0 && setCurrentWallet(res.data[0]);
 
                 setWalletsLoading(false);
                 setWalletsLoaded(true);
@@ -387,8 +387,6 @@ const HomeScreen = ({ navigation }) => {
             setDeposits(res[5]?.data);
             setAtms(res[6]?.data);
             setBanks(res[7]?.data);
-
-            res[3] && Array.isArray(res[3].data) && res[3].data.length > 0 && setCurrentWallet(res[3].data[0]);
 
             setRefreshing(false);
             setAllOtherUserDataLoaded(true);

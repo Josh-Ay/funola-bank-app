@@ -7,7 +7,6 @@ export const handleAPICallAndSubsequentStateUpdate = async (
     handleApiFailure,
     extraDataParam=null,
     addItemAtBeginningOfStateBeingTracked=false,
-    stateBeingTrackedIsArray=true,
     typeOfState=null,
 ) => {
     try {
@@ -18,15 +17,15 @@ export const handleAPICallAndSubsequentStateUpdate = async (
         (await apiCallFunction(dataToPost)).data;
 
         handleApiSuccess();
-        
-        if (stateBeingTrackedIsArray) {
+
+        if (Array.isArray(copyOfStateBeingTracked)) {
             if (addItemAtBeginningOfStateBeingTracked) {
                 copyOfStateBeingTracked.unshift(res);
                 updateStateBeingTracked(copyOfStateBeingTracked);
                 return
             }
             
-            copyOfStateBeingTracked.push(res);    
+            copyOfStateBeingTracked.push(res);
             updateStateBeingTracked(copyOfStateBeingTracked);
         }
 
