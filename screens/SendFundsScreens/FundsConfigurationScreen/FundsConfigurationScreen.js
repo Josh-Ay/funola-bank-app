@@ -183,7 +183,7 @@ const FundsConfigurationScreen = ({ navigation, route }) => {
                         minimumTrackTintColor={colors.blue}
                         maximumTrackTintColor={colors.grey}
                         thumbTintColor={colors.blue}
-                        value={amountToSend}
+                        value={Number(amountToSend)}
                         onValueChange={(val) => setAmountToSend(`${val}`)}
                         step={100}
                         lowerLimit={100}
