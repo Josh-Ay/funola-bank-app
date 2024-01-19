@@ -82,3 +82,19 @@ exports.validWalletTransferTypes = [
 
 // Keys to be excluded in the middleware when querying for the current user
 exports.userKeysToExcludeInMiddleWare = '-password -refreshToken -transactionPin -verificationToken -loginPin';
+
+// function that copies and deletes sensitive info from a user's record before using to create a token
+exports.createCopyOfUserObjToGenerateTokenFrom = (user) => {
+
+    if (typeof user !== 'object') return {}
+
+    // creating a copy of the existing user object
+    const copyOfExistingUser = {...user};
+    delete copyOfExistingUser.password;
+    delete copyOfExistingUser.refreshToken;
+    delete copyOfExistingUser.verificationToken;
+    delete copyOfExistingUser.transactionPin;
+    delete copyOfExistingUser.loginPin;
+
+    return copyOfExistingUser
+}

@@ -6,21 +6,7 @@ const { VerificationCodes } = require("../models/codes");
 const { generateToken, validateToken } = require("../utils/tokenUtils");
 const { compileHtml, sendEmail, validateEmail } = require("../utils/emailUtils");
 const { Notification } = require("../models/notifications");
-
-const createCopyOfUserObjToGenerateTokenFrom = (user) => {
-
-    if (typeof user !== 'object') return {}
-
-    // creating a copy of the existing user object
-    const copyOfExistingUser = {...user};
-    delete copyOfExistingUser.password;
-    delete copyOfExistingUser.refreshToken;
-    delete copyOfExistingUser.verificationToken;
-    delete copyOfExistingUser.transactionPin;
-    delete copyOfExistingUser.loginPin;
-
-    return copyOfExistingUser
-}
+const { createCopyOfUserObjToGenerateTokenFrom } = require("../utils/utils");
 
 exports.send_verification_code = async (req, res) => {
     // checking for a request body
