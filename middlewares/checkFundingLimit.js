@@ -15,7 +15,7 @@ exports.checkFundingLimit = (req, res, next) => {
         if (amount > funolaUserTopupLimits.nairaLimit) return res.status(403).send(`'amount' must be less than ${funolaUserTopupLimits.nairaLimit} for NGN topups`);
         
         // validating the user has enough to process the fund request
-        if (amount > req.user.dailyNairaTopupLimit) return res.status(403).send(`You can only fund ${req.user.dailyNairaTopupLimit} or less`);
+        if (amount > req.user.dailyNairaTopupLimit) return res.status(403).send(`You have used ${Number(Number(funolaUserTopupLimits.nairaLimit) - Number(req.user.dailyNairaTopupLimit)).toFixed(2)} out of your daily limit of ${funolaUserTopupLimits.nairaLimit}. You can only fund ${req.user.dailyNairaTopupLimit} or less`);
 
         next();
 
@@ -27,7 +27,7 @@ exports.checkFundingLimit = (req, res, next) => {
         if (amount > funolaUserTopupLimits.dollarLimit) return res.status(403).send(`'amount' must be less than ${funolaUserTopupLimits.dollarLimit} for USD topups`);
         
         // validating the user has enough to process the fund request
-        if (amount > req.user.dailyDollarTopupLimit) return res.status(403).send(`You can only fund ${req.user.dailyDollarTopupLimit} or less`);
+        if (amount > req.user.dailyDollarTopupLimit) return res.status(403).send(`You have used ${Number(Number(funolaUserTopupLimits.dollarLimit) - Number(req.user.dailyDollarTopupLimit)).toFixed(2)} out of your daily limit of ${funolaUserTopupLimits.dollarLimit}. You can only fund ${req.user.dailyDollarTopupLimit} or less`);
 
         next();
 
