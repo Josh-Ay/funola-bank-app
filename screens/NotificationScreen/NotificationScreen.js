@@ -1,4 +1,4 @@
-import { RefreshControl, SafeAreaView, Text, TouchableOpacity, View } from "react-native"
+import { RefreshControl, Text, TouchableOpacity, View } from "react-native"
 import { colors } from "../../utils/colors";
 import { Ionicons } from '@expo/vector-icons';
 import { useUserContext } from "../../contexts/UserContext";
@@ -8,6 +8,7 @@ import { notificationStyles } from "./notificationStyles";
 import { FlatList } from "react-native";
 import { formatDateToMonthAndDay } from "../../utils/helpers";
 import { useToast } from "react-native-toast-notifications";
+import { SafeAreaView } from "react-native-safe-area-context";
 
 const NotificationItem = ({ item }) => {
     if (!item.content) return <></>

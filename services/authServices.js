@@ -80,4 +80,13 @@ export class AuthServices {
 
         return await axiosInstance.get(`${this.urlPrefix}/logout`)
     }
+
+    requestPasswordReset = async (data) => {
+        /**
+         * Send a request to reset password of a user's account
+         * 
+         * @returns A promise
+         */
+        return await axiosInstance.post(`${this.urlPrefix}/request-password-reset`, data)
+    }
 }

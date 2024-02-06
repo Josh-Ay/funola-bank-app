@@ -1,4 +1,4 @@
-import { FlatList, Image, SafeAreaView, Text, TouchableOpacity, View } from "react-native";
+import { FlatList, Image, Text, TouchableOpacity, View } from "react-native";
 import AppLayout from "../../layouts/AppLayout/AppLayout";
 import React, { useCallback, useEffect, useRef, useState } from "react";
 import { useUserContext } from "../../contexts/UserContext";
@@ -34,6 +34,7 @@ import { useBanksContext } from "../../contexts/BanksContext";
 import { BankServices } from "../../services/bankServices";
 import { getCurrencySymbol } from "../../utils/helpers";
 import LoadingIndicator from "../../components/LoadingIndicator/LoadingIndicator";
+import { SafeAreaView } from "react-native-safe-area-context";
 
 const HomeScreen = ({ navigation }) => {
 
@@ -413,7 +414,7 @@ const HomeScreen = ({ navigation }) => {
         })
     }
 
-    const handleActionItemPress = (itemAction) => {
+    const handleActionItemPress = async (itemAction) => {
         if (sheetModalIsOpen) return
 
         switch (itemAction) {
@@ -435,10 +436,20 @@ const HomeScreen = ({ navigation }) => {
                 handleUpdateWalletActionStateDetail('swap', 'currency', currentWallet?.currency);
                 break;
             case userItemActions.walletSend:
-                navigation.navigate('SendFunds', {
-                    itemType: 'wallet',
-                    item: currentWallet,
-                })
+                try {
+                    const userHasTransactionPinSet = (await userService.checkTransactionPinStatus()).data;
+                    navigation.navigate('SendFunds', {
+                        itemType: 'wallet',
+                        item: currentWallet,
+                    })
+                } catch (error) {
+                    showToastMessage(
+                        error?.response?.status === 500 ?
+                            'An error occured. Please try again later'
+                        :
+                        'Please set a transaction pin first in your profile page'
+                    );
+                }
                 break;
             case userItemActions.walletRequest:
                 navigation.navigate('RequestFunds', {

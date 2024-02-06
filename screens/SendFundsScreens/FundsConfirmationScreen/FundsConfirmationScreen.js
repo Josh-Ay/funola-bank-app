@@ -1,4 +1,4 @@
-import { Image, SafeAreaView, ScrollView, Text, View } from "react-native";
+import { Image, ScrollView, Text, View } from "react-native";
 import { colors } from "../../../utils/colors";
 import { fundsConfirmationStyles } from "./fundsConfirmationStyles";
 import { TouchableOpacity } from "react-native";
@@ -16,6 +16,7 @@ import PinInputForm from "../../../components/PinInputForm/PinInputForm";
 import { useToast } from "react-native-toast-notifications";
 import LoadingScreen from "../../LoadingScreen/LoadingScreen";
 import BankItem from "../SendFundsScreen/components/BankItem/BankItem";
+import { SafeAreaView } from "react-native-safe-area-context";
 
 const FundsConfirmationScreen = ({ navigation, route }) => {
 

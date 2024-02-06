@@ -2,7 +2,7 @@ import { useToast } from "react-native-toast-notifications";
 import { useUserContext } from "../../contexts/UserContext";
 import { UserServices } from "../../services/userServices";
 import React, { useEffect, useRef, useState } from "react";
-import { Modal, SafeAreaView, Text, View } from "react-native";
+import { Modal, Text, View } from "react-native";
 import { profileStyles } from "../ProfileScreen/profileStyles";
 import { AuthServices } from "../../services/authServices";
 import { userProfileActions } from "../ProfileScreen/utils";
@@ -24,6 +24,7 @@ import BottomSheet, { BottomSheetView } from "@gorhom/bottom-sheet";
 import { fullSnapPoints } from "../../layouts/AppLayout/utils";
 import { initialNewBankDetail } from "../SendFundsScreens/SendFundsScreen/SendFundsScreen";
 import ModalOverlay from "../../layouts/AppLayout/components/ModalOverlay/ModalOverlay";
+import { SafeAreaView } from "react-native-safe-area-context";
 
 export const ProfileUpdateScreen = ({ navigation, setLoggedIn, route }) => {
     const {

@@ -5,7 +5,6 @@ import { requestFundStyles } from "./requestFundStyles";
 import { ScrollView, View } from "react-native";
 import { FlatList } from "react-native";
 import UserActionItem from "../../components/UserActionItem/UserActionItem";
-import { SafeAreaView } from "react-native";
 import { Text } from "react-native";
 import { TouchableOpacity } from "react-native";
 import { colors } from "../../utils/colors";
@@ -17,6 +16,7 @@ import CustomDropdownItem from "../../components/DropdownItemComponent/CustomDro
 import { validFunolaCurrencies } from "../../utils/utils";
 import { useUserContext } from "../../contexts/UserContext";
 import QRCodeStyled from 'react-native-qrcode-styled';
+import { SafeAreaView } from "react-native-safe-area-context";
 
 
 const RequestFundsScreen = ({ navigation, route }) => {

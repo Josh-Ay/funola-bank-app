@@ -1,8 +1,9 @@
-import { Image, SafeAreaView, Text, TouchableOpacity, View } from "react-native";
+import { Image, Text, TouchableOpacity, View } from "react-native";
 import { welcomeStyles } from "./styles";
 import { useEffect } from "react";
 import { useAppContext } from "../../contexts/AppContext";
 import { CountryServices } from "../../services/countriesServices";
+import { SafeAreaView } from "react-native-safe-area-context";
 
 const WelcomeScreen = ({ navigation, route }) => {    
 

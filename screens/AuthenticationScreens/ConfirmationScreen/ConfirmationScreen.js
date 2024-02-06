@@ -1,6 +1,7 @@
-import { Image, SafeAreaView, Text, TouchableOpacity, View } from "react-native";
+import { Image, Text, TouchableOpacity, View } from "react-native";
 import { confirmationStyles } from "./styles";
 import { StackActions } from "@react-navigation/native";
+import { SafeAreaView } from "react-native-safe-area-context";
 
 const AccountConfirmationScreen = ({ navigation }) => {
 

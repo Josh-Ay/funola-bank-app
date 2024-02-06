@@ -18,5 +18,11 @@ export const loginStyles = StyleSheet.create({
         justifyContent: 'center', 
         alignItems: 'center',
         width: 24,
+    },
+    resetPasswordText: {
+        fontFamily: 'Poppins',
+        textAlign: 'center',
+        color: colors.blue,
+        marginTop: 10,
     }
 })

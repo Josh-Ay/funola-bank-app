@@ -1,6 +1,6 @@
 import React, { useEffect, useRef, useState } from "react";
 import AppLayout from "../../layouts/AppLayout/AppLayout";
-import { SafeAreaView, Text, TouchableOpacity, View } from "react-native";
+import { Text, TouchableOpacity, View } from "react-native";
 import { colors } from "../../utils/colors";
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import LottieView from "lottie-react-native";
@@ -229,7 +229,7 @@ const MapsScreen = ({ navigation }) => {
             handlePageRefresh={handleRefresh}
             sheetModalIsOpen={sheetModalIsOpen}
         >
-            <SafeAreaView style={{ flex: 1 }}>
+            <View style={{ flex: 1 }}>
                 <View style={mapStyles.mapWrapper}>
                     <View style={mapStyles.titleContentWrapper}>
                         <View style={mapStyles.titleContent}>
@@ -384,7 +384,7 @@ const MapsScreen = ({ navigation }) => {
                         </BottomSheet>
                     </ModalOverlay>
                 }
-            </SafeAreaView>
+            </View>
         </AppLayout>
     </>
 }

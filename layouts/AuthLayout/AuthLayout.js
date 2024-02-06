@@ -11,6 +11,7 @@ import { AntDesign } from "@expo/vector-icons";
 import { authStyles } from "./styles";
 import AnimatedLoader from "react-native-animated-loader";
 import { colors } from "../../utils/colors";
+import { SafeAreaView } from "react-native-safe-area-context";
 
 const AuthLayout = ({
   children,
@@ -25,7 +26,7 @@ const AuthLayout = ({
   handleBackBtnClick,
 }) => {
   return (
-    <>
+    <SafeAreaView style={{ flex: 1}}>
       <View style={authStyles.container}>
         <View style={authStyles.topContent}>
           <AntDesign
@@ -109,7 +110,7 @@ const AuthLayout = ({
       >
         <Text style={authStyles.loadingText}>Please wait...</Text>
       </AnimatedLoader>
-    </>
+    </SafeAreaView>
   );
 };
 

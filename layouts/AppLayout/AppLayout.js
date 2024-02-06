@@ -1,4 +1,4 @@
-import { RefreshControl, SafeAreaView, ScrollView, Text, View } from "react-native";
+import { RefreshControl, ScrollView, Text, View } from "react-native";
 import React, { useCallback, useEffect, useRef, useState } from "react";
 import { appLayoutStyles } from "./styles";
 import { useRoute } from "@react-navigation/native";
@@ -19,6 +19,7 @@ import { fullSnapPoints, miniSnapPoints } from "./utils";
 import SingleWalletItem from "./components/SingleWalletItem/SingleWalletItem";
 import BottomNavigationBar from "../../components/BottomNavigationBar/BottomNavigationBar";
 import ModalOverlay from "./components/ModalOverlay/ModalOverlay";
+import { SafeAreaView } from "react-native-safe-area-context";
 
 
 const AppLayout = ({ 

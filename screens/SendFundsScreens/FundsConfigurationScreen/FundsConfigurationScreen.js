@@ -1,4 +1,4 @@
-import { FlatList, KeyboardAvoidingView, SafeAreaView, ScrollView, Text, TouchableOpacity } from "react-native";
+import { FlatList, KeyboardAvoidingView, ScrollView, Text, TouchableOpacity } from "react-native";
 import { colors } from "../../../utils/colors";
 import { configureFundStyles } from "./configureFundStyles";
 import { View } from "react-native";

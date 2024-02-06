@@ -1,5 +1,4 @@
 import { ActivityIndicator, View } from "react-native";
-import { SafeAreaView } from "react-native";
 import { TouchableOpacity } from "react-native-gesture-handler";
 import { colors } from "../../../utils/colors";
 import { Ionicons } from '@expo/vector-icons';
@@ -13,6 +12,7 @@ import NavigationTabFilterItem from "../../../components/NavigationTabFilterItem
 import { useWalletContext } from "../../../contexts/WalletContext";
 import { WalletServices } from "../../../services/walletServices";
 import LoadingIndicator from "../../../components/LoadingIndicator/LoadingIndicator";
+import { SafeAreaView } from "react-native-safe-area-context";
 
 const { height } = Dimensions.get('window');
 

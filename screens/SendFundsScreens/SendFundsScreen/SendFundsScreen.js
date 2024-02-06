@@ -1,5 +1,5 @@
 import React, { useEffect, useRef, useState } from "react";
-import { FlatList, Image, SafeAreaView, ScrollView, StyleSheet, Text, TextInput, TouchableOpacity, View } from "react-native";
+import { FlatList, Image, ScrollView, StyleSheet, Text, TextInput, TouchableOpacity, View } from "react-native";
 import { colors } from "../../../utils/colors";
 import UserActionItem from "../../../components/UserActionItem/UserActionItem";
 import { Ionicons } from '@expo/vector-icons';
@@ -27,6 +27,7 @@ import { validFunolaBankAccountTypes, validFunolaCurrencies } from "../../../uti
 import CustomButton from "../../../components/CustomButton/CustomButton";
 import { fullSnapPoints } from "../../../layouts/AppLayout/utils";
 import LoadingIndicator from "../../../components/LoadingIndicator/LoadingIndicator";
+import { SafeAreaView } from "react-native-safe-area-context";
 
 export const initialNewBankDetail = {
     name: '',

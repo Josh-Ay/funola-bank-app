@@ -33,6 +33,7 @@ import RequestFundsScreen from './screens/RequestFundsScreens/RequestFundsScreen
 import { ProfileUpdateScreen } from './screens/ProfileUpdateScreen/ProfileUpdateScreen';
 // import useCheckIfTimeToLockApp from './hooks/useCheckIfTimeToLockApp';
 import { LogBox } from 'react-native';
+import PasswordResetScreen from './screens/AuthenticationScreens/PasswordReset/PasswordResetScreen';
 
 LogBox.ignoreLogs(['Warning: ...']); // Ignore log notification by message
 LogBox.ignoreAllLogs(); //Ignore all log notifications
@@ -188,6 +189,10 @@ export default function App() {
                 /> 
               }
             </Stack.Screen>
+            <Stack.Screen 
+              name='PasswordReset'
+              component={PasswordResetScreen}
+            />
             <Stack.Screen 
               name='Verification'
               component={VerificationScreen}

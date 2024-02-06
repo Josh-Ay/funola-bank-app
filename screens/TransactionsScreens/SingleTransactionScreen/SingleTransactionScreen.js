@@ -1,5 +1,4 @@
 import { useEffect, useState } from "react";
-import { SafeAreaView } from "react-native";
 import { colors } from "../../../utils/colors";
 import { TouchableOpacity } from "react-native";
 import { View } from "react-native";

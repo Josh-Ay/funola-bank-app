@@ -14,7 +14,6 @@ import { Ionicons } from '@expo/vector-icons';
 import { colors } from "../../utils/colors";
 import UserActionItem from "../../components/UserActionItem/UserActionItem";
 import { cardItemActionsList } from "./utils";
-import { SafeAreaView } from "react-native";
 import DepositItem from "../../components/DepositItem/DepositItem";
 import { userItemActions } from "../../utils/utils";
 import ModalOverlay from "../../layouts/AppLayout/components/ModalOverlay/ModalOverlay";
@@ -308,7 +307,7 @@ const CardSettingsScreen = ({ navigation, route }) => {
                 <View style={cardSettingStyles.topContent}>
                     <Text style={cardSettingStyles.titleText}>Card Settings</Text>
                     <Text style={cardSettingStyles.subtitleText}>You can change quick links in settings</Text>
-                    <SafeAreaView style={cardSettingStyles.cardActionsStyle}>
+                    <View style={cardSettingStyles.cardActionsStyle}>
                         <FlatList
                             data={cardItemActionsList}
                             renderItem={
@@ -328,7 +327,7 @@ const CardSettingsScreen = ({ navigation, route }) => {
                                 paddingRight: 8,
                             }}
                         />
-                    </SafeAreaView>
+                    </View>
                 </View>
             </View>
             <View style={cardSettingStyles.contentWrapper}>
