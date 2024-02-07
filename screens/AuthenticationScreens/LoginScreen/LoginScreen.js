@@ -110,7 +110,7 @@ const LoginScreen = ({ navigation, route, setLoggedIn }) => {
                 <TouchableOpacity
                     onPress={() => navigation.navigate('PasswordReset')}
                 >
-                    <Text style={loginStyles.resetPasswordText}>Reset password</Text>
+                    <Text style={loginStyles.resetPasswordText}>Forgot password?</Text>
                 </TouchableOpacity>
             </View>
         </AuthLayout>

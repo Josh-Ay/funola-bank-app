@@ -21,7 +21,7 @@ export const loginStyles = StyleSheet.create({
     },
     resetPasswordText: {
         fontFamily: 'Poppins',
-        textAlign: 'center',
+        textAlign: 'left',
         color: colors.blue,
         marginTop: 10,
     }

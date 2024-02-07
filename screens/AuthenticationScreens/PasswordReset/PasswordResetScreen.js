@@ -50,6 +50,7 @@ const PasswordResetScreen = ({ navigation }) => {
             showLoadingEffect={dataLoading}
         >
             <View style={loginStyles.container}>
+                <View></View>
                 <View>
                     <Text style={loginStyles.headerText}>Enter your email</Text>
                     <TextInputComponent
