@@ -22,6 +22,7 @@ import { miniSnapPoints } from "../../../layouts/AppLayout/utils";
 import { appLayoutStyles } from "../../../layouts/AppLayout/styles";
 import { StackActions } from "@react-navigation/native";
 import { getCurrencySymbol } from "../../../utils/helpers";
+import { SafeAreaView } from "react-native-safe-area-context";
 
 const FundsConfigurationScreen = ({ navigation, route }) => {
     const initialAmount = '10';
@@ -118,7 +119,7 @@ const FundsConfigurationScreen = ({ navigation, route }) => {
         )
     }
 
-    return <>
+    return <SafeAreaView style={{ flex: 1 }}>
         <KeyboardAvoidingView style={{ flex: 1, backgroundColor: colors.paleBlue }} behavior='padding'>
             <View style={configureFundStyles.topContentWrapper}>
                 <TouchableOpacity onPress={() => navigation.pop()}>
@@ -356,7 +357,7 @@ const FundsConfigurationScreen = ({ navigation, route }) => {
                 </ModalOverlay>
             }
         </KeyboardAvoidingView>
-    </>
+    </SafeAreaView>
 }
 
 export default FundsConfigurationScreen;

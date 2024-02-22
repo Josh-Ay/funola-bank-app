@@ -9,6 +9,7 @@ import { formatDateToMonthAndDay, getCurrencySymbol, getDateHoursAndMinutes } fr
 import { Image } from "react-native";
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { ScrollView } from "react-native";
+import { SafeAreaView } from "react-native-safe-area-context";
 
 
 const SingleTransactionScreen = ({ route, navigation }) => {
@@ -23,7 +24,7 @@ const SingleTransactionScreen = ({ route, navigation }) => {
         setCurrentTransaction(route?.params?.transactionItem);
     }, [])
 
-    return <>
+    return <SafeAreaView style={{ flex: 1 }}>
         <ScrollView style={{ flex: 1, marginTop: 30, marginBottom: 30 }}>
             <View style={transactionStyles.wrapper}>
                 <TouchableOpacity onPress={() => navigation.pop()}>
@@ -178,7 +179,7 @@ const SingleTransactionScreen = ({ route, navigation }) => {
                 </View>
             </View>
         </ScrollView>
-    </>
+    </SafeAreaView>
 }
 
 

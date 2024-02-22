@@ -6,7 +6,7 @@ import { userItemActions } from '../../utils/utils';
 export const walletItemActionsList = [
     {
         title: 'Fund',
-        icon: <Ionicons name="ios-add" size={20} color="black" />,
+        icon: <Ionicons name="add" size={20} color="black" />,
         id: 39,
         action: userItemActions.walletFund
     },
@@ -30,7 +30,7 @@ export const walletItemActionsList = [
     },
     {
         title: 'Change',
-        icon: <Ionicons name="ios-swap-horizontal-sharp" size={20} color="black" />,
+        icon: <Ionicons name="swap-horizontal-sharp" size={20} color="black" />,
         id: 79,
         action: userItemActions.walletSwap,
     },

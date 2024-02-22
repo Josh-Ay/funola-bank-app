@@ -145,6 +145,7 @@ const FundsConfirmationScreen = ({ navigation, route }) => {
 
                 } catch (error) {
                     setLoading(false);
+                    setPin('');
                     
                     const errorMsg = error.response ? error.response.data : error.message;
                     showToastMessage(errorMsg.toLocaleLowerCase().includes('html') ? 'Something went wrong trying to transfer funds. Please try again later' : errorMsg, 'danger');
@@ -218,10 +219,10 @@ const FundsConfirmationScreen = ({ navigation, route }) => {
                         <Text style={fundsConfirmationStyles.successInfoText}>
                             {
                                 fundTransferDetail?.transferType === 'wallet' ?
-                                    '*The user will receive funds within 10 minutes'
+                                    '*The user will receive funds within 2 minutes'
                                 :
                                 fundTransferDetail?.transferType === 'bank' ?
-                                    '*note that the transfer will take between 1 - 3 days'
+                                    '*note that the transfer can take between 1 - 3 days'
                                 :
                                 '*Fund transfer successful'
                             }

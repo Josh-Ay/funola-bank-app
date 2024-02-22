@@ -1,5 +1,4 @@
-import { ActivityIndicator, View } from "react-native";
-import { TouchableOpacity } from "react-native-gesture-handler";
+import { ActivityIndicator, View, TouchableOpacity } from "react-native";
 import { colors } from "../../../utils/colors";
 import { Ionicons } from '@expo/vector-icons';
 import { transactionStyles } from "../transactionStyles";

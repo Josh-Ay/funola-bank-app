@@ -12,13 +12,13 @@ export const pinFormStyles = StyleSheet.create({
     },
     blankNumberBtn: {
         width: '30%',
-        height: 58,
+        height: 65,
     },
     numberBtn: {
         width: '30%',
         marginBottom: 20,
         backgroundColor: colors.paleBlue,
-        height: 58,
+        height: 65,
         borderRadius: 10,
         alignItems: 'center',
         justifyContent: 'center',

@@ -90,7 +90,7 @@ export const helpSettingItems = [
         action: userProfileActions.selfHelp,
     },
     {
-        icon: <Ionicons name="ios-mail-unread-outline" size={24} color="black" />,
+        icon: <Ionicons name="mail-unread-outline" size={24} color="black" />,
         title: 'Contact us',
         subtitle: "Come say hello! We'd love to hear from you",
         action: userProfileActions.contactUs,

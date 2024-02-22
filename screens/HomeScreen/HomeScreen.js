@@ -117,6 +117,7 @@ const HomeScreen = ({ navigation }) => {
     const [ currentUserAction, setCurrentUserAction ] = useState(null);
     const [ loading, setLoading ] = useState(false);
     const [ swapExchangeResult, setSwapExchangeResult ] = useState(0);
+    const [ actionItemsLoading, setActionItemsLoading ] = useState([]);
 
     const [
         userService, 
@@ -436,13 +437,23 @@ const HomeScreen = ({ navigation }) => {
                 handleUpdateWalletActionStateDetail('swap', 'currency', currentWallet?.currency);
                 break;
             case userItemActions.walletSend:
+                const copyOfActionItemsLoading = actionItemsLoading.slice();
+
+                if (!copyOfActionItemsLoading.includes(userItemActions.walletSend)) {
+                    copyOfActionItemsLoading.push(userItemActions.walletSend);
+                    setActionItemsLoading(copyOfActionItemsLoading);
+                }
+
                 try {
                     const userHasTransactionPinSet = (await userService.checkTransactionPinStatus()).data;
+                    setActionItemsLoading(actionItemsLoading.filter(item => item !== userItemActions.walletSend));
+                    
                     navigation.navigate('SendFunds', {
                         itemType: 'wallet',
                         item: currentWallet,
                     })
                 } catch (error) {
+                    setActionItemsLoading(actionItemsLoading.filter(item => item !== userItemActions.walletSend));
                     showToastMessage(
                         error?.response?.status === 500 ?
                             'An error occured. Please try again later'
@@ -713,6 +724,7 @@ const HomeScreen = ({ navigation }) => {
                                     item={item} 
                                     handleItemPress={handleActionItemPress} 
                                     style={{ marginRight: 30 }} 
+                                    itemLoading={actionItemsLoading.includes(item.action)}
                                 />
                             }
                             keyExtractor={item => item.id}

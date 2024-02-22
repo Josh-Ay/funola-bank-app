@@ -31,6 +31,7 @@ export const dropdownStyles = StyleSheet.create({
         backgroundColor: colors.paleBlue,
         paddingTop: 30,
         paddingBottom: 20,
+        marginTop: 20,
     },
     dropdownListWrapper: {
         marginBottom: 20,

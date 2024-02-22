@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import AppLayout from "../../layouts/AppLayout/AppLayout";
-import { Text, View } from "react-native";
+import { Linking, Text, View } from "react-native";
 import { UserServices } from "../../services/userServices";
 import { useUserContext } from "../../contexts/UserContext";
 import { useToast } from "react-native-toast-notifications";
@@ -107,7 +107,7 @@ const ProfileScreen = ({ navigation, setLoggedIn }) => {
                 showToastMessage('Feature coming soon!')
                 break;
             case userProfileActions.contactUs:
-                showToastMessage('Feature coming soon!')
+                Linking.openURL('mailto:funola.cares@gmail.com');
                 break;
             default:
                 console.log('item action not defined yet');

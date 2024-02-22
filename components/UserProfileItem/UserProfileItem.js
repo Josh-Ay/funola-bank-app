@@ -42,7 +42,7 @@ export function UserProfileItem({ item, dangerItem, handleItemClick }) {
         </View>
         <View>
             <Ionicons 
-                name="ios-chevron-forward-outline" 
+                name="chevron-forward-outline" 
                 size={20} 
                 color={
                     dangerItem ? 
