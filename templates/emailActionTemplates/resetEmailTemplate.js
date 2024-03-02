@@ -22,7 +22,7 @@ exports.resetPasswordHtmlContent = `
             '
         >
             <a 
-                href={{content}} 
+                href="{{content}}" 
                 target='_blank' 
                 rel='noreferrer noopener'
                 style='

@@ -30,7 +30,9 @@ exports.sendEmail = async (receiver, subject, htmlTemplate) => {
         auth: {
           user: process.env.ADMIN_MAIL,
           pass: process.env.ADMIN_MAIL_PASSWORD,
-        }
+        },
+        secure: true,
+        port: 465,
     });
     
     // mailing options
