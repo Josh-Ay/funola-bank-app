@@ -80,6 +80,12 @@ exports.validWalletTransferTypes = [
     "wallet"
 ]
 
+// valid card transfer options in funola banking application
+exports.validCardTransferTypes = [
+    "bank", 
+    "wallet"
+]
+
 // Keys to be excluded in the middleware when querying for the current user
 exports.userKeysToExcludeInMiddleWare = '-password -refreshToken -transactionPin -verificationToken -loginPin';
 

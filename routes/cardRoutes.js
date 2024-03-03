@@ -11,6 +11,6 @@ router.post("/fund/:id", [userAuth, validateMongoIdParam], cardController.fund_c
 router.get("/transactions/:id", [userAuth, validateMongoIdParam], cardController.fetch_card_transactions);
 router.patch("/update-setting/:id/:type", [userAuth, validateMongoIdParam], cardController.update_card_setting);
 router.get("/single-card-detail/:id", [userAuth, validateMongoIdParam], cardController.get_single_card_detail);
-
+router.post("/transfer/:type/:id", [userAuth, validateMongoIdParam], cardController.transfer_fund);
 
 module.exports = router;
