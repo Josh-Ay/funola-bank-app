@@ -1,7 +1,7 @@
 {
   "expo": {
     "name": "Funola",
-    "slug": "FunolaBankApp",
+    "slug": "funola-banking-app",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/logo/logo.png",
@@ -20,7 +20,8 @@
         "NSContactsUsageDescription": "Allow $(Funola) to access your contacts.",
         "NSCameraUsageDescription": "Allow $(Funola) to access camera.",
         "NSMicrophoneUsageDescription": "Allow $(PRODUCT_NAME) to access your microphone"
-      }
+      },
+      "bundleIdentifier": "com.ayoolaa.FunolaBankApp"
     },
     "android": {
       "adaptiveIcon": {
@@ -53,14 +54,15 @@
     ],
     "extra": {
       "eas": {
-        "projectId": "74287c43-58a1-46e8-8bff-6e7f035a4484"
+        "projectId": "5f498ccf-453e-4520-912a-997bdaeef527"
       }
     },
     "runtimeVersion": {
       "policy": "sdkVersion"
     },
     "updates": {
-      "url": "https://u.expo.dev/74287c43-58a1-46e8-8bff-6e7f035a4484"
-    }
+      "url": "https://u.expo.dev/5f498ccf-453e-4520-912a-997bdaeef527"
+    },
+    "owner": "ayoolaa-doe"
   }
 }
