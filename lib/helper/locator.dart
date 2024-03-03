@@ -1,5 +1,5 @@
 import 'dart:developer' show log;
-import 'package:funola_bank_app/api/auth/services/auth_service.dart';
+import 'package:funola_bank_app/api/auth/auth_service.dart';
 import 'package:funola_bank_app/api/utils.dart';
 import 'package:funola_bank_app/repositories/auth_repository.dart';
 import 'package:funola_bank_app/repositories/country_repository.dart';
