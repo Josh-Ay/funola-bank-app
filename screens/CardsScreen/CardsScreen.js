@@ -106,7 +106,7 @@ const CardsScreen = ({ navigation }) => {
 
         } catch (error) {
             const errorMsg = error.response ? error.response.data : error.message;
-            console.log(errorMsg);
+            // console.log(errorMsg);
 
             showToastMessage(errorMsg.toLocaleLowerCase().includes('html') ? 'Something went wrong trying to get your card details. Please refresh' : errorMsg, 'danger');
             setRefreshing(false);
@@ -141,7 +141,7 @@ const CardsScreen = ({ navigation }) => {
 
         try {
             const res = await (await cardService.updateCardSetting(currentCard?._id, settingToUpdate, { newValue: `${newValue}`})).data;
-            console.log(res);
+            // console.log(res);
 
             currentSettingsBeingUpdated[currentCard?._id] = currentSettingsBeingUpdated[currentCard?._id]?.filter(setting => setting !== settingToUpdate);
             setCardSettingBeingUpdated(currentSettingsBeingUpdated);
@@ -150,7 +150,7 @@ const CardsScreen = ({ navigation }) => {
 
         } catch (error) {
             const errorMsg = error.response ? error.response.data : error.message;
-            console.log(errorMsg);
+            // console.log(errorMsg);
 
             showToastMessage(errorMsg.toLocaleLowerCase().includes('html') ? 'Something went wrong trying to update your card details. Please refresh' : errorMsg, 'danger');
 

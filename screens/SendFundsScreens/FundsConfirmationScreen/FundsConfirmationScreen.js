@@ -17,6 +17,9 @@ import { useToast } from "react-native-toast-notifications";
 import LoadingScreen from "../../LoadingScreen/LoadingScreen";
 import BankItem from "../SendFundsScreen/components/BankItem/BankItem";
 import { SafeAreaView } from "react-native-safe-area-context";
+import { CardServices } from "../../../services/cardServices";
+import { useCardContext } from "../../../contexts/CardContext";
+import { useUserContext } from "../../../contexts/UserContext";
 
 const FundsConfirmationScreen = ({ navigation, route }) => {
 
@@ -31,9 +34,28 @@ const FundsConfirmationScreen = ({ navigation, route }) => {
     const {
         wallets,
         setWallets,
+        walletTransactions, 
+        setWalletTransactions,
     } = useWalletContext();
 
-    const walletService = new WalletServices();
+    const {
+        cards,
+        setCards,
+        cardTransactions, 
+        setCardTransactions,
+    } = useCardContext();
+
+    const {
+        currentUser
+    } = useUserContext();
+
+    const [
+        walletService,
+        cardService
+    ] = [
+        new WalletServices(),
+        new CardServices(),
+    ];
     const requiredTransactionPinLength = 6;
 
     const toast = useToast();
@@ -98,26 +120,80 @@ const FundsConfirmationScreen = ({ navigation, route }) => {
             return
         }
 
+        const cardIsToBeDebited = (
+            fundTransferDetail?.itemToBeDebited?.paymentNetwork && 
+            fundTransferDetail?.itemToBeDebited?.cardName
+        ) ? 
+            true 
+        : 
+        false;
+
+        if (
+            cardIsToBeDebited &&
+            (
+                !fundTransferDetail?.itemToBeDebited?.onlinePaymentEnabled ||
+                fundTransferDetail?.itemToBeDebited?.onlinePaymentEnabled !== true
+            )
+        ) {
+            showToastMessage("Please enable online payments on your card first");
+            return
+        }
+
         setSheetModalIsOpen(true);
     }
 
     const handleSendFund = async () => {
-        const copyOfWallets = wallets?.slice();
+        const [
+            copyOfWallets,
+            copyOfCurrentWalletTransactions,
+            copyOfCards,
+            copyOfCurrentCardTransactions,
+        ] = [
+            wallets?.slice(),
+            {...walletTransactions},
+            cards?.slice(),
+            {...cardTransactions},
+        ];
+        
+        const initialDataToPost = {
+            pin: pin,
+            remarks: fundTransferDetail?.remarks,
+            amount: fundTransferDetail?.amount,
+            currency: fundTransferDetail?.itemToBeDebited?.currency,
+        }
 
         switch (fundTransferDetail?.transferType) {
             case 'wallet':     
             case 'bank':
+                const cardIsToBeDebited = (
+                    fundTransferDetail?.itemToBeDebited?.paymentNetwork && 
+                    fundTransferDetail?.itemToBeDebited?.cardName
+                ) ? 
+                    true 
+                : 
+                false;
+
                 try {
                     setLoading(true);
 
-                    const initialDataToPost = {
-                        pin: pin,
-                        remarks: fundTransferDetail?.remarks,
-                        amount: fundTransferDetail?.amount,
-                        currency: fundTransferDetail?.itemToBeDebited?.currency,
-                    }
-
-                    const res = (await walletService.transferFromWallet(
+                    const res = cardIsToBeDebited ? 
+                        (await cardService.transferFromCard(
+                            fundTransferDetail?.itemToBeDebited?._id,
+                            fundTransferDetail?.transferType === 'wallet' ?
+                                {
+                                    ...initialDataToPost,
+                                    receiverId: isRecentItem ? fundTransferDetail?.receiver?.userId : fundTransferDetail?.receiver?._id,
+                                    receiveInWallet: route?.params?.receivingItemType === 'card' ? false : true,
+                                }
+                            :
+                            {
+                                ...initialDataToPost,
+                                bankId: fundTransferDetail?.receiver?._id
+                            },
+                            fundTransferDetail?.transferType,
+                        )).data 
+                    : 
+                    (await walletService.transferFromWallet(
                         fundTransferDetail?.transferType === 'wallet' ?
                         {
                             ...initialDataToPost,
@@ -132,10 +208,44 @@ const FundsConfirmationScreen = ({ navigation, route }) => {
                         fundTransferDetail?.transferType,
                     )).data;
 
-                    const foundWallet = copyOfWallets?.find(item => item._id === fundTransferDetail?.itemToBeDebited?._id);
-                    if (foundWallet) {
-                        foundWallet.balance -= fundTransferDetail?.amount;
-                        setWallets(copyOfWallets);
+                    const newTransactionObj = {
+                        owner: currentUser?._id,
+                        transactionType: 'transfer',
+                        transactionRemarks: initialDataToPost.remarks,
+                        recipientInfo: '',
+                        amount: initialDataToPost.amount,
+                        status: 'success',
+                        currency: initialDataToPost.currency,
+                    }
+
+                    if (fundTransferDetail?.transferType === 'wallet') newTransactionObj.recipientInfo = isRecentItem ? fundTransferDetail?.receiver?.userId : fundTransferDetail?.receiver?._id;
+                    if (cardIsToBeDebited) newTransactionObj.cardId = fundTransferDetail?.itemToBeDebited?._id;
+                    if (!cardIsToBeDebited) newTransactionObj.walletId = fundTransferDetail?.itemToBeDebited?._id;
+
+                    const foundItemToUpdateBalance = cardIsToBeDebited ?
+                        copyOfCards?.find(item => item._id === fundTransferDetail?.itemToBeDebited?._id)
+                    :
+                    copyOfWallets?.find(item => item._id === fundTransferDetail?.itemToBeDebited?._id);
+                    
+                    if (foundItemToUpdateBalance) {
+                        foundItemToUpdateBalance.balance -= fundTransferDetail?.amount;
+                        
+                        if (cardIsToBeDebited) {
+                            setCards(copyOfCards);
+
+                            if (copyOfCurrentCardTransactions[fundTransferDetail?.itemToBeDebited?._id] && Array.isArray(copyOfCurrentCardTransactions[fundTransferDetail?.itemToBeDebited?._id]?.transactions)) {
+                                copyOfCurrentCardTransactions[fundTransferDetail?.itemToBeDebited?._id]?.transactions?.unshift(newTransactionObj);
+                                setCardTransactions(copyOfCurrentCardTransactions);
+                            }
+                        }
+                        if (!cardIsToBeDebited) {
+                            setWallets(copyOfWallets);
+
+                            if (copyOfCurrentWalletTransactions[fundTransferDetail?.itemToBeDebited?._id] && Array.isArray(copyOfCurrentWalletTransactions[fundTransferDetail?.itemToBeDebited?._id]?.transactions)) {
+                                copyOfCurrentWalletTransactions[fundTransferDetail?.itemToBeDebited?._id]?.transactions?.unshift(newTransactionObj);
+                                setWalletTransactions(copyOfCurrentWalletTransactions);
+                            }
+                        }
                     }
 
                     showToastMessage(res, 'success');
@@ -199,8 +309,8 @@ const FundsConfirmationScreen = ({ navigation, route }) => {
                                 <Text style={fundsConfirmationStyles.contentText}>{getCurrencySymbol(fundTransferDetail?.itemToBeDebited?.currency)} {Number(fundTransferDetail?.amount).toLocaleString()}</Text>
                             </View>
                             <View style={fundsConfirmationStyles.confirmFundDetailItem}>
-                                <Text style={fundsConfirmationStyles.contentTitleText}>{changeToTitleCase(fundTransferDetail?.transferType)} to be debited</Text>
-                                <Text style={fundsConfirmationStyles.contentText}>Your {fundTransferDetail?.itemToBeDebited?.currency} {fundTransferDetail?.transferType}</Text>
+                                <Text style={fundsConfirmationStyles.contentTitleText}>{changeToTitleCase((fundTransferDetail?.itemToBeDebited?.cardName && fundTransferDetail?.itemToBeDebited?.paymentNetwork) ? 'card' : fundTransferDetail?.transferType)} to be debited</Text>
+                                <Text style={fundsConfirmationStyles.contentText}>Your {fundTransferDetail?.itemToBeDebited?.currency} {(fundTransferDetail?.itemToBeDebited?.cardName && fundTransferDetail?.itemToBeDebited?.paymentNetwork) ? 'card' : fundTransferDetail?.transferType}</Text>
                             </View>
                             <View style={fundsConfirmationStyles.confirmFundDetailItem}>
                                 <Text style={fundsConfirmationStyles.contentTitleText}>Remarks</Text>

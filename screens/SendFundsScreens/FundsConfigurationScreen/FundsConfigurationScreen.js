@@ -54,7 +54,7 @@ const FundsConfigurationScreen = ({ navigation, route }) => {
 
     useEffect(() => {
 
-        const { type, receiverDetail } = route?.params;
+        const { type, receiverDetail, initiatorType } = route?.params;
         if (
             !type ||
             !receiverDetail ||
@@ -69,6 +69,13 @@ const FundsConfigurationScreen = ({ navigation, route }) => {
         setTransferType(type);
         setReceiver(receiverDetail);
         
+        if (initiatorType === 'card') {
+            if (cards.length > 0 && Array.isArray(cards) && !itemToBeDebited) setItemToBeDebited(cards[0])
+            setShowWallets(false);
+
+            return
+        }
+
         if (wallets.length > 0 && Array.isArray(wallets) && !itemToBeDebited) setItemToBeDebited(wallets[0])
 
     }, [])

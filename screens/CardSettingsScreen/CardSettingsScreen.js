@@ -25,6 +25,7 @@ import { getCurrencySymbol } from "../../utils/helpers";
 import { useWalletContext } from "../../contexts/WalletContext";
 import CustomButton from "../../components/CustomButton/CustomButton";
 import { useUserContext } from "../../contexts/UserContext";
+import { UserServices } from "../../services/userServices";
 
 const CardSettingsScreen = ({ navigation, route }) => {
     const {
@@ -59,10 +60,17 @@ const CardSettingsScreen = ({ navigation, route }) => {
     const [ loading, setLoading ] = useState(false);
     const [ itemToBeDebited, setItemToBeDebited ] = useState(null);
     const [ amount, setAmount ] = useState('0')
+    const [ actionItemsLoading, setActionItemsLoading ] = useState([]);
     
     const cardListingRef = useRef();
 
-    const cardService = new CardServices();
+    const [
+        cardService,
+        userService,
+    ] = [
+        new CardServices(),
+        new UserServices(),
+    ];
     
     const viewabilityConfig = {
         viewAreaCoveragePercentThreshold: 50,
@@ -174,17 +182,17 @@ const CardSettingsScreen = ({ navigation, route }) => {
             console.log('refresh for cards done');
         } catch (error) {
             const errorMsg = error.response ? error.response.data : error.message;
-            console.log(errorMsg);
+            // console.log(errorMsg);
 
             showToastMessage(errorMsg.toLocaleLowerCase().includes('html') ? 'Something went wrong trying to get your card details. Please refresh' : errorMsg, 'danger');
             setRefreshing(false);
         }
     }
 
-    const handleActionItemPress = (action) => {
+    const handleActionItemPress = async (action) => {
         if (sheetModalIsOpen) return
 
-        console.log(action);
+        // console.log(action);
         switch (action) {
             case userItemActions.cardFund:
                 setCurrentUserAction(action);
@@ -200,10 +208,31 @@ const CardSettingsScreen = ({ navigation, route }) => {
                 )
                 break;
             case userItemActions.cardSend:
-                navigation.navigate('SendFunds', {
-                    itemType: 'card',
-                    item: currentCardToDisplay,
-                })
+                const copyOfActionItemsLoading = actionItemsLoading.slice();
+
+                if (!copyOfActionItemsLoading.includes(userItemActions.cardSend)) {
+                    copyOfActionItemsLoading.push(userItemActions.cardSend);
+                    setActionItemsLoading(copyOfActionItemsLoading);
+                }
+
+                try {
+                    const userHasTransactionPinSet = (await userService.checkTransactionPinStatus()).data;
+                    setActionItemsLoading(actionItemsLoading.filter(item => item !== userItemActions.cardSend));
+                    
+                    navigation.navigate('SendFunds', {
+                        itemType: 'card',
+                        item: currentCardToDisplay,
+                    })
+                } catch (error) {
+                    setActionItemsLoading(actionItemsLoading.filter(item => item !== userItemActions.cardSend));
+                    showToastMessage(
+                        error?.response?.status === 500 ?
+                            'An error occured. Please try again later'
+                        :
+                        'Please set a transaction pin first in your profile page'
+                    );
+                }
+
                 break;
             case userItemActions.cardRequest:
                 navigation.navigate('RequestFunds', {
@@ -316,6 +345,7 @@ const CardSettingsScreen = ({ navigation, route }) => {
                                     item={item} 
                                     handleItemPress={handleActionItemPress} 
                                     // style={{ marginRight: 30 }} 
+                                    itemLoading={actionItemsLoading.includes(item.action)}
                                 />
                             }
                             keyExtractor={item => item.id}

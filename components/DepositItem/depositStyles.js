@@ -49,5 +49,8 @@ export const depositStyles = StyleSheet.create({
     },
     creditBal: {
         color: colors.green,
-    }
+    },
+    debitBal: {
+        color: colors.red,
+    },
 })

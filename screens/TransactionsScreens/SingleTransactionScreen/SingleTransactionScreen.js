@@ -69,13 +69,13 @@ const SingleTransactionScreen = ({ route, navigation }) => {
                                 transactionStyles.amount,
                                 currentTransaction?.transactionType === 'credit' ? 
                                     transactionStyles.greenText : 
-                                currentTransaction?.transactionType === 'debit' ? 
+                                (currentTransaction?.transactionType === 'debit' || currentTransaction?.transactionType === 'transfer') ? 
                                     transactionStyles.redText : 
                                 {}
                             )
                         }>
                             {
-                                `${currentTransaction?.transactionType === 'credit' ? '+' : currentTransaction?.transactionType === 'debit' ? '-' : ''} ${
+                                `${currentTransaction?.transactionType === 'credit' ? '+' : (currentTransaction?.transactionType === 'debit' || currentTransaction?.transactionType === 'transfer') ? '-' : ''} ${
                                     getCurrencySymbol(currentTransaction?.currency)
                                 }${route?.params?.typeOfItem === 'deposit' ? Number(currentTransaction?.paybackAmount).toFixed(2) : currentTransaction?.amount}`
                             }

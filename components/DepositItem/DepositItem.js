@@ -45,11 +45,14 @@ export default function DepositItem ({
                         transaction?.transactionType === 'credit' ?
                             Object.assign({}, depositStyles.cardBalance, depositStyles.creditBal)
                         :
+                        (transaction?.transactionType === 'debit' || transaction?.transactionType === 'transfer') ?
+                            Object.assign({}, depositStyles.cardBalance, depositStyles.debitBal)
+                        :
                         depositStyles.cardBalance
                     }
                 >
                     {
-                        `${transaction?.transactionType === 'credit' ? '+' : transaction?.transactionType === 'debit' ? '-' : ''} ${getCurrencySymbol(transaction?.currency)} ${Number(transaction?.amount)?.toFixed(2)}`
+                        `${transaction?.transactionType === 'credit' ? '+' : (transaction?.transactionType === 'debit' || transaction?.transactionType === 'transfer') ? '-' : ''} ${getCurrencySymbol(transaction?.currency)} ${Number(transaction?.amount)?.toFixed(2)}`
                     }
                 </Text>
                 <Text style={depositStyles.cardDateText}>

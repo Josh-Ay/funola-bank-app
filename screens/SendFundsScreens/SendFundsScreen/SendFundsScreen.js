@@ -128,7 +128,7 @@ const SendFundsScreen = ({ navigation, route }) => {
             setContacts(res.sort((a, b) => a?.name?.localeCompare(b?.name)));
             setStatusGranted('yes');
         }).catch(err => {
-            console.log(err);
+            // console.log(err);
             setStatusGranted('no')
         })
 
@@ -188,6 +188,7 @@ const SendFundsScreen = ({ navigation, route }) => {
                 {
                     type: 'wallet',
                     receiverDetail: foundUserOnFunola,
+                    initiatorType: passedItem?.itemType,
                 }
             )
             return
@@ -205,6 +206,7 @@ const SendFundsScreen = ({ navigation, route }) => {
                 type: 'wallet',
                 receiverDetail: recentItem,
                 isRecent: true,
+                initiatorType: passedItem?.itemType,
             }
         )
     }
@@ -217,6 +219,7 @@ const SendFundsScreen = ({ navigation, route }) => {
             {
                 type: 'bank',
                 receiverDetail: bank,
+                initiatorType: passedItem?.itemType,
             }
         )
     }

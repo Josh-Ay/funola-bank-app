@@ -85,4 +85,18 @@ export class CardServices {
 
         return await axiosInstance.patch(`${this.urlPrefix}/update-setting/${id}/${type}`, data)
     }
+
+    transferFromCard = async (cardId, data, type) => {
+        /**
+         * Transfer funds from an existing card
+         * 
+         * @param cardId The mongo id of the card you will like funds to be transferred from
+         * @param data Request body containing the amount to be transferred from the card
+         * @param type The type of item at the receiving end (e.g wallet, bank)
+         * 
+         * @returns A promise
+         */
+
+        return await axiosInstance.post(`${this.urlPrefix}/transfer/${type}/${cardId}`, data)
+    }
 }

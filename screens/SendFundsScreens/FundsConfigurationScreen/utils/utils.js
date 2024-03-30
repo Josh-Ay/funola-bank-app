@@ -30,4 +30,5 @@ export const validTransferOptions = [
     'bank',
     'qr',
     'nearby',
+    'card',
 ]

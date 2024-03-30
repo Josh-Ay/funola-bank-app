@@ -494,7 +494,7 @@ const HomeScreen = ({ navigation }) => {
 
             try {
                 const res = (await walletService.fundWallet({ amount: newWalletFundDetails.amount, currency: currentWallet?.currency})).data;
-                console.log(res);
+                // console.log(res);
 
                 const newWalletBalance = Number(currentWallet?.balance) + Number(newWalletFundDetails?.amount);
                 copyOfCurrentWallet.balance = newWalletBalance;
