@@ -1,5 +1,5 @@
 const { Card, validateNewCardDetails, validCardSettingsUpdate } = require('../models/cards');
-const { funolaValidCurrencies, funolaValidCardTypes, funolaValidCardPaymentNetworks, validCardTransferTypes, validateMongooseId } = require('../utils/utils');
+const { funolaValidCurrencies, funolaValidCardTypes, funolaValidCardPaymentNetworks, validCardTransferTypes, validateMongooseId, checkWalletRequestBodyErrors } = require('../utils/utils');
 const { generateNewTransactionObj, validateNewTransactionDetails, Transaction } = require("../models/transaction");
 const { Notification } = require("../models/notifications");
 const { compileHtml, sendEmail } = require("../utils/emailUtils");
@@ -7,6 +7,7 @@ const { Wallet } = require('../models/wallet');
 const { User } = require('../models/user');
 const { Bank } = require('../models/banks');
 const { RecentMobileTransfer, validateRecentMobileTransfer } = require('../models/recentMobileTransfers');
+const bcrypt = require('bcrypt');
 
 exports.create_new_card = async (req, res) => {
     // validating request parameters and sending back appropriate error messages if any
