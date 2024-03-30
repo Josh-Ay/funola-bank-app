@@ -216,6 +216,7 @@ const FundsConfirmationScreen = ({ navigation, route }) => {
                         amount: initialDataToPost.amount,
                         status: 'success',
                         currency: initialDataToPost.currency,
+                        createdAt: new Date(),
                     }
 
                     if (fundTransferDetail?.transferType === 'wallet') newTransactionObj.recipientInfo = isRecentItem ? fundTransferDetail?.receiver?.userId : fundTransferDetail?.receiver?._id;
