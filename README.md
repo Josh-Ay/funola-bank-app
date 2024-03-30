@@ -24,7 +24,7 @@
 
 ### Demo
 #### React Native
-![](./assets/demos/react-native-demo.gif)
+- ![](./assets/demos/react-native-demo.gif)
 #### Flutter
 
 ### Features
@@ -49,21 +49,91 @@
 ### Installing on IOS
 - To install on IOS, you will need to first have [Expo GO](https://apps.apple.com/us/app/expo-go/id982107779) installed on your device.
 - After installing [Expo GO](https://apps.apple.com/us/app/expo-go/id982107779), just scan the QR code below:
-![](./assets/images/react-native/ios-expo.png)
+- ![](./assets/images/react-native/ios-expo.png)
 
 ### Screenshots
 #### React Native Screenshots
-![](./assets/images/react-native/1.png)
-![](./assets/images/react-native/2.png)
-![](./assets/images/react-native/3.png)
-![](./assets/images/react-native/4.png)
-![](./assets/images/react-native/5.png)
-![](./assets/images/react-native/6.png)
-![](./assets/images/react-native/7.png)
-![](./assets/images/react-native/8.png)
-![](./assets/images/react-native/9.png)
-![](./assets/images/react-native/10.png)
-![](./assets/images/react-native/11.png)
+<table cellpadding='0' style='bordercollapse: collapse; overflow-x: auto; width: 100%; max-width: 100%;'>
+    <tr>
+        <td>
+            <img
+                src='./assets/images/react-native/1.png'
+                alt='screenshot'
+                style='min-width: 200px'
+            />
+        </td>
+        <td>
+            <img
+                src='./assets/images/react-native/2.png'
+                alt='screenshot'
+                style='min-width: 200px'
+            />
+        </td>
+        <td>
+            <img
+                src='./assets/images/react-native/3.png'
+                alt='screenshot'
+                style='min-width: 200px'
+            />
+        </td>
+        <td>
+            <img
+                src='./assets/images/react-native/4.png'
+                alt='screenshot'
+                style='min-width: 200px'
+            />
+        </td>
+        <td>
+            <img
+                src='./assets/images/react-native/5.png'
+                alt='screenshot'
+                style='min-width: 200px'
+            />
+        </td>
+        <td>
+            <img
+                src='./assets/images/react-native/6.png'
+                alt='screenshot'
+                style='min-width: 200px'
+            />
+        </td>
+        <td>
+            <img
+                src='./assets/images/react-native/7.png'
+                alt='screenshot'
+                style='min-width: 200px'
+            />
+        </td>
+        <td>
+            <img
+                src='./assets/images/react-native/8.png'
+                alt='screenshot'
+                style='min-width: 200px'
+            />
+        </td>
+        <td>
+            <img
+                src='./assets/images/react-native/9.png'
+                alt='screenshot'
+                style='min-width: 200px'
+            />
+        </td>
+        <td>
+            <img
+                src='./assets/images/react-native/10.png'
+                alt='screenshot'
+                style='min-width: 200px'
+            />
+        </td>
+        <td>
+            <img
+                src='./assets/images/react-native/11.png'
+                alt='screenshot'
+                style='min-width: 200px'
+            />
+        </td>
+    </tr>
+</table>
 
 #### Flutter Screenshots
 
