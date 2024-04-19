@@ -99,6 +99,7 @@ exports.createCopyOfUserObjToGenerateTokenFrom = (user) => {
     delete copyOfExistingUser.password;
     delete copyOfExistingUser.refreshToken;
     delete copyOfExistingUser.verificationToken;
+    delete copyOfExistingUser.resetPasswordToken;
     delete copyOfExistingUser.transactionPin;
     delete copyOfExistingUser.loginPin;
 

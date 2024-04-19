@@ -309,7 +309,7 @@ exports.transfer_fund = async (req, res) => {
     if (!isValidPin) return res.status(401).send('Incorrect transaction pin');
 
     // checking if the sending user has a card and sufficient balance in the requested currency
-    if (!existingCardOfSender) return res.status(403).send(`Transfer failed. You do not have a ${currency} card.`);
+    if (!existingCardOfSender) return res.status(403).send(`Transfer failed. You do not have a ${currency} card with the passed id.`);
     if (existingCardOfSender.balance < amount) return res.status(403).send("You do not have sufficient funds to initiate this transfer.");
 
     // BANK TRANSFER
