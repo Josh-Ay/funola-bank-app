@@ -499,16 +499,16 @@ exports.request_fund = async (req, res) => {
         // creating a new notification for the both users
         Notification.create({
             owner: req.user._id,
-            content: `You requested for ${currency}${amount} from #${creditorId}!#`,
+            content: `You requested for ${amount} ${currency} from #${creditorId}!#`,
         }),
 
         Notification.create({
             owner: creditorId,
-            content: `#${req.user._id}!# is requesting for ${currency}${amount}`,
+            content: `#${req.user._id}!# is requesting for ${amount} ${currency}`,
         }),
     ])
 
-    return res.status(200).send(`Successfully requested for ${currency}${amount} from ${creditingUser.firstName} ${creditingUser.lastName}`)
+    return res.status(200).send(`Successfully requested for ${amount} ${currency} from ${creditingUser.firstName} ${creditingUser.lastName}`)
 }
 
 exports.get_recent_transfer_recipients = async (req, res) => {

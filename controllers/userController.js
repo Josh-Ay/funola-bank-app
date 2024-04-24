@@ -4,6 +4,7 @@ const { User, validateUserUpdateDetails } = require("../models/user");
 const { compileHtml, sendEmail } = require("../utils/emailUtils");
 const bcrypt = require('bcrypt');
 const { funolaUserTopupLimits } = require("../utils/utils");
+const { RecentMobileTransfer } = require("../models/recentMobileTransfers");
 
 exports.get_user_profile = async (req, res) => {
     // sending back the user's details
@@ -126,6 +127,7 @@ exports.update_user_detail = async (req, res) => {
             // validating the phone number is an actual number
             if (isNaN(Number(validUserDetails.value.phoneNumber))) return res.status(400).send("'phoneNumber' must be a number");
             if (foundUser.phoneNumber.slice(-10) === String(validUserDetails.value.phoneNumber).slice(-10)) return res.status(200).send("Successfully updated phone number!");
+            
             try {
                 // making sure the new phone number is not currently in use by another user
                 const foundUserWithNumber = await User.findOne({ phoneNumber: { $regex: String(validUserDetails.value.phoneNumber).slice(-10) } }).lean();
@@ -133,6 +135,18 @@ exports.update_user_detail = async (req, res) => {
 
             } catch (error) {
                 return res.status(500).send('An error occured while trying to update your phone number')            
+            }
+
+            try {
+                // updating any recent mobile transfers that has the previous number
+                const updatedRecentMobileTransfers = await RecentMobileTransfer.updateMany(
+                    { userPhoneNumber: { $regex: String(foundUser.phoneNumber).slice(-10) }},
+                    { $set: { userPhoneNumber: validUserDetails.value.phoneNumber }}
+                ).lean();
+
+                console.log(`Successfully reflected phone number change in ${updatedRecentMobileTransfers?.modifiedCount} recent mobile transfer records!`);
+            } catch (error) {
+                return res.status(500).send('An error occured while trying to update your phone number');
             }
 
             // updating the phone number in the db
