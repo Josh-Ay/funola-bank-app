@@ -1,10 +1,13 @@
 # Funola Banking Application API
 The Funola Banking Application API is a RESTFul API built using the [Model-View-Controller](https://developer.mozilla.org/en-US/docs/Glossary/MVC) design pattern.
 
-Local API Link: `http://localhost:5000`
+- Local API Link: `http://localhost:5000`
 
 <!-- Live API Link: `https://yoola-bank-app.onrender.com` -->
-Live API Link: `https://real-fly-hoodie.cyclic.app`
+- Live API Link: `https://real-fly-hoodie.cyclic.app`
+
+- Postman Documentation Link: `https://documenter.getpostman.com/view/26461326/2sA3BrYqdg`
+- Database Entity-Relationship Diagram: `https://app.eraser.io/workspace/0DTqxwHdSSSo1Jqu6sfr?origin=share`
 
 <br />
 
@@ -12,7 +15,6 @@ Live API Link: `https://real-fly-hoodie.cyclic.app`
 - [Summary of routes](#summary-of-routes)
 - [Built with](#built-with)
 - [How to run](#how-to-run)
-- [Helpful technical stuff](#helpful-technical-stuff)
 - [Detailed routes description](#detailed-routes-description)
 
 ### Summary of routes
@@ -125,12 +127,6 @@ $ node app.js
 <br />
 
 **Happy hacking!**
-
-<br />
-
-### Helpful technical stuff
-- [Postman Documentation Link](#helpful-technical-stuff)
-- [Database Entity-Relationship Diagram](https://app.eraser.io/workspace/0DTqxwHdSSSo1Jqu6sfr?origin=share)
 
 <br />
 
