@@ -1,6 +1,6 @@
 import 'dart:developer';
 
-import 'package:funola_bank_app/api/auth/services/auth_service.dart';
+import 'package:funola_bank_app/api/auth/auth_service.dart';
 import 'package:funola_bank_app/api/models/response_model.dart';
 
 class AuthRepository {
