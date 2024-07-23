@@ -26,7 +26,7 @@ class AuthService {
         },
       );
 
-      log('hhh -> ${response.data}');
+      // log('hhh -> ${response.data}');
 
       return ResponseModel.fromJson(
         response.data,
@@ -52,7 +52,6 @@ class AuthService {
     String password,
   ) async {
     try {
-      log('$apiBaseUrl/$authBasePath/login');
       Response response = await client.post(
         '$apiBaseUrl/$authBasePath/login',
         data: {
@@ -61,11 +60,14 @@ class AuthService {
         },
       );
 
-      log('hhh -> ${response.data}');
+      // log('hhh -> ${response.data}');
 
       return ResponseModel.fromJson(
+        {
+          "statusCode": response.statusCode,
+          "data": response.data,
+        },
         response.data,
-        'Successfully logged in',
         isSuccess: true,
       );
     } on DioException catch (e) {

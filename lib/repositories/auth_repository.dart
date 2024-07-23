@@ -10,14 +10,22 @@ class AuthRepository {
     required this.authService,
   });
 
-  Future sendVerificationCode(String phoneNumber, String email) async {
+  Future<ResponseModel> sendVerificationCode(
+    String phoneNumber,
+    String email,
+  ) async {
     ResponseModel response = await authService.sendVerificationCode(
       phoneNumber,
       email,
     );
+
+    return response;
   }
 
-  Future<ResponseModel> loginExistingUser(String email, String password) async {
+  Future<ResponseModel> loginExistingUser(
+    String email,
+    String password,
+  ) async {
     ResponseModel response = await authService.loginUser(
       email,
       password,

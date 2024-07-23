@@ -1,6 +1,6 @@
 import 'dart:developer' show log;
 import 'package:flutter/material.dart';
-import 'package:fluttertoast/fluttertoast.dart';
+import 'package:funola_bank_app/api/models/response_model.dart';
 import 'package:funola_bank_app/constants/colors.dart';
 import 'package:funola_bank_app/constants/utils.dart';
 import 'package:funola_bank_app/controllers/registration_controller.dart';
@@ -39,29 +39,34 @@ class RegistrationScreen extends StatelessWidget {
   }
 
   Future _handleSendVerificationCode(BuildContext contextPassed) async {
-    final bool emailEnteredIsValid =
-        validateEmailAddress(registrationController.email.value);
+    final bool emailEnteredIsValid = validateEmailAddress(
+      registrationController.email.value,
+    );
+
     if (emailEnteredIsValid == false) {
-      Fluttertoast.showToast(
-        msg: "Please enter a valid email address",
-        toastLength: Toast.LENGTH_SHORT,
-        gravity: ToastGravity.CENTER,
-        timeInSecForIosWeb: 1,
-        backgroundColor: Colors.grey[600],
-        textColor: Colors.white,
-        fontSize: 16.0,
-      );
+      showToastMessage(message: "Please enter a valid email address");
       return;
     }
 
     contextPassed.loaderOverlay.show();
 
-    await authRepository.sendVerificationCode(
+    ResponseModel verificationResponse =
+        await authRepository.sendVerificationCode(
       registrationController.phoneNumber.value,
       registrationController.email.value,
     );
 
+    // ignore: use_build_context_synchronously
     contextPassed.loaderOverlay.hide();
+
+    if (!verificationResponse.responseIsSuccessful) {
+      showToastMessage(
+        message: verificationResponse.responseMessage,
+        backgroundColor: kRed,
+      );
+
+      return;
+    }
   }
 
   @override
@@ -112,8 +117,9 @@ class RegistrationScreen extends StatelessWidget {
                               handleSelectItemFromDropdown:
                                   (var selectedCountry) {
                                 try {
-                                  CountryModel country =
-                                      CountryModel.fromJson(selectedCountry);
+                                  CountryModel country = CountryModel.fromJson(
+                                    selectedCountry,
+                                  );
 
                                   registrationController.updateStringStateVal(
                                     country.name['common'],

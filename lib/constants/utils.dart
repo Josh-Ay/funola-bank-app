@@ -68,3 +68,16 @@ const List<Map<String, String>> kValidFunolaBankAccountTypes = [
     'type': 'Savings',
   }
 ];
+
+// Get the symbol of a currency
+String kGetCurrencySymbol(String currency) {
+  if (currency == 'NGN') return "₦";
+  if (currency == 'USD') return "\$";
+
+  return "";
+}
+
+// Convert a string to title case
+String kConvertToTitleCase(String inputString) {
+  return '${inputString[0].toUpperCase()}${inputString.substring(1).toLowerCase()}';
+}

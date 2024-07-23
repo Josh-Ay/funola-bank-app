@@ -26,27 +26,27 @@ void setup() {
   getItLocator.registerSingleton<Dio>(dioClient);
 
   // registering country service and repository
-  getItLocator.registerSingleton<CountryService>(
-    CountryService(
+  getItLocator.registerLazySingleton<CountryService>(
+    () => CountryService(
       client: getItLocator<Dio>(),
       apiUrl: kRestCountryAPIDomain,
     ),
   );
-  getItLocator.registerSingleton<CountryRepository>(
-    CountryRepository(
+  getItLocator.registerLazySingleton<CountryRepository>(
+    () => CountryRepository(
       countryService: getItLocator<CountryService>(),
     ),
   );
 
   // registering auth service and repository
-  getItLocator.registerSingleton<AuthService>(
-    AuthService(
+  getItLocator.registerLazySingleton<AuthService>(
+    () => AuthService(
       client: getItLocator<Dio>(),
       apiBaseUrl: kBaseApiUrl,
     ),
   );
-  getItLocator.registerSingleton<AuthRepository>(
-    AuthRepository(
+  getItLocator.registerLazySingleton<AuthRepository>(
+    () => AuthRepository(
       authService: getItLocator<AuthService>(),
     ),
   );

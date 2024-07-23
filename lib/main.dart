@@ -3,6 +3,7 @@ import 'package:funola_bank_app/helper/init_controllers.dart';
 import 'package:funola_bank_app/helper/locator.dart';
 import 'package:funola_bank_app/screens/authentication/login_screen.dart';
 import 'package:funola_bank_app/screens/authentication/registration_screen.dart';
+import 'package:funola_bank_app/screens/home_screen.dart';
 import 'package:funola_bank_app/screens/landing_screen.dart';
 import 'package:funola_bank_app/widgets/overlay_loader.dart';
 import 'package:get/get.dart' show GetMaterialApp;
@@ -29,11 +30,12 @@ class FunolaApp extends StatelessWidget {
       },
       child: GetMaterialApp(
         debugShowCheckedModeBanner: false,
-        initialRoute: LandingScreen.id,
+        initialRoute: HomeScreen.id,
         routes: {
           LandingScreen.id: (context) => const LandingScreen(),
           RegistrationScreen.id: (context) => RegistrationScreen(),
           LoginScreen.id: (context) => LoginScreen(),
+          HomeScreen.id: (context) => const HomeScreen(),
         },
       ),
     );

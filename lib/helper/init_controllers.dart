@@ -7,6 +7,6 @@ import 'package:get/get.dart';
 Future<void> initControllers() async {
   log('Initializing all controllers...');
 
-  Get.put(CountryController());
-  Get.put(RegistrationController());
+  Get.lazyPut(() => CountryController());
+  Get.lazyPut(() => RegistrationController());
 }

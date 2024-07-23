@@ -7,35 +7,34 @@ import 'package:funola_bank_app/controllers/registration_controller.dart';
 import 'package:funola_bank_app/helper/helpers.dart';
 import 'package:funola_bank_app/helper/locator.dart';
 import 'package:funola_bank_app/repositories/auth_repository.dart';
+import 'package:funola_bank_app/screens/home_screen.dart';
 import 'package:funola_bank_app/widgets/custom_button.dart';
 import 'package:funola_bank_app/widgets/custom_input_widget.dart';
 import 'package:funola_bank_app/widgets/page_title_widget.dart';
 import 'package:get/get.dart';
-import 'package:fluttertoast/fluttertoast.dart';
 import 'package:loader_overlay/loader_overlay.dart';
 
 class LoginScreen extends StatelessWidget {
   static String id = 'login_screen';
 
-  LoginScreen({super.key});
+  LoginScreen({
+    super.key,
+  });
 
   final _formKey = GlobalKey<FormState>();
   final RegistrationController registrationController = Get.find();
   final authRepository = getItLocator.get<AuthRepository>();
 
   _handleLogin(BuildContext contextPassed) async {
-    final bool emailEnteredIsValid =
-        validateEmailAddress(registrationController.email.value);
+    final bool emailEnteredIsValid = validateEmailAddress(
+      registrationController.email.value,
+    );
+
     if (emailEnteredIsValid == false) {
-      Fluttertoast.showToast(
-        msg: "Please enter a valid email address",
-        toastLength: Toast.LENGTH_SHORT,
-        gravity: ToastGravity.CENTER,
-        timeInSecForIosWeb: 1,
-        backgroundColor: Colors.grey[600],
-        textColor: Colors.white,
-        fontSize: 16.0,
+      showToastMessage(
+        message: "Please enter a valid email address",
       );
+
       return;
     }
 
@@ -46,23 +45,23 @@ class LoginScreen extends StatelessWidget {
       registrationController.password.value,
     );
 
+    // ignore: use_build_context_synchronously
     contextPassed.loaderOverlay.hide();
 
     if (authRes.responseIsSuccessful == false) {
-      Fluttertoast.showToast(
-        msg: authRes.responseMessage,
-        toastLength: Toast.LENGTH_SHORT,
-        gravity: ToastGravity.CENTER,
-        timeInSecForIosWeb: 2,
-        backgroundColor: Colors.grey[600],
-        textColor: Colors.white,
-        fontSize: 16.0,
+      showToastMessage(
+        message: authRes.responseMessage,
       );
 
       return;
     }
 
-    log(authRes.responseMessage);
+    showToastMessage(
+      message: authRes.responseMessage,
+      backgroundColor: kGreen,
+    );
+
+    Get.toNamed(HomeScreen.id);
   }
 
   @override
