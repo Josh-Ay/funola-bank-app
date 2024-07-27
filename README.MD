@@ -1,13 +1,15 @@
 # Funola Banking Application API
-The Funola Banking Application API is a RESTFul API built using the [Model-View-Controller](https://developer.mozilla.org/en-US/docs/Glossary/MVC) design pattern.
+The Funola Banking Application API is a RESTFul API built using the <a href='https://developer.mozilla.org/en-US/docs/Glossary/MVC' target='_blank' rel='noreferrer noopener'>Model-View-Controller</a> design pattern.
 
 - Local API Link: `http://localhost:5000`
 
 <!-- Live API Link: `https://yoola-bank-app.onrender.com` -->
-- Live API Link: `https://real-fly-hoodie.cyclic.app`
+<!-- - Live API Link: `https://real-fly-hoodie.cyclic.app` -->
+- Live API Link: <a href='https://funola.vercel.app' target='_blank' rel='noreferrer noopener'>View here</a>
 
-- Postman Documentation Link: `https://documenter.getpostman.com/view/26461326/2sA3BrYqdg`
-- Database Entity-Relationship Diagram: `https://app.eraser.io/workspace/0DTqxwHdSSSo1Jqu6sfr?origin=share`
+- Postman Documentation Link: <a href='https://documenter.getpostman.com/view/26461326/2sA3BrYqdg' target='_blank' rel='noreferrer noopener'>View here</a>
+
+- Database Entity-Relationship Diagram: <a href='https://app.eraser.io/workspace/0DTqxwHdSSSo1Jqu6sfr?origin=share' target='_blank' rel='noreferrer noopener'>View here</a>
 
 <br />
 
@@ -119,7 +121,7 @@ $ npm install
 
 ```bash
 # Run the server
-$ node app.js
+$ npm run dev
 ```
 
 -That's all! You should see your server successfully running on port 5000.

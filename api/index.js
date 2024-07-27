@@ -1,5 +1,5 @@
 require('dotenv').config();
-const { connectToDb } = require('./config/db');
+const { connectToDb } = require('../config/db');
 
 // making the necessary imports
 const express = require('express');
@@ -9,7 +9,7 @@ const PORT = process.env.PORT || 5000;
 const app = express();
 
 // adding routes, external configurations to the application
-require('./config/config')(app);
+require('../config/config')(app);
 
 
 // connecting to the database
