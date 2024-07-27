@@ -11,8 +11,7 @@
     - [React Native](#react-native)
     - [Flutter](#flutter)
 - [Features](#features)
-- [Installing on Android](#installing-on-android)
-- [Installing on IOS](#installing-on-ios)
+- [React Native - Installing on Android/IOS](#react-native---installing-on-androidios)
 - [Screenshots](#screenshots)
     - [React Native](#react-native-screenshots)
     - [Flutter](#flutter-screenshots)
@@ -39,17 +38,12 @@
 - Live currency conversion
 - Round-the-Clock Customer Support 😇
 
-### Installing on Android
-- To install on Android, you can download the `.apk` directly onto your device and install using this [link](https://expo.dev/artifacts/eas/a8ntpTarT8gTbpy53sVLEA.apk). But **please note** that you will have to:
-    - Enable `Allow installation from unknown sources` from your device settings
-    - Disable `play protect` before installing, then you can re-enable it back once it's installed
-- Alternatively, you can install [Expo GO](https://play.google.com/store/apps/details?id=host.exp.exponent&hl=en&gl=US), then scan the QR code below once you are done installing Expo Go:
-![](./assets/images/react-native/android-expo.png)
-
-### Installing on IOS
-- To install on IOS, you will need to first have [Expo GO](https://apps.apple.com/us/app/expo-go/id982107779) installed on your device.
-- After installing [Expo GO](https://apps.apple.com/us/app/expo-go/id982107779), just scan the QR code below:
-- ![](./assets/images/react-native/ios-expo.png)
+### React Native - Installing on Android/IOS
+- To install on Android/IOS, you will need to first have Expo GO installed on your device(s).
+    - For Android devices, you can install using this [link](https://play.google.com/store/apps/details?id=host.exp.exponent&hl=en&gl=US).
+    - For IOS devices, you can install using this [link](https://apps.apple.com/us/app/expo-go/id982107779).
+- After installing Expo GO, just scan the QR code below:
+![](./assets/images/react-native/funola-qr-cross.png)
 
 ### Screenshots
 #### React Native Screenshots
