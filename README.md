@@ -40,9 +40,12 @@
 
 ### React Native - Installing on Android/IOS
 - To install on Android/IOS, you will need to first have Expo GO installed on your device(s).
+
     - For Android devices, you can install using this [link](https://play.google.com/store/apps/details?id=host.exp.exponent&hl=en&gl=US).
     - For IOS devices, you can install using this [link](https://apps.apple.com/us/app/expo-go/id982107779).
+
 - After installing Expo GO, just scan the QR code below:
+
 ![](./assets/images/react-native/funola-qr-cross.png)
 
 ### Screenshots
