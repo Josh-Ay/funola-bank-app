@@ -1,5 +1,5 @@
 exports.newFundingTemplate = `
-<div style="background-color: #F7F9FC; padding: 40px;">
+<div style="background-color: #F7F9FC; padding: 20px 10px;">
 <div class="content" style="width: 90%; text-align: center; padding: 20px; margin-top: 20px; margin-bottom: 20px; margin-left: auto; margin-right: auto; border-radius: 10px; background-color: #FFF; box-shadow: rgba(149, 157, 165, 0.2) 0px 8px 24px;">
     <h2>{{title}}</h2>
     <div class="body">
@@ -11,17 +11,17 @@ exports.newFundingTemplate = `
         <p style='font-size: 1rem;'>Hello {{name}},</p>
         <p>Your {{ fundingType }} funding was successful.</p>
         <p>These are the details of your deposit:</p>
-        <table style="width: 50%; border-collapse: collapse; margin-left: auto; margin-right: auto;">
+        <table style="width: 85%; border-collapse: collapse; margin-left: auto; margin-right: auto;">
             <thead style="background-color: blue; color: white;">
                 <tr>
-                    <td style='padding: 0.5rem;'>Currency</td>
-                    <td style='padding: 0.5rem;'>Amount</td>
+                    <td style='padding: 0.75rem;'>Currency</td>
+                    <td style='padding: 0.75rem;'>Amount</td>
                 </tr>
             </thead>
             <tbody style="background-color: aliceblue;">
                 <tr>
-                    <td style='padding: 0.5rem;'>{{ content.currency }}</td>
-                    <td style='padding: 0.5rem;'>{{ content.amount }}</td>
+                    <td style='padding: 0.75rem;'>{{ content.currency }}</td>
+                    <td style='padding: 0.75rem;'>{{ content.amount }}</td>
                 </tr>
             </tbody>
         </table>

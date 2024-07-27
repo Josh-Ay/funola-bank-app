@@ -1,5 +1,5 @@
 exports.newDepositTemplate = `
-<div style="background-color: #F7F9FC; padding: 40px;">
+<div style="background-color: #F7F9FC; padding: 20px 10px;">
 <div class="content" style="width: 90%; text-align: center; padding: 20px; margin-top: 20px; margin-bottom: 20px; margin-left: auto; margin-right: auto; border-radius: 10px; background-color: #FFF; box-shadow: rgba(149, 157, 165, 0.2) 0px 8px 24px;">
     <h2>{{title}}</h2>
     <div class="body">
