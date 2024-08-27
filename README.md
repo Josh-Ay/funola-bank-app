@@ -44,9 +44,11 @@
     - For Android devices, you can install using this [link](https://play.google.com/store/apps/details?id=host.exp.exponent&hl=en&gl=US).
     - For IOS devices, you can install using this [link](https://apps.apple.com/us/app/expo-go/id982107779).
 
-- After installing Expo GO, just scan the QR code below:
+- After installing Expo GO (sdk 51), just scan the QR code below:
 
 ![](./assets/images/react-native/funola-qr-cross.png)
+- For older expo versions, please see this
+    - [Installing on older EXPO versions](./assets/static/README.md)
 
 ### Screenshots
 #### React Native Screenshots
