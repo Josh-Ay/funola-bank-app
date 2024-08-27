@@ -50,7 +50,8 @@
         {
           "cameraPermission": "Allow $(Funola) to access camera."
         }
-      ]
+      ],
+      "expo-font"
     ],
     "extra": {
       "eas": {
